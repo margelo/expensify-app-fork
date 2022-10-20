@@ -35,21 +35,23 @@ const appReady = new Promise((resolve) => {
     });
 });
 
-E2EClient.getTestConfig().then((config) => {
-    const test = tests[config.name];
-    if (!test) {
+E2EClient.getTestConfig()
+    .then((config) => {
+        const test = tests[config.name];
+        if (!test) {
         // instead of throwing, report the error to the server, which is better for DX
-        return E2EClient.submitTestResults({
-            name: config.name,
-            error: `Test '${config.name}' not found`,
-        });
-    }
-    console.debug(`[E2E] Configured for test ${config.name}. Waiting for app to become ready`);
+            return E2EClient.submitTestResults({
+                name: config.name,
+                error: `Test '${config.name}' not found`,
+            });
+        }
+        console.debug(`[E2E] Configured for test ${config.name}. Waiting for app to become ready`);
 
-    appReady.then(() => {
-        console.debug('[E2E] App is ready, running test…');
-        Performance.measureFailSafe('appStartedToReady', 'regularAppStart');
-        test();
-    });
-});
+        appReady.then(() => {
+            console.debug('[E2E] App is ready, running test…');
+            Performance.measureFailSafe('appStartedToReady', 'regularAppStart');
+            test();
+        });
+    })
+    .catch(err => console.error('[E2E] Error in setup phase', err));
 
