@@ -35,6 +35,9 @@ const args = process.argv.slice(2);
 const baselineBranch = process.env.baseline || DEFAULT_BASELINE_BRANCH;
 const compareBranch = process.env.compare || DEFAULT_BASELINE_BRANCH;
 
+// Configure logger
+Logger.setLogLevelVerbose(args.includes('--verbose'));
+
 // Clear all files from previous jobs
 try {
     fs.rmSync(OUTPUT_DIR, {recursive: true, force: true});
