@@ -52,7 +52,7 @@ const provider = {
       * @return {Promise<void>}
       */
     setItem(key, value) {
-        return QuickSQLite.executeAsync(DB_NAME, 'REPLACE into magic_map (record_key, value) VALUES (?, json(?));', [key, lightStringify(value)]);
+        return QuickSQLite.executeAsync(DB_NAME, 'REPLACE into magic_map (record_key, value) VALUES (?, ?);', [key, JSON.stringify(value)]);
     },
 
     /**

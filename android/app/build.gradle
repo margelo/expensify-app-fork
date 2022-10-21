@@ -82,11 +82,12 @@ import org.apache.tools.ant.taskdefs.condition.Os
 
 project.ext.react = [
     enableHermes: true,  // clean and rebuild if changing
+   // hermesFlagsRelease: ["-O", "-output-source-map"], // plus whichever flag was required to set this away from default
 ]
 
 project.ext.envConfigFiles = [
     debug: ".env",
-    release: ".env.production",
+    release: ".env",
 ]
 
 apply from: "../../node_modules/react-native/react.gradle"
@@ -248,7 +249,7 @@ android {
             signingConfig signingConfigs.debug
         }
         release {
-            signingConfig signingConfigs.release
+            signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }

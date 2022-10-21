@@ -19,6 +19,9 @@
 #include "folly/dynamic.h"
 #include <folly/json.h>
 
+#include <chrono>
+#include <ctime>
+
 using namespace std;
 using namespace facebook;
 
@@ -201,7 +204,7 @@ SQLiteOPResult sqliteRemoveDb(string const dbName, string const docPath)
 
 void bindStatement(sqlite3_stmt *statement, vector<QuickValue> *values)
 {
-  LOGV("bind start");
+  auto start = std::chrono::system_clock::now();
   size_t size = values->size();
   if (size <= 0)
   {
@@ -215,53 +218,46 @@ void bindStatement(sqlite3_stmt *statement, vector<QuickValue> *values)
     QuickDataType dataType = value.dataType;
     if (dataType == NULL_VALUE)
     {
-        LOGV("This is NULL");
         sqlite3_bind_null(statement, sqIndex);
     }
     else if (dataType == BOOLEAN)
     {
-        LOGV("This is BOOLEAN");
         sqlite3_bind_int(statement, sqIndex, value.booleanValue);
     }
     else if (dataType == INTEGER)
     {
-        LOGV("This is INTEGER");
         sqlite3_bind_int(statement, sqIndex, (int)value.doubleOrIntValue);
     }
     else if (dataType == DOUBLE)
     {
-        LOGV("This is double");
         sqlite3_bind_double(statement, sqIndex, value.doubleOrIntValue);
     }
     else if (dataType == INT64)
     {
-        LOGV("This is int");
         sqlite3_bind_int64(statement, sqIndex, value.int64Value);
     }
     else if (dataType == TEXT)
     {
-        LOGV("This is str");
         sqlite3_bind_text(statement, sqIndex, value.textValue.c_str(), value.textValue.length(), SQLITE_TRANSIENT);
     }
     else if (dataType == ARRAY_BUFFER)
     {
-        LOGV("This is AB");
       sqlite3_bind_blob(statement, sqIndex, value.arrayBufferValue.get(), value.arrayBufferSize, SQLITE_STATIC);
     } else if (dataType == ARRAY or dataType == OBJECT) {
       std::string str = folly::toJson(*value.json);
-      LOGV(("This is the json -" + str + "-").c_str());
       sqlite3_bind_text(statement, sqIndex, str.c_str(), str.length(), SQLITE_TRANSIENT);
     }
   }
+  auto end = std::chrono::system_clock::now();
+  auto d = std::chrono::duration_cast<std::chrono::microseconds>(end-start);
+  LOGV(("1 bind  on native took " + to_string(d.count()/ 1000) + string("")).c_str());
 }
 
 SQLiteOPResult sqliteExecute(string const dbName, string const &query, vector<QuickValue> *params, vector<map<string, QuickValue>> *results, vector<QuickColumnMetadata> *metadata)
 {
-  LOGV("exec start");
   // Check if db connection is opened
   if (dbMap.count(dbName) == 0)
   {
-      LOGV("exec error count");
     return SQLiteOPResult{
         .type = SQLiteError,
         .errorMessage = "[react-native-quick-sqlite]: Database " + dbName + " is not open",
@@ -284,7 +280,6 @@ SQLiteOPResult sqliteExecute(string const dbName, string const &query, vector<Qu
   else
   {
     const char *message = sqlite3_errmsg(db);
-      LOGV("exec error prep");
     return SQLiteOPResult{
         .type = SQLiteError,
         .errorMessage = "[react-native-quick-sqlite] SQL preparing error: " + string(message) + " for query " + query,
@@ -300,7 +295,11 @@ SQLiteOPResult sqliteExecute(string const dbName, string const &query, vector<Qu
 
   while (isConsuming)
   {
+      auto start = std::chrono::system_clock::now();
     result = sqlite3_step(statement);
+      auto end = std::chrono::system_clock::now();
+      auto d = std::chrono::duration_cast<std::chrono::microseconds>(end-start);
+      LOGV(("1 step  on native took " + to_string(d.count()/ 1000) + string("")).c_str());
 
     switch (result)
     {
@@ -413,7 +412,6 @@ SQLiteOPResult sqliteExecute(string const dbName, string const &query, vector<Qu
   if (isFailed)
   {
     const char *message = sqlite3_errmsg(db);
-      LOGV(("exec error exec " + string(message) + "for query " + query).c_str());
     return SQLiteOPResult{
         .type = SQLiteError,
         .errorMessage = "[react-native-quick-sqlite] SQL execution error: " + string(message) + "for query " + query,

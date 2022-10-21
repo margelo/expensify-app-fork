@@ -1,11 +1,11 @@
-arguments=
+arguments=--init-script /var/folders/qz/9bngtnt56rl3zlgplx3s1pjh0000gn/T/init6273680253275248278.gradle --init-script /var/folders/qz/9bngtnt56rl3zlgplx3s1pjh0000gn/T/init4944875570210489059.gradle
 auto.sync=false
 build.scans.enabled=false
-connection.gradle.distribution=GRADLE_DISTRIBUTION(VERSION(6.0))
-connection.project.dir=../../../android
+connection.gradle.distribution=GRADLE_DISTRIBUTION(VERSION(7.4.2))
+connection.project.dir=
 eclipse.preferences.version=1
 gradle.user.home=
-java.home=/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home
+java.home=/opt/homebrew/Cellar/openjdk/17.0.2/libexec/openjdk.jdk/Contents/Home
 jvm.arguments=
 offline.mode=false
 override.workspace.settings=true
