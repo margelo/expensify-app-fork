@@ -2,6 +2,7 @@
  * Batch execution implementation
 */
 #include "sqlbatchexecutor.h"
+#include "logs.h"
 
 void jsiBatchParametersToQuickArguments(jsi::Runtime &rt, jsi::Array const &batchParams, vector<QuickQueryArguments> *commands)
 {
@@ -72,7 +73,13 @@ SequelBatchOperationResult sqliteExecuteBatch(std::string dbName, vector<QuickQu
         affectedRows += result.rowsAffected;
       }
     }
-    sqliteExecuteLiteral(dbName, "COMMIT");
+      auto start = std::chrono::system_clock::now();
+      sqliteExecuteLiteral(dbName, "COMMIT");
+      auto end = std::chrono::system_clock::now();
+      auto d = std::chrono::duration_cast<std::chrono::microseconds>(end-start);
+      LOGV("%s", ("1 commit  on native took " + to_string(d.count()/ 1000) + string("")).c_str());
+
+
     return SequelBatchOperationResult {
       .type = SQLiteOk,
       .affectedRows = affectedRows,

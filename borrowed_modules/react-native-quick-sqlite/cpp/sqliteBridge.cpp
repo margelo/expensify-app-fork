@@ -250,7 +250,7 @@ void bindStatement(sqlite3_stmt *statement, vector<QuickValue> *values)
   }
   auto end = std::chrono::system_clock::now();
   auto d = std::chrono::duration_cast<std::chrono::microseconds>(end-start);
-  LOGV(("1 bind  on native took " + to_string(d.count()/ 1000) + string("")).c_str());
+  LOGV("%s", ("1 bind  on native took " + to_string(d.count()/ 1000) + string("")).c_str());
 }
 
 SQLiteOPResult sqliteExecute(string const dbName, string const &query, vector<QuickValue> *params, vector<map<string, QuickValue>> *results, vector<QuickColumnMetadata> *metadata)
@@ -299,7 +299,7 @@ SQLiteOPResult sqliteExecute(string const dbName, string const &query, vector<Qu
     result = sqlite3_step(statement);
       auto end = std::chrono::system_clock::now();
       auto d = std::chrono::duration_cast<std::chrono::microseconds>(end-start);
-      LOGV(("1 step  on native took " + to_string(d.count()/ 1000) + string("")).c_str());
+      LOGV("%s", ("1 step  on native took " + to_string(d.count()/ 1000) + string("")).c_str());
 
     switch (result)
     {

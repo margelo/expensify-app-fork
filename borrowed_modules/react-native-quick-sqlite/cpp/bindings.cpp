@@ -217,7 +217,7 @@ void install(jsi::Runtime &rt, std::shared_ptr<react::CallInvoker> jsCallInvoker
       auto end = std::chrono::system_clock::now();
 
       auto d = std::chrono::duration_cast<std::chrono::microseconds>(end-start);
-      LOGV(("0 JS perfx on native took " + to_string(d.count()/ 1000) + string("")).c_str());
+      LOGV("%s", ("0 JS perfx on native took " + to_string(d.count()/ 1000) + string("")).c_str());
 
     auto promiseCtr = rt.global().getPropertyAsFunction(rt, "Promise");
     auto promise = promiseCtr.callAsConstructor(rt, HOSTFN("executor", 2) {
@@ -236,20 +236,20 @@ void install(jsi::Runtime &rt, std::shared_ptr<react::CallInvoker> jsCallInvoker
           auto status = sqliteExecute(dbName, query, params.get(), &results, &(*metadata));
           auto end = std::chrono::system_clock::now();
           auto d = std::chrono::duration_cast<std::chrono::microseconds>(end-start);
-          LOGV(("1 work perfx on native took " + to_string(d.count()/ 1000) + string("")).c_str());
+          LOGV("%s", ("1 work perfx on native took " + to_string(d.count()/ 1000) + string("")).c_str());
 
             auto d2 = std::chrono::duration_cast<std::chrono::microseconds>(end-start2);
-            LOGV(("2 work only perfx on native took " + to_string(d2.count()/ 1000) + string("")).c_str());
+            LOGV("%s", ("2 work only perfx on native took " + to_string(d2.count()/ 1000) + string("")).c_str());
 
             auto d3 = std::chrono::duration_cast<std::chrono::microseconds>(end-start2);
-            LOGV(("3 work only perfx on native took " + to_string(d3.count()/ 1000) + string("")).c_str());
+            LOGV("%s", ("3 work only perfx on native took " + to_string(d3.count()/ 1000) + string("")).c_str());
           invoker->invokeAsync([&rt, start, results = make_shared<vector<map<string, QuickValue>>>(results), metadata, status_copy = move(status), resolve]
                                {
             auto jsiResult = createSequelQueryExecutionResult(rt, status_copy, results.get(), metadata.get());
             auto end = std::chrono::system_clock::now();
 
             auto d = std::chrono::duration_cast<std::chrono::microseconds>(end-start);
-          LOGV(("perfx on native took " + to_string(d.count()/ 1000) + string("")).c_str());
+          LOGV("%s", ("perfx on native took " + to_string(d.count()/ 1000) + string("")).c_str());
     
             resolve->asObject(rt).asFunction(rt).call(rt, move(jsiResult)); });
         }

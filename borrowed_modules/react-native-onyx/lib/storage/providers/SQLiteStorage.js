@@ -52,7 +52,17 @@ const provider = {
       * @return {Promise<void>}
       */
     setItem(key, value) {
-        return QuickSQLite.executeAsync(DB_NAME, 'REPLACE into magic_map (record_key, value) VALUES (?, ?);', [key, JSON.stringify(value)]);
+        // return QuickSQLite.executeAsync(DB_NAME, 'REPLACE into magic_map (record_key, value) VALUES (?, ?);', [key, JSON.stringify(value)]);
+        // QuickSQLite.execute(DB_NAME, 'REPLACE into magic_map (record_key, value) VALUES (?, ?);', [key, JSON.stringify(value)]);
+        const bef = performance.now();
+        QuickSQLite.executeBatch(DB_NAME, [
+            ['REPLACE into magic_map (record_key, value) VALUES (?, ?);', [[key, JSON.stringify(value)]],
+            ]]);
+
+        const aft = performance.now();
+        console.log('synctook',aft - bef);
+
+        return Promise.resolve();
     },
 
     /**

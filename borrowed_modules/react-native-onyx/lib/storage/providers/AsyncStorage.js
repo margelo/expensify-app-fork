@@ -37,6 +37,7 @@ const provider = {
       * @return {Promise<void>}
       */
     setItem(key, value) {
+      console.log('set');
         return AsyncStorage.setItem(key, JSON.stringify(value));
     },
 

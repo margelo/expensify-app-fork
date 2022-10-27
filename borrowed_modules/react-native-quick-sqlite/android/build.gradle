@@ -109,7 +109,7 @@ android {
   
   buildTypes {
     release {
-      minifyEnabled false
+      ///minifyEnabled false
     }
   }
   lintOptions {
