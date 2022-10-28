@@ -78,18 +78,33 @@ const runTestsOnBranch = async (branch, baselineOrCompare) => {
     await reversePort();
     progressLog.done();
 
-    // // Start the HTTP server
-    // Logger.log('Creating server instance');
-    // const server = createServerInstance();
-    // Logger.log('Starting server instance');
-    // await server.start();
-    // Logger.log('Server instance running');
+    // Start the HTTP server
+    const server = createServerInstance();
+    await server.start();
+
+    // Create a dict in which we will store the run durations for all tests
+    const durationsByTestName = {};
+
+    // Collect results while tests are being executed
+    server.addTestResultListener((testResult) => {
+        if (testResult.error != null) {
+            throw new Error(`Test '${testResult.name}' failed with error: ${testResult.error}`);
+        }
+        if (testResult.duration < 0) {
+            return;
+        }
+
+        Logger.log(`[LISTENER] Test '${testResult.name}' took ${testResult.duration}ms`);
+        durationsByTestName[testResult.name] = (durationsByTestName[testResult.name] || []).concat(testResult.duration);
+    });
 
     // Run the tests
     const numOfTests = _.values(TESTS_CONFIG).length;
     for (let testIndex = 0; testIndex < numOfTests; testIndex++) {
         const config = _.values(TESTS_CONFIG)[testIndex];
+        server.setTestConfig(config);
 
+        // Run warmups
         const warmupLogs = Logger.progressInfo(`Running test '${config.name}'`);
         for (let warmUpRuns = 0; warmUpRuns < WARM_UP_RUNS; warmUpRuns++) {
             const progressText = `(${testIndex + 1}/${numOfTests}) Warmup for test '${config.name}' (iteration ${warmUpRuns + 1}/${WARM_UP_RUNS})`;
@@ -113,23 +128,23 @@ const runTestsOnBranch = async (branch, baselineOrCompare) => {
             const progressText = `(${testIndex + 1}/${numOfTests}) Running test '${config.name}' (iteration ${i + 1}/${RUNS})`;
             testLog.updateText(progressText);
 
-            // const stopVideoRecording = startRecordingVideo();
+            const stopVideoRecording = startRecordingVideo();
 
             await restartApp();
 
             // Wait for a test to finish by waiting on its done call to the http server
             try {
                 await withFailTimeout(new Promise((resolve) => {
-                    // const cleanup = server.addTestDoneListener(() => {
-                    //     Logger.log(`Test iteration ${i + 1} done!`);
-                    //     cleanup();
-                    //     resolve();
-                    // });
+                    const cleanup = server.addTestDoneListener(() => {
+                        Logger.log(`Test iteration ${i + 1} done!`);
+                        cleanup();
+                        resolve();
+                    });
                 }), progressText);
-                // await stopVideoRecording(false);
+                await stopVideoRecording(false);
             } catch (e) {
                 // When we fail due to a timeout it's interesting to take a screenshot of the emulator to see whats going on
-                // await stopVideoRecording(true);
+                await stopVideoRecording(true);
                 testLog.done();
                 throw e; // Rethrow to abort execution
             }
@@ -152,7 +167,7 @@ const runTestsOnBranch = async (branch, baselineOrCompare) => {
     }
     progressLog.done();
 
-    // await server.stop();
+    await server.stop();
 };
 
 const runTests = async () => {
