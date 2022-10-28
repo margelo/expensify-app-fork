@@ -34,9 +34,13 @@ const submitTestDone = () => fetch(`${SERVER_ADDRESS}${Routes.testDone}`);
 /**
  * @returns {Promise<TestConfig>}
  */
-const getTestConfig = () => fetch(`${SERVER_ADDRESS}${Routes.testConfig}`)
-    .then(res => res.json())
-    .then(config => config);
+const getTestConfig = () => {
+    const url = `${SERVER_ADDRESS}${Routes.testConfig}`;
+    console.debug('[E2E] Getting test config from', url);
+    return fetch(url)
+        .then(res => res.json())
+        .then(config => config);
+};
 
 export default {
     submitTestResults,

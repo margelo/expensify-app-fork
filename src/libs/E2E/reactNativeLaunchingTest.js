@@ -15,9 +15,9 @@ Performance.markEnd('regularAppStart');
 import E2EConfig from '../../../e2e/config';
 import E2EClient from './client';
 
-console.log('==========================');
-console.log('==== Running e2e test ====');
-console.log('==========================');
+console.debug('==========================');
+console.debug('==== Running e2e test ====');
+console.debug('==========================');
 
 // import your test here, define its name and config first in e2e/config.js
 const tests = {
@@ -35,22 +35,23 @@ const appReady = new Promise((resolve) => {
     });
 });
 
-console.log('[E2E] Sending get test config request');
-E2EClient.getTestConfig().then((config) => {
-    const test = tests[config.name];
-    if (!test) {
+E2EClient.getTestConfig()
+    .then((config) => {
+        const test = tests[config.name];
+        if (!test) {
         // instead of throwing, report the error to the server, which is better for DX
-        return E2EClient.submitTestResults({
-            name: config.name,
-            error: `Test '${config.name}' not found`,
-        });
-    }
-    console.log(`[E2E] Configured for test ${config.name}. Waiting for app to become ready`);
+            return E2EClient.submitTestResults({
+                name: config.name,
+                error: `Test '${config.name}' not found`,
+            });
+        }
+        console.debug(`[E2E] Configured for test ${config.name}. Waiting for app to become ready`);
 
-    appReady.then(() => {
-        console.log('[E2E] App is ready, running test…');
-        Performance.measureFailSafe('appStartedToReady', 'regularAppStart');
-        test();
-    });
-});
+        appReady.then(() => {
+            console.debug('[E2E] App is ready, running test…');
+            Performance.measureFailSafe('appStartedToReady', 'regularAppStart');
+            test();
+        });
+    })
+    .catch(err => console.error('[E2E] Error in setup phase', err));
 

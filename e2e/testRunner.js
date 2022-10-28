@@ -35,6 +35,9 @@ const args = process.argv.slice(2);
 const baselineBranch = process.env.baseline || DEFAULT_BASELINE_BRANCH;
 const compareBranch = process.env.compare || DEFAULT_BASELINE_BRANCH;
 
+// Configure logger
+Logger.setLogLevelVerbose(args.includes('--verbose'));
+
 // Clear all files from previous jobs
 try {
     fs.rmSync(OUTPUT_DIR, {recursive: true, force: true});
@@ -87,22 +90,22 @@ const runTestsOnBranch = async (branch, baselineOrCompare) => {
     for (let testIndex = 0; testIndex < numOfTests; testIndex++) {
         const config = _.values(TESTS_CONFIG)[testIndex];
 
-        // const warmupLogs = Logger.progressInfo(`Running test '${config.name}'`);
-        // for (let warmUpRuns = 0; warmUpRuns < WARM_UP_RUNS; warmUpRuns++) {
-        //     const progressText = `(${testIndex + 1}/${numOfTests}) Warmup for test '${config.name}' (iteration ${warmUpRuns + 1}/${WARM_UP_RUNS})`;
-        //     warmupLogs.updateText(progressText);
-        //
-        //     await restartApp();
-        //
-        //     await withFailTimeout(new Promise((resolve) => {
-        //         const cleanup = server.addTestDoneListener(() => {
-        //             Logger.log(`Warmup ${warmUpRuns + 1} done!`);
-        //             cleanup();
-        //             resolve();
-        //         });
-        //     }), progressText);
-        // }
-        // warmupLogs.done();
+        const warmupLogs = Logger.progressInfo(`Running test '${config.name}'`);
+        for (let warmUpRuns = 0; warmUpRuns < WARM_UP_RUNS; warmUpRuns++) {
+            const progressText = `(${testIndex + 1}/${numOfTests}) Warmup for test '${config.name}' (iteration ${warmUpRuns + 1}/${WARM_UP_RUNS})`;
+            warmupLogs.updateText(progressText);
+
+            await restartApp();
+
+            await withFailTimeout(new Promise((resolve) => {
+                const cleanup = server.addTestDoneListener(() => {
+                    Logger.log(`Warmup ${warmUpRuns + 1} done!`);
+                    cleanup();
+                    resolve();
+                });
+            }), progressText);
+        }
+        warmupLogs.done();
 
         // We run each test multiple time to average out the results
         const testLog = Logger.progressInfo('');
@@ -171,8 +174,14 @@ const runTests = async () => {
         // Write logcat, meminfo, emulator info to file as well:
         require('node:child_process').execSync(`adb logcat -d > ${OUTPUT_DIR}/logcat.txt`);
         require('node:child_process').execSync(`adb shell "cat /proc/meminfo" > ${OUTPUT_DIR}/meminfo.txt`);
-        require('node:child_process').execSync(`cat ~/.android/avd/${process.env.AVD_NAME || 'test'}.avd/config.ini > ${OUTPUT_DIR}/emulator-config.ini`);
         require('node:child_process').execSync(`adb shell "getprop" > ${OUTPUT_DIR}/emulator-properties.txt`);
+
+        try {
+            require('node:child_process')
+                .execSync(`cat ~/.android/avd/${process.env.AVD_NAME || 'test'}.avd/config.ini > ${OUTPUT_DIR}/emulator-config.ini`);
+        } catch (__) {
+            // Ignore, we are not necessarily using an emulator
+        }
 
         require('node:child_process').execSync(`cat ${LOG_FILE}`);
         process.exit(1);
