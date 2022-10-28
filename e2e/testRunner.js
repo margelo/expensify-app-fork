@@ -47,11 +47,14 @@ try {
     console.error(error);
 }
 
+// IP address
+const ip = require('node:os').networkInterfaces().en0.find((i) => i.family === 'IPv4').address;
+
 const restartApp = async () => {
     Logger.log('Killing app …');
     await killApp('android');
     Logger.log('Launching app …');
-    await launchApp('android');
+    await launchApp('android', `-e "hostip" "${ip}"`);
 };
 
 const runTestsOnBranch = async (branch, baselineOrCompare) => {

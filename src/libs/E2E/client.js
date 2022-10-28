@@ -1,7 +1,9 @@
 import Routes from '../../../e2e/server/routes';
 import Config from '../../../e2e/config';
+import LaunchArguments from'./launchArgs';
 
-const SERVER_ADDRESS = `http://localhost:${Config.SERVER_PORT}`;
+const launchArgs = LaunchArguments.value();
+const SERVER_ADDRESS = `http://${launchArgs.hostip}:${Config.SERVER_PORT}`;
 
 /**
  * Submits a test result to the server.
