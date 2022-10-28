@@ -67,7 +67,18 @@ const runTestsOnBranch = async (branch, baselineOrCompare) => {
     // Build app
     if (!args.includes('--skipBuild')) {
         progress.updateText(`Preparing ${baselineOrCompare} tests on branch '${branch}' - building app`);
+
+        // Get local IP address
+        const ip = require('node:child_process').execSync('ipconfig getifaddr en0').toString().trim();
+
+        // Append IP to env file
+        const envFile = fs.readFileSync('e2e/.env.e2e', 'utf8');
+        fs.writeFileSync('e2e/.env.e2e', `${envFile}HOST_IP=${ip}`);
+
         await execAsync('npm run android-build-e2e');
+
+        // Revert change on env file
+        fs.writeFileSync('e2e/.env.e2e', envFile);
     }
     progress.done();
 

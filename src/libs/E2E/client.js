@@ -1,7 +1,8 @@
+import EnvConfig from 'react-native-config';
 import Routes from '../../../e2e/server/routes';
 import Config from '../../../e2e/config';
 
-const SERVER_ADDRESS = `http://localhost:${Config.SERVER_PORT}`;
+const SERVER_ADDRESS = `http://${EnvConfig.HOST_IP}:${Config.SERVER_PORT}`;
 
 /**
  * Submits a test result to the server.
@@ -18,7 +19,7 @@ const submitTestResults = testResult => fetch(`${SERVER_ADDRESS}${Routes.testRes
     body: JSON.stringify(testResult),
 }).then((res) => {
     if (res.statusCode === 200) {
-        console.log(`[E2E] Test result '${testResult.name}' submitted successfully`);
+        console.debug(`[E2E] Test result '${testResult.name}' submitted successfully`);
         return;
     }
     const errorMsg = `Test result submission failed with status code ${res.statusCode}`;
