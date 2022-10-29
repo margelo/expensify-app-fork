@@ -8,6 +8,7 @@
 
 /* eslint-disable @lwc/lwc/no-async-await,no-restricted-syntax,no-await-in-loop */
 const fs = require('fs');
+const os = require('node:os');
 const _ = require('underscore');
 const {
     DEFAULT_BASELINE_BRANCH,
@@ -48,7 +49,8 @@ try {
 }
 
 // IP address
-const ip = require('node:os').networkInterfaces().en0.find((i) => i.family === 'IPv4').address;
+const networkInterfaces = os.networkInterfaces();
+const ip = _.find(networkInterfaces.en0 || networkInterfaces.eth0, i => i.family === 'IPv4').address;
 
 const restartApp = async () => {
     Logger.log('Killing app …');
