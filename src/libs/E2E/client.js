@@ -1,6 +1,6 @@
 import Routes from '../../../e2e/server/routes';
 import Config from '../../../e2e/config';
-import LaunchArguments from'./launchArgs';
+import LaunchArguments from './launchArgs';
 
 const launchArgs = LaunchArguments.value();
 const SERVER_ADDRESS = `http://${launchArgs.hostip}:${Config.SERVER_PORT}`;
@@ -20,7 +20,7 @@ const submitTestResults = testResult => fetch(`${SERVER_ADDRESS}${Routes.testRes
     body: JSON.stringify(testResult),
 }).then((res) => {
     if (res.statusCode === 200) {
-        console.log(`[E2E] Test result '${testResult.name}' submitted successfully`);
+        console.debug(`[E2E] Test result '${testResult.name}' submitted successfully`);
         return;
     }
     const errorMsg = `Test result submission failed with status code ${res.statusCode}`;
