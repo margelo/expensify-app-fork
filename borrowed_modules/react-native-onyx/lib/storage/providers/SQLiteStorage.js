@@ -9,9 +9,9 @@ const DB_NAME = 'Expensify-new-db';
 QuickSQLite.open(DB_NAME);
 
 QuickSQLite.execute(DB_NAME, 'CREATE TABLE IF NOT EXISTS magic_map (record_key TEXT NOT NULL PRIMARY KEY , value JSON NOT NULL) WITHOUT ROWID;');
-QuickSQLite.execute(DB_NAME, 'PRAGMA CACHE_SIZE=-2000000;'); // try -2000
-QuickSQLite.execute(DB_NAME, 'PRAGMA SYNCHRONOUS=OFF;'); // try different values just no OFF
-QuickSQLite.execute(DB_NAME, 'PRAGMA journal_mode=OFF;'); // try different values just no OFF
+QuickSQLite.execute(DB_NAME, 'PRAGMA CACHE_SIZE=-20000;');
+QuickSQLite.execute(DB_NAME, 'PRAGMA SYNCHRONOUS=NORMAL;');
+QuickSQLite.execute(DB_NAME, 'PRAGMA journal_mode=WAL;');
 
 function lightStringify(value) {
     let newValue = value;
