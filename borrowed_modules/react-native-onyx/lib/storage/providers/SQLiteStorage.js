@@ -8,7 +8,10 @@ import {QuickSQLite} from 'react-native-quick-sqlite';
 const DB_NAME = 'Expensify-new-db';
 QuickSQLite.open(DB_NAME);
 
-QuickSQLite.execute(DB_NAME, 'CREATE TABLE IF NOT EXISTS magic_map (record_key TEXT NOT NULL PRIMARY KEY , value JSON NOT NULL);');
+QuickSQLite.execute(DB_NAME, 'CREATE TABLE IF NOT EXISTS magic_map (record_key TEXT NOT NULL PRIMARY KEY , value JSON NOT NULL) WITHOUT ROWID;');
+QuickSQLite.execute(DB_NAME, 'PRAGMA CACHE_SIZE=-2000000;'); // try -2000
+QuickSQLite.execute(DB_NAME, 'PRAGMA SYNCHRONOUS=OFF;'); // try different values just no OFF
+QuickSQLite.execute(DB_NAME, 'PRAGMA journal_mode=OFF;'); // try different values just no OFF
 
 function lightStringify(value) {
     let newValue = value;
@@ -52,9 +55,9 @@ const provider = {
       * @return {Promise<void>}
       */
     setItem(key, value) {
-        // return QuickSQLite.executeAsync(DB_NAME, 'REPLACE into magic_map (record_key, value) VALUES (?, ?);', [key, JSON.stringify(value)]);
+         return QuickSQLite.executeAsync(DB_NAME, 'REPLACE into magic_map (record_key, value) VALUES (?, ?);', [key, JSON.stringify(value)]);
         // QuickSQLite.execute(DB_NAME, 'REPLACE into magic_map (record_key, value) VALUES (?, ?);', [key, JSON.stringify(value)]);
-        const bef = performance.now();
+        /*const bef = performance.now();
         QuickSQLite.executeBatch(DB_NAME, [
             ['REPLACE into magic_map (record_key, value) VALUES (?, ?);', [[key, JSON.stringify(value)]],
             ]]);
@@ -62,7 +65,7 @@ const provider = {
         const aft = performance.now();
         console.log('synctook',aft - bef);
 
-        return Promise.resolve();
+        return Promise.resolve();*/
     },
 
     /**

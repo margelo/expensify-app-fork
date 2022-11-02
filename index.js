@@ -9,7 +9,6 @@ import {SQLiteStorage, AsyncStorage} from 'react-native-onyx/lib/storage/NativeS
 import {AppRegistry} from 'react-native';
 import Config from './src/CONFIG';
 
-
 AppRegistry.registerComponent(Config.APP_NAME, () => () => (null));
 
 async function test() {
