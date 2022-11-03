@@ -171,7 +171,6 @@ struct SmartHO : public jsi::HostObject {
       std::shared_ptr<jsi::Value> value = std::make_shared<jsi::Value>(runtime, jsi::valueFromDynamic(runtime, dyn->at(name)));
       values[name] = value;
       return jsi::Value(runtime, *value);
-      return jsi::Value::undefined();
     }
 
     void set(jsi::Runtime &runtime,
