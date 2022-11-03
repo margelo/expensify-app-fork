@@ -37,7 +37,7 @@ const provider = {
     getItem(key) {
         return QuickSQLite.executeAsync(DB_NAME, 'SELECT record_key, _ex_val from magic_map where record_key=?;', [key]).then(({rows}) => {
             const res = rows._array[0];
-            return JSON.parse(res._ex_val);
+            return res._ex_val;
         });
     },
 
@@ -49,7 +49,7 @@ const provider = {
     multiGet(keys) {
         return QuickSQLite.executeAsync(DB_NAME, `SELECT record_key, _ex_val from magic_map where record_key IN (${new Array(keys.length).fill('?').join(',')});`, keys)
             .then(({rows}) => {
-                const res = rows._array.map(row => [row.record_key, JSON.parse(row._ex_val)]);
+                const res = rows._array.map(row => [row.record_key, row._ex_val]);
                 return res;
             });
     },

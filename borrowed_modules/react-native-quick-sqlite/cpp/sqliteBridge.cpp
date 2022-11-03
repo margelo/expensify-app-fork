@@ -347,7 +347,7 @@ SQLiteOPResult sqliteExecute(string const dbName, string const &query, vector<Qu
           const char *column_value = reinterpret_cast<const char *>(sqlite3_column_text(statement, i));
           int byteLen = sqlite3_column_bytes(statement, i);
             auto str = string(column_value, byteLen);
-            if (false && column_name == "_ex_val") {
+            if (column_name == "_ex_val") {
               try { // Most likely we want to check if it's json somehow but haven't found yet how to do it
                 auto patch = folly::parseJson(str.c_str());
                 row[column_name] = createDynamicQuickValue(patch);

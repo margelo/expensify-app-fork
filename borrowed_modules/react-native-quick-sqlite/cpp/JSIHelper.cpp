@@ -139,6 +139,62 @@ void jsiQueryArgumentsToSequelParam(jsi::Runtime &rt, jsi::Value const &params, 
   }
 }
 
+struct SmartHO : public jsi::HostObject {
+    std::map<std::string, std::shared_ptr<jsi::Value>> values;
+    std::vector<jsi::PropNameID> propertyNames;
+    std::shared_ptr<folly::dynamic> dyn;
+
+    SmartHO(std::shared_ptr<folly::dynamic> dy): dyn(dy) {}
+
+    std::vector<jsi::PropNameID> getPropertyNames(
+            jsi::Runtime &runtime) {
+      //if (this->propertyNames.size() > 0) {
+      //  return propertyNames;
+      //}
+      std::vector<jsi::PropNameID> propertyNames;
+      for (const auto& element : dyn->items()) {
+        if (element.first.isNumber() || element.first.isString()) {
+          propertyNames.push_back(jsi::PropNameID::forUtf8(runtime, element.first.asString()));
+        }
+      }
+
+      //this->propertyNames = propertyNames;
+      return propertyNames;
+    }
+
+    jsi::Value get(jsi::Runtime &runtime,
+                                       const jsi::PropNameID &propNameId) {
+      auto name = propNameId.utf8(runtime);
+      if (values.count(name)) {
+        return jsi::Value(runtime, *values[name]);
+      }
+      std::shared_ptr<jsi::Value> value = std::make_shared<jsi::Value>(runtime, jsi::valueFromDynamic(runtime, dyn->at(name)));
+      values[name] = value;
+      return jsi::Value(runtime, *value);
+      return jsi::Value::undefined();
+    }
+
+    void set(jsi::Runtime &runtime,
+                   const jsi::PropNameID &propNameId, const jsi::Value & value) {
+      auto name = propNameId.utf8(runtime);
+      if (values.count(name)) {
+        values[name] = std::make_shared<jsi::Value>(runtime, value);
+      } else {
+        propertyNames.push_back(jsi::PropNameID::forUtf8(runtime, name));
+        values[name] = std::make_shared<jsi::Value>(runtime, value);
+      }
+
+    }
+};
+
+jsi::Value smartDynamicToValue(jsi::Runtime &rt, std::shared_ptr<folly::dynamic> value) {
+  if (value->isObject()) {
+    auto ho = std::make_shared<SmartHO>(value);
+    return jsi::Object::createFromHostObject(rt, ho);
+  }
+  return jsi::valueFromDynamic(rt, *value);
+}
+
 jsi::Value createSequelQueryExecutionResult(jsi::Runtime &rt, SQLiteOPResult status, vector<map<string, QuickValue>> *results, vector<QuickColumnMetadata> *metadata)
 {
   if(status.type == SQLiteError) {
@@ -193,7 +249,7 @@ jsi::Value createSequelQueryExecutionResult(jsi::Runtime &rt, SQLiteOPResult sta
         }
         else if (value.dataType == ARRAY or value.dataType == OBJECT) {
           auto start = std::chrono::system_clock::now();
-          rowObject.setProperty(rt, columnName.c_str(), jsi::valueFromDynamic(rt, *value.json));
+          rowObject.setProperty(rt, columnName.c_str(), smartDynamicToValue(rt, value.json));
           auto end = std::chrono::system_clock::now();
 
           auto d = std::chrono::duration_cast<std::chrono::microseconds>(end-start);
