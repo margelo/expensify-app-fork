@@ -11,7 +11,7 @@ import Config from './src/CONFIG';
 
 AppRegistry.registerComponent(Config.APP_NAME, () => () => (null));
 
-async function test() {
+/* async function test() {
     // make sure modules are initialized
     await AsyncStorage.getAllKeys();
     await SQLiteStorage.getAllKeys();
@@ -51,6 +51,56 @@ async function test() {
         const after = performance.now();
         console.log('perfx async it took', after - before);
     }
+} */
+
+async function test() {
+    let asTime = 0;
+    let SQTime = 0;
+
+    let before = performance.now();
+    const allKeys = await AsyncStorage.getAllKeys();
+    let after = performance.now();
+    asTime += after - before;
+
+    before = performance.now();
+    const allKeys2 = await SQLiteStorage.getAllKeys();
+    after = performance.now();
+    SQTime += after - before;
+
+    console.log(`perfx getAllKeys sq:${SQTime} vs as:${asTime}`);
+    console.log(`perfx allkeys size sq:${allKeys2.length} vs as:${allKeys.length}`);
+    for (const key of allKeys) {
+        before = performance.now();
+        const value = await AsyncStorage.getItem(key);
+        after = performance.now();
+        let asTemp = after - before;
+
+        before = performance.now();
+        await SQLiteStorage.getItem(key);
+        after = performance.now();
+        let sqTemp = after - before;
+
+        console.log(`perfx get key:${key} sq:${sqTemp} vs as:${asTemp}`);
+        asTime += asTemp;
+        SQTime += sqTemp;
+
+        before = performance.now();
+        await AsyncStorage.setItem(key, value);
+        after = performance.now();
+        asTemp = after - before;
+
+        before = performance.now();
+        await SQLiteStorage.setItem(key, value);
+        after = performance.now();
+        sqTemp = after - before;
+
+        console.log(`perfx set key:${key} sq:${sqTemp} vs as:${asTemp}`);
+
+        asTime += asTemp;
+        SQTime += sqTemp;
+    }
+
+    console.log(`perfx total time sq:${SQTime} vs as:${asTime}`);
 }
 
 test();
