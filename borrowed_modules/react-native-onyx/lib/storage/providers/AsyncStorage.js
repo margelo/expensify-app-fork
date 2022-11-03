@@ -15,7 +15,10 @@ const provider = {
     getItem(key) {
         return AsyncStorage.getItem(key)
             .then((value) => {
+                const bef = performance.now();
                 const parsed = value && JSON.parse(value);
+                const aft = performance.now();
+                console.log('parse for key', key, 'took', aft - bef);
                 return parsed;
             });
     },

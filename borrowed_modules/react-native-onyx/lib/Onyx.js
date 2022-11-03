@@ -937,6 +937,12 @@ function init({
             keyChanged(key, value);
         });
     }
+
+    /*Storage.getAllDataAsync().then((pairs) => {
+        for ([key, value] of pairs) {
+            cache.set(key, value);
+        }
+    });*/
 }
 
 const Onyx = {

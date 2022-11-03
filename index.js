@@ -8,13 +8,13 @@ import {SQLiteStorage, AsyncStorage} from 'react-native-onyx/lib/storage/NativeS
 
 import {AppRegistry} from 'react-native';
 import Config from './src/CONFIG';
-//import additionalAppSetup from './src/setup';
-//import App from './src/App';
+import additionalAppSetup from './src/setup';
+import App from './src/App';
 
-//AppRegistry.registerComponent(Config.APP_NAME, () => App);
-//additionalAppSetup();
+AppRegistry.registerComponent(Config.APP_NAME, () => App);
+additionalAppSetup();
 
-AppRegistry.registerComponent(Config.APP_NAME, () => () => (null));
+//AppRegistry.registerComponent(Config.APP_NAME, () => () => (null));
 
 /* async function test() {
     // make sure modules are initialized
@@ -108,4 +108,4 @@ async function test() {
     console.log(`perfx total time sq:${SQTime} vs as:${asTime}`);
 }
 
-test();
+//test();

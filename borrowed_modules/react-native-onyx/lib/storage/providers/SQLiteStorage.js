@@ -2,18 +2,22 @@
  * The AsyncStorage provider stores everything in a key/value store by
  * converting the value to a JSON string
  */
-
 import {QuickSQLite} from 'react-native-quick-sqlite';
+
+const start = performance.now();
 
 const DB_NAME = 'Expensify-new-db';
 QuickSQLite.open(DB_NAME);
 
-//QuickSQLite.execute(DB_NAME, 'ALTER TABLE magic_map RENAME COLUMN value to _ex_val;');
+// QuickSQLite.execute(DB_NAME, 'ALTER TABLE magic_map RENAME COLUMN value to _ex_val;');
 
 QuickSQLite.execute(DB_NAME, 'CREATE TABLE IF NOT EXISTS magic_map (record_key TEXT NOT NULL PRIMARY KEY , _ex_val JSON NOT NULL) WITHOUT ROWID;');
 QuickSQLite.execute(DB_NAME, 'PRAGMA CACHE_SIZE=-20000;');
 QuickSQLite.execute(DB_NAME, 'PRAGMA SYNCHRONOUS=NORMAL;');
 QuickSQLite.execute(DB_NAME, 'PRAGMA journal_mode=WAL;');
+const end = performance.now();
+
+console.log('init time:', end - start);
 
 function lightStringify(value) {
     let newValue = value;
@@ -33,7 +37,7 @@ const provider = {
     getItem(key) {
         return QuickSQLite.executeAsync(DB_NAME, 'SELECT record_key, _ex_val from magic_map where record_key=?;', [key]).then(({rows}) => {
             const res = rows._array[0];
-            return res._ex_val;
+            return JSON.parse(res._ex_val);
         });
     },
 
@@ -45,7 +49,7 @@ const provider = {
     multiGet(keys) {
         return QuickSQLite.executeAsync(DB_NAME, `SELECT record_key, _ex_val from magic_map where record_key IN (${new Array(keys.length).fill('?').join(',')});`, keys)
             .then(({rows}) => {
-                const res = rows._array.map(row => [row.record_key, row._ex_val]);
+                const res = rows._array.map(row => [row.record_key, JSON.parse(row._ex_val)]);
                 return res;
             });
     },
@@ -57,9 +61,10 @@ const provider = {
       * @return {Promise<void>}
       */
     setItem(key, value) {
-         return QuickSQLite.executeAsync(DB_NAME, 'REPLACE into magic_map (record_key, _ex_val) VALUES (?, ?);', [key, JSON.stringify(value)]);
+        return QuickSQLite.executeAsync(DB_NAME, 'REPLACE into magic_map (record_key, _ex_val) VALUES (?, ?);', [key, JSON.stringify(value)]);
+
         // QuickSQLite.execute(DB_NAME, 'REPLACE into magic_map (record_key, value) VALUES (?, ?);', [key, JSON.stringify(value)]);
-        /*const bef = performance.now();
+        /* const bef = performance.now();
         QuickSQLite.executeBatch(DB_NAME, [
             ['REPLACE into magic_map (record_key, value) VALUES (?, ?);', [[key, JSON.stringify(value)]],
             ]]);
@@ -67,7 +72,7 @@ const provider = {
         const aft = performance.now();
         console.log('synctook',aft - bef);
 
-        return Promise.resolve();*/
+        return Promise.resolve(); */
     },
 
     /**
@@ -76,7 +81,7 @@ const provider = {
       * @return {Promise<void>}
       */
     multiSet(pairs) { // maybe just generate array of ?
-        return QuickSQLite.executeBatchAsync(DB_NAME, [['REPLACE into magic_map (record_key, _ex_val) VALUES (?, json(?))', pairs.map(ele => [ele[0], lightStringify(ele[1])])]]);
+        return QuickSQLite.executeBatchAsync(DB_NAME, [['REPLACE into magic_map (record_key, _ex_val) VALUES (?, json(?))', pairs.map(ele => [ele[0], JSON.stringify(ele[1])])]]);
     },
 
     /**
@@ -85,7 +90,10 @@ const provider = {
       * @return {Promise<void>}
       */
     multiMerge(pairs) {
-        return QuickSQLite.executeBatchAsync(DB_NAME, [['INSERT into magic_map (record_key, _ex_val) VALUES (?, json(?)) ON CONFLICT DO UPDATE SET _ex_val = json_patch(_ex_val, json(?));', pairs.map(ele => [ele[0], lightStringify(ele[1]), lightStringify(ele[1])])]]);
+        return QuickSQLite.executeBatchAsync(DB_NAME, [['INSERT into magic_map (record_key, _ex_val) VALUES (?, json(?)) ON CONFLICT DO UPDATE SET _ex_val = json_patch(_ex_val, json(?));', pairs.map((ele) => {
+            const str = JSON.stringify(ele[1]);
+            return [ele[0], str, str];
+        })]]);
 
         // return db.multiMerge('magic_map', 'record_key', 'value', pairs);
     },
@@ -111,13 +119,24 @@ const provider = {
       * @returns {Promise<void>}
       */
     clear: () => QuickSQLite.executeAsync(DB_NAME, 'DELETE FROM magic_map ;', []),
+
+    getAllData: () => {
+        const allData = QuickSQLite.execute(DB_NAME, 'SELECT record_key, _ex_val from magic_map ;');
+        const {rows} = allData;
+        const res = rows._array.map(row => [row.record_key, row._ex_val]);
+        return res;
+    },
+    getAllDataAsync: () => QuickSQLite.executeAsync(DB_NAME, 'SELECT record_key, _ex_val from magic_map ;').then(
+        ({rows}) => {
+            const res = rows._array.map(row => [row.record_key, row._ex_val]);
+            return res;
+        },
+    ),
 };
 
 export default provider;
 
-const shouldTest = true;
-
-console.log('about to start test');
+const shouldTest = false;
 
 if (shouldTest) {
     const Storage = provider;

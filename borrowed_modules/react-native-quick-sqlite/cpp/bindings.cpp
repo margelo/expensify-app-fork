@@ -198,9 +198,10 @@ void install(jsi::Runtime &rt, std::shared_ptr<react::CallInvoker> jsCallInvoker
     }
   });
 
+    static double total = 0;
   auto executeAsync = HOSTFN("executeAsync", 3)
   {
-    auto start = std::chrono::system_clock::now();
+    //auto start = std::chrono::system_clock::now();
     if (count < 3)
     {
       throw jsi::JSError(rt, "[react-native-quick-sqlite][executeAsync] Incorrect arguments for executeAsync");
@@ -214,10 +215,10 @@ void install(jsi::Runtime &rt, std::shared_ptr<react::CallInvoker> jsCallInvoker
     std::shared_ptr<vector<QuickValue>> params = make_shared<vector<QuickValue>>();
     jsiQueryArgumentsToSequelParam(rt, originalParams, &(*params));
 
-      auto end = std::chrono::system_clock::now();
+      //auto end = std::chrono::system_clock::now();
 
-      auto d = std::chrono::duration_cast<std::chrono::microseconds>(end-start);
-      LOGV("%s", ("0 JS perfx on native took " + to_string(d.count()/ 1000) + string("")).c_str());
+      //auto d = std::chrono::duration_cast<std::chrono::microseconds>(end-start);
+     //LOGV("%s", ("0 JS perfx on native took " + to_string(d.count()/ 1000) + string("")).c_str());
 
     auto promiseCtr = rt.global().getPropertyAsFunction(rt, "Promise"); // we can save it globally
     auto promise = promiseCtr.callAsConstructor(rt, HOSTFN("executor", 2) {
@@ -225,31 +226,33 @@ void install(jsi::Runtime &rt, std::shared_ptr<react::CallInvoker> jsCallInvoker
       auto reject = std::make_shared<jsi::Value>(rt, args[1]);
 
       auto task =
-      [&rt, dbName, query, params, resolve, reject, start]()
+      [&rt, dbName, query, params, resolve, reject]()
       {
         try
         {
-            auto start2 = std::chrono::system_clock::now();
+           // auto start2 = std::chrono::system_clock::now();
           vector<map<string, QuickValue>> results;
           auto metadata = make_shared<vector<QuickColumnMetadata>>();
-            auto start3 = std::chrono::system_clock::now();
+         //   auto start3 = std::chrono::system_clock::now();
           auto status = sqliteExecute(dbName, query, params.get(), &results, &(*metadata));
-          auto end = std::chrono::system_clock::now();
-          auto d = std::chrono::duration_cast<std::chrono::microseconds>(end-start);
-          LOGV("%s", ("1 work perfx on native took " + to_string(d.count()/ 1000) + string("")).c_str());
+        //  auto end = std::chrono::system_clock::now();
+         // auto d = std::chrono::duration_cast<std::chrono::microseconds>(end-start);
+         // LOGV("%s", ("1 work perfx on native took " + to_string(d.count()/ 1000) + string("")).c_str());
 
-            auto d2 = std::chrono::duration_cast<std::chrono::microseconds>(end-start2);
-            LOGV("%s", ("2 work only perfx on native took " + to_string(d2.count()/ 1000) + string("")).c_str());
+           // auto d2 = std::chrono::duration_cast<std::chrono::microseconds>(end-start2);
+            //LOGV("%s", ("2 work only perfx on native took " + to_string(d2.count()/ 1000) + string("")).c_str());
 
-            auto d3 = std::chrono::duration_cast<std::chrono::microseconds>(end-start2);
-            LOGV("%s", ("3 work only perfx on native took " + to_string(d3.count()/ 1000) + string("")).c_str());
-          invoker->invokeAsync([&rt, start, results = make_shared<vector<map<string, QuickValue>>>(results), metadata, status_copy = move(status), resolve]
-                               {
+          //  auto d3 = std::chrono::duration_cast<std::chrono::microseconds>(end-start2);
+          //  LOGV("%s", ("3 work only perfx on native took " + to_string(d3.count()/ 1000) + string("")).c_str());
+          invoker->invokeAsync([&rt, results = make_shared<vector<map<string, QuickValue>>>(results), metadata, status_copy = move(status), resolve]
+                                {
+              auto start = std::chrono::system_clock::now();
             auto jsiResult = createSequelQueryExecutionResult(rt, status_copy, results.get(), metadata.get());
-            auto end = std::chrono::system_clock::now();
+             auto end = std::chrono::system_clock::now();
 
-            auto d = std::chrono::duration_cast<std::chrono::microseconds>(end-start);
-          LOGV("%s", ("perfx on native took " + to_string(d.count()/ 1000) + string("")).c_str());
+             auto d = std::chrono::duration_cast<std::chrono::microseconds>(end-start);
+             total += d.count()/ 1000;
+             LOGV("%s", ("perfx on native took " + to_string(d.count()/ 1000) + string(" and in Total:") + to_string(total)).c_str());
     
             resolve->asObject(rt).asFunction(rt).call(rt, move(jsiResult)); });
         }

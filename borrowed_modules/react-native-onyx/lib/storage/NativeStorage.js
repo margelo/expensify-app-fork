@@ -22,14 +22,14 @@ const methodsToWrap = ['getAllKeys', 'getItem', 'multiGet', 'multiSet', 'multiMe
 
 for (const name of methodsToWrap) {
     console.log('perfx wrapped', name);
-   // wrap(AsyncStorage, name);
+    wrap(AsyncStorage, name);
 }
 
 for (const name of methodsToWrap) {
   console.log('perfx wrapped', name);
-  //wrap(SQLiteStorage, name);
+  wrap(SQLiteStorage, name);
 }
 
-export default AsyncStorage;
+export default SQLiteStorage;
 
 export { AsyncStorage, SQLiteStorage };

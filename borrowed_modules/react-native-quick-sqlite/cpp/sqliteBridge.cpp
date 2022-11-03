@@ -248,9 +248,9 @@ void bindStatement(sqlite3_stmt *statement, vector<QuickValue> *values)
       sqlite3_bind_text(statement, sqIndex, str.c_str(), str.length(), SQLITE_TRANSIENT);
     }
   }
-  auto end = std::chrono::system_clock::now();
-  auto d = std::chrono::duration_cast<std::chrono::microseconds>(end-start);
-  LOGV("%s", ("1 bind  on native took " + to_string(d.count()/ 1000) + string("")).c_str());
+ // auto end = std::chrono::system_clock::now();
+  //auto d = std::chrono::duration_cast<std::chrono::microseconds>(end-start);
+  //LOGV("%s", ("1 bind  on native took " + to_string(d.count()/ 1000) + string("")).c_str());
 }
 
 SQLiteOPResult sqliteExecute(string const dbName, string const &query, vector<QuickValue> *params, vector<map<string, QuickValue>> *results, vector<QuickColumnMetadata> *metadata)
@@ -295,11 +295,11 @@ SQLiteOPResult sqliteExecute(string const dbName, string const &query, vector<Qu
 
   while (isConsuming)
   {
-      auto start = std::chrono::system_clock::now();
+    //  auto start = std::chrono::system_clock::now();
     result = sqlite3_step(statement);
-      auto end = std::chrono::system_clock::now();
-      auto d = std::chrono::duration_cast<std::chrono::microseconds>(end-start);
-      LOGV("%s", ("1 step  on native took " + to_string(d.count()/ 1000) + string("")).c_str());
+     // auto end = std::chrono::system_clock::now();
+     // auto d = std::chrono::duration_cast<std::chrono::microseconds>(end-start);
+     // LOGV("%s", ("1 step  on native took " + to_string(d.count()/ 1000) + string("")).c_str());
 
     switch (result)
     {
@@ -347,7 +347,7 @@ SQLiteOPResult sqliteExecute(string const dbName, string const &query, vector<Qu
           const char *column_value = reinterpret_cast<const char *>(sqlite3_column_text(statement, i));
           int byteLen = sqlite3_column_bytes(statement, i);
             auto str = string(column_value, byteLen);
-            if (column_name == "_ex_val") {
+            if (false && column_name == "_ex_val") {
               try { // Most likely we want to check if it's json somehow but haven't found yet how to do it
                 auto patch = folly::parseJson(str.c_str());
                 row[column_name] = createDynamicQuickValue(patch);

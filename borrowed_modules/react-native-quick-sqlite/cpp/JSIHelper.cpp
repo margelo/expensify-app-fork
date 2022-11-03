@@ -10,6 +10,7 @@
 #include <folly/dynamic.h>
 #include <folly/json.h>
 #include <folly/json_patch.h>
+#include "logs.h"
 
 using namespace std;
 using namespace facebook;
@@ -191,7 +192,14 @@ jsi::Value createSequelQueryExecutionResult(jsi::Runtime &rt, SQLiteOPResult sta
           rowObject.setProperty(rt, columnName.c_str(), o);
         }
         else if (value.dataType == ARRAY or value.dataType == OBJECT) {
+          auto start = std::chrono::system_clock::now();
           rowObject.setProperty(rt, columnName.c_str(), jsi::valueFromDynamic(rt, *value.json));
+          auto end = std::chrono::system_clock::now();
+
+          auto d = std::chrono::duration_cast<std::chrono::microseconds>(end-start);
+
+          LOGV("%s", ("perfx folly took " + to_string(d.count()/ 1000)).c_str());
+
         }
         else
         {
