@@ -219,7 +219,7 @@ void install(jsi::Runtime &rt, std::shared_ptr<react::CallInvoker> jsCallInvoker
       auto d = std::chrono::duration_cast<std::chrono::microseconds>(end-start);
       LOGV("%s", ("0 JS perfx on native took " + to_string(d.count()/ 1000) + string("")).c_str());
 
-    auto promiseCtr = rt.global().getPropertyAsFunction(rt, "Promise");
+    auto promiseCtr = rt.global().getPropertyAsFunction(rt, "Promise"); // we can save it globally
     auto promise = promiseCtr.callAsConstructor(rt, HOSTFN("executor", 2) {
       auto resolve = std::make_shared<jsi::Value>(rt, args[0]);
       auto reject = std::make_shared<jsi::Value>(rt, args[1]);

@@ -347,15 +347,19 @@ SQLiteOPResult sqliteExecute(string const dbName, string const &query, vector<Qu
           const char *column_value = reinterpret_cast<const char *>(sqlite3_column_text(statement, i));
           int byteLen = sqlite3_column_bytes(statement, i);
             auto str = string(column_value, byteLen);
-            try { // Most likely we want to check if it's json somehow but haven't found yet how to do it
+            if (column_name == "_ex_val") {
+              try { // Most likely we want to check if it's json somehow but haven't found yet how to do it
                 auto patch = folly::parseJson(str.c_str());
                 row[column_name] = createDynamicQuickValue(patch);
-            } catch(folly::json::parse_error &e) { //It's not caught here for some reason???
-                // Specify length too; in case string contains NULL in the middle (which SQLite supports!)
-                row[column_name] = createTextQuickValue(str);
-            } catch(std::runtime_error &error) {
-              row[column_name] = createTextQuickValue(str);
+                break;
+              } catch(folly::json::parse_error &e) { //It's not caught here for some reason???
+
+              } catch(std::runtime_error &error) {
+
+              }
             }
+          // Specify length too; in case string contains NULL in the middle (which SQLite supports!)
+          row[column_name] = createTextQuickValue(str);
           break;
         }
 

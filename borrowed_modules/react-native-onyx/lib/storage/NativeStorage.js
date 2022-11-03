@@ -32,4 +32,4 @@ for (const name of methodsToWrap) {
 
 export default AsyncStorage;
 
-export { AsyncStorage, SQLiteStorage }
+export { AsyncStorage, SQLiteStorage };

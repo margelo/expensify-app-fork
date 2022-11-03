@@ -8,6 +8,11 @@ import {SQLiteStorage, AsyncStorage} from 'react-native-onyx/lib/storage/NativeS
 
 import {AppRegistry} from 'react-native';
 import Config from './src/CONFIG';
+//import additionalAppSetup from './src/setup';
+//import App from './src/App';
+
+//AppRegistry.registerComponent(Config.APP_NAME, () => App);
+//additionalAppSetup();
 
 AppRegistry.registerComponent(Config.APP_NAME, () => () => (null));
 
@@ -69,7 +74,7 @@ async function test() {
 
     console.log(`perfx getAllKeys sq:${SQTime} vs as:${asTime}`);
     console.log(`perfx allkeys size sq:${allKeys2.length} vs as:${allKeys.length}`);
-    for (const key of allKeys) {
+    /*for (const key of allKeys) {
         before = performance.now();
         const value = await AsyncStorage.getItem(key);
         after = performance.now();
@@ -98,7 +103,7 @@ async function test() {
 
         asTime += asTemp;
         SQTime += sqTemp;
-    }
+    }*/
 
     console.log(`perfx total time sq:${SQTime} vs as:${asTime}`);
 }

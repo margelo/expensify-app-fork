@@ -8,7 +8,9 @@ import {QuickSQLite} from 'react-native-quick-sqlite';
 const DB_NAME = 'Expensify-new-db';
 QuickSQLite.open(DB_NAME);
 
-QuickSQLite.execute(DB_NAME, 'CREATE TABLE IF NOT EXISTS magic_map (record_key TEXT NOT NULL PRIMARY KEY , value JSON NOT NULL) WITHOUT ROWID;');
+//QuickSQLite.execute(DB_NAME, 'ALTER TABLE magic_map RENAME COLUMN value to _ex_val;');
+
+QuickSQLite.execute(DB_NAME, 'CREATE TABLE IF NOT EXISTS magic_map (record_key TEXT NOT NULL PRIMARY KEY , _ex_val JSON NOT NULL) WITHOUT ROWID;');
 QuickSQLite.execute(DB_NAME, 'PRAGMA CACHE_SIZE=-20000;');
 QuickSQLite.execute(DB_NAME, 'PRAGMA SYNCHRONOUS=NORMAL;');
 QuickSQLite.execute(DB_NAME, 'PRAGMA journal_mode=WAL;');
@@ -29,9 +31,9 @@ const provider = {
       * @return {Promise<*>}
       */
     getItem(key) {
-        return QuickSQLite.executeAsync(DB_NAME, 'SELECT record_key, value from magic_map where record_key=?;', [key]).then(({rows}) => {
+        return QuickSQLite.executeAsync(DB_NAME, 'SELECT record_key, _ex_val from magic_map where record_key=?;', [key]).then(({rows}) => {
             const res = rows._array[0];
-            return res.value;
+            return res._ex_val;
         });
     },
 
@@ -41,9 +43,9 @@ const provider = {
       * @return {Promise<Array<[key, value]>>}
       */
     multiGet(keys) {
-        return QuickSQLite.executeAsync(DB_NAME, `SELECT record_key, value from magic_map where record_key IN (${new Array(keys.length).fill('?').join(',')});`, keys)
+        return QuickSQLite.executeAsync(DB_NAME, `SELECT record_key, _ex_val from magic_map where record_key IN (${new Array(keys.length).fill('?').join(',')});`, keys)
             .then(({rows}) => {
-                const res = rows._array.map(row => [row.record_key, row.value]);
+                const res = rows._array.map(row => [row.record_key, row._ex_val]);
                 return res;
             });
     },
@@ -55,7 +57,7 @@ const provider = {
       * @return {Promise<void>}
       */
     setItem(key, value) {
-         return QuickSQLite.executeAsync(DB_NAME, 'REPLACE into magic_map (record_key, value) VALUES (?, ?);', [key, JSON.stringify(value)]);
+         return QuickSQLite.executeAsync(DB_NAME, 'REPLACE into magic_map (record_key, _ex_val) VALUES (?, ?);', [key, JSON.stringify(value)]);
         // QuickSQLite.execute(DB_NAME, 'REPLACE into magic_map (record_key, value) VALUES (?, ?);', [key, JSON.stringify(value)]);
         /*const bef = performance.now();
         QuickSQLite.executeBatch(DB_NAME, [
@@ -74,7 +76,7 @@ const provider = {
       * @return {Promise<void>}
       */
     multiSet(pairs) { // maybe just generate array of ?
-        return QuickSQLite.executeBatchAsync(DB_NAME, [['REPLACE into magic_map (record_key, value) VALUES (?, json(?))', pairs.map(ele => [ele[0], lightStringify(ele[1])])]]);
+        return QuickSQLite.executeBatchAsync(DB_NAME, [['REPLACE into magic_map (record_key, _ex_val) VALUES (?, json(?))', pairs.map(ele => [ele[0], lightStringify(ele[1])])]]);
     },
 
     /**
@@ -83,7 +85,7 @@ const provider = {
       * @return {Promise<void>}
       */
     multiMerge(pairs) {
-        return QuickSQLite.executeBatchAsync(DB_NAME, [['INSERT into magic_map (record_key, value) VALUES (?, json(?)) ON CONFLICT DO UPDATE SET value = json_patch(value, json(?));', pairs.map(ele => [ele[0], lightStringify(ele[1]), lightStringify(ele[1])])]]);
+        return QuickSQLite.executeBatchAsync(DB_NAME, [['INSERT into magic_map (record_key, _ex_val) VALUES (?, json(?)) ON CONFLICT DO UPDATE SET _ex_val = json_patch(_ex_val, json(?));', pairs.map(ele => [ele[0], lightStringify(ele[1]), lightStringify(ele[1])])]]);
 
         // return db.multiMerge('magic_map', 'record_key', 'value', pairs);
     },
@@ -113,11 +115,14 @@ const provider = {
 
 export default provider;
 
-const shouldTest = false;
+const shouldTest = true;
+
+console.log('about to start test');
 
 if (shouldTest) {
     const Storage = provider;
     async function test() {
+        console.log('started test');
         await Storage.clear();
 
         console.log('cleared');
