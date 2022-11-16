@@ -31,6 +31,14 @@ const defaultProps = {
     shouldMeasureItems: false,
 };
 
+const scaleYInvertedMatrix = [
+    // seems to work
+    -1, 0, 0, 0,
+    0, 1, 0, 0,
+    0, 0, 1, 0,
+    0, 0, 0, -1,
+];
+
 class BaseInvertedFlatList extends Component {
     constructor(props) {
         super(props);
@@ -125,7 +133,14 @@ class BaseInvertedFlatList extends Component {
             );
         }
 
-        return this.props.renderItem({item, index});
+        return (
+            <View style={{
+                transform: [{matrix: scaleYInvertedMatrix}],
+            }}
+            >
+                {this.props.renderItem({item, index})}
+            </View>
+        );
     }
 
     render() {
@@ -134,9 +149,12 @@ class BaseInvertedFlatList extends Component {
                 // eslint-disable-next-line react/jsx-props-no-spreading
                 {...this.props}
                 ref={this.props.innerRef}
-                inverted
                 renderItem={this.renderItem}
                 sizeMap={this.sizeMap}
+
+                style={{
+                    transform: [{matrix: scaleYInvertedMatrix}],
+                }}
 
                 // Native platforms do not need to measure items and work fine without this.
                 // Web requires that items be measured or else crazy things happen when scrolling.
