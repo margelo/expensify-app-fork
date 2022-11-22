@@ -1,14 +1,11 @@
 import React from 'react';
 import {Pressable, View} from 'react-native';
-import {Rect, Circle} from 'react-native-svg';
-import SkeletonViewContentLoader from 'react-content-loader/native';
 import PropTypes from 'prop-types';
 import styles from '../styles/styles';
 import Icon from './Icon';
 import * as Expensicons from './Icon/Expensicons';
 import withWindowDimensions, {windowDimensionsPropTypes} from './withWindowDimensions';
-import variables from '../styles/variables';
-import themeColors from '../styles/themes/default';
+import * as Skeleton from './Skeleton';
 
 const propTypes = {
     ...windowDimensionsPropTypes,
@@ -28,17 +25,42 @@ const ReportHeaderSkeletonView = props => (
             >
                 <Icon src={Expensicons.BackArrow} />
             </Pressable>
-            <SkeletonViewContentLoader
+            <Skeleton.Container
                 animate={props.animate}
-                width={styles.w100.width}
-                height={variables.contentHeaderHeight}
-                backgroundColor={themeColors.highlightBG}
-                foregroundColor={themeColors.border}
+                style={{
+                    flex: 1,
+                    flexDirection: 'row',
+                }}
             >
-                <Circle cx="20" cy="33" r="20" />
-                <Rect x="55" y="20" width="30%" height="8" />
-                <Rect x="55" y="40" width="40%" height="8" />
-            </SkeletonViewContentLoader>
+                <Skeleton.View type="circle" height={40} width={40} />
+                <View style={{
+                    flex: 1,
+                }}
+                >
+                    <Skeleton.View
+                        type="rectangle"
+                        height={8}
+                        width="30%"
+                        style={{
+                            position: 'absolute',
+
+                            top: 5,
+                            left: 15,
+                        }}
+                    />
+                    <Skeleton.View
+                        type="rectangle"
+                        height={8}
+                        width="40%"
+                        style={{
+                            position: 'absolute',
+
+                            top: 25,
+                            left: 15,
+                        }}
+                    />
+                </View>
+            </Skeleton.Container>
         </View>
     </View>
 );
