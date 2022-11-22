@@ -223,18 +223,6 @@ class ReportScreen extends React.Component {
         const animatePlaceholder = !freeze;
 
         return (
-            <ScreenWrapper
-                style={screenWrapperStyle}
-            >
-                <ReportHeaderSkeletonView animate={animatePlaceholder} />
-                <ReportActionsSkeletonView
-                    animate={animatePlaceholder}
-                    containerHeight={this.state.skeletonViewContainerHeight}
-                />
-            </ScreenWrapper>
-        );
-
-        return (
             <Freeze
                 freeze={freeze}
                 placeholder={(
@@ -242,7 +230,7 @@ class ReportScreen extends React.Component {
                         style={screenWrapperStyle}
                     >
                         <ReportHeaderSkeletonView animate={animatePlaceholder} />
-                        <ReportActionsSkeletonView containerHeight={this.state.skeletonViewContainerHeight} />
+                        <ReportActionsSkeletonView animate={animatePlaceholder} containerHeight={this.state.skeletonViewContainerHeight} />
                     </ScreenWrapper>
                 )}
             >
