@@ -15,11 +15,13 @@ const defaultTypes = {
 };
 
 const SkeletonViewLines = props => (
-    <Skeleton.Container style={{
-        width: '100%',
-        flexDirection: 'row',
-        height: CONST.CHAT_SKELETON_VIEW.HEIGHT_FOR_ROW_COUNT[props.numberOfRows],
-    }}
+    <Skeleton.Container
+        animate={props.animate}
+        style={{
+            width: '100%',
+            flexDirection: 'row',
+            height: CONST.CHAT_SKELETON_VIEW.HEIGHT_FOR_ROW_COUNT[props.numberOfRows],
+        }}
     >
         <Skeleton.View
             type="circle"

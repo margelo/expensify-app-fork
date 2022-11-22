@@ -1,6 +1,7 @@
 import React, {useContext, useEffect, useMemo} from 'react';
 import {View} from 'react-native';
 import Reanimated, {
+    cancelAnimation,
     Easing,
     useAnimatedStyle,
     useSharedValue,
@@ -10,6 +11,17 @@ import Reanimated, {
 import PropTypes from 'prop-types';
 
 const SkeletonContext = React.createContext(undefined);
+
+const containerPropTypes = {
+    children: PropTypes.node.isRequired,
+    animate: PropTypes.bool,
+    style: PropTypes.oneOfType([PropTypes.object, PropTypes.arrayOf(PropTypes.object)]),
+};
+
+const containerDefaultProps = {
+    animate: true,
+    style: {},
+};
 
 function SkeletonContainer(props) {
     const opacity = useSharedValue(0.3);
@@ -29,11 +41,15 @@ function SkeletonContainer(props) {
     );
 
     useEffect(() => {
-        opacity.value = withRepeat(
-            withTiming(1, {easing: Easing.linear, duration: 700}),
-            -1,
-            true,
-        );
+        if (props.animate) {
+            opacity.value = withRepeat(
+                withTiming(1, {easing: Easing.linear, duration: 700}),
+                -1,
+                true,
+            );
+        } else {
+            cancelAnimation(opacity);
+        }
     }, [opacity]);
 
     return (
@@ -43,6 +59,8 @@ function SkeletonContainer(props) {
         </SkeletonContext.Provider>
     );
 }
+SkeletonContainer.propTypes = containerPropTypes;
+SkeletonContainer.defaultProps = containerDefaultProps;
 
 const propTypes = {
     width: PropTypes.number.isRequired,

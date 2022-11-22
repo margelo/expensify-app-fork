@@ -43,7 +43,6 @@ const ReportHeaderSkeletonView = props => (
                         width="30%"
                         style={{
                             position: 'absolute',
-
                             top: 5,
                             left: 15,
                         }}
@@ -54,7 +53,6 @@ const ReportHeaderSkeletonView = props => (
                         width="40%"
                         style={{
                             position: 'absolute',
-
                             top: 25,
                             left: 15,
                         }}
