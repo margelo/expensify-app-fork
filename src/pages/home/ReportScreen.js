@@ -6,7 +6,7 @@ import lodashGet from 'lodash/get';
 import _ from 'underscore';
 import {Freeze} from 'react-freeze';
 import Animated, {
-    Easing, interpolate, useAnimatedStyle, useSharedValue, withRepeat, withTiming,
+    Easing, interpolate, makeMutable, useAnimatedStyle, useSharedValue, withRepeat, withTiming,
 } from 'react-native-reanimated';
 import styles from '../../styles/styles';
 import ScreenWrapper from '../../components/ScreenWrapper';
@@ -114,6 +114,7 @@ class ReportScreen extends React.Component {
         this.updateViewportOffsetTop = this.updateViewportOffsetTop.bind(this);
         this.chatWithAccountManager = this.chatWithAccountManager.bind(this);
         this.dismissBanner = this.dismissBanner.bind(this);
+        this.shouldFreeze = this.shouldFreeze.bind(this);
         this.removeViewportResizeListener = () => {};
 
         this.state = {
@@ -121,6 +122,8 @@ class ReportScreen extends React.Component {
             viewportOffsetTop: 0,
             isBannerVisible: true,
         };
+
+        this.skeletonAnimation = makeMutable(false);
     }
 
     componentDidMount() {
@@ -132,6 +135,12 @@ class ReportScreen extends React.Component {
     }
 
     componentDidUpdate(prevProps) {
+        const shouldFreezeNow = this.shouldFreeze();
+        if (shouldFreezeNow !== this.shouldFreeze(prevProps)) {
+            console.log('❄️ Freeze state changed to', shouldFreezeNow);
+            this.skeletonAnimation.value = !shouldFreezeNow;
+        }
+
         if (this.props.route.params.reportID === prevProps.route.params.reportID) {
             return;
         }
@@ -193,6 +202,10 @@ class ReportScreen extends React.Component {
         Navigation.navigate(ROUTES.getReportRoute(this.props.accountManagerReportID));
     }
 
+    shouldFreeze(props = this.props) {
+        return props.isSmallScreenWidth && props.isDrawerOpen;
+    }
+
     render() {
         if (!this.props.isSidebarLoaded || _.isEmpty(this.props.personalDetails)) {
             return null;
@@ -224,11 +237,7 @@ class ReportScreen extends React.Component {
         const isLoadingInitialReportActions = _.isEmpty(this.props.reportActions) && this.props.report.isLoadingReportActions;
 
         // When the ReportScreen is not open/in the viewport, we want to "freeze" it for performance reasons
-        const freeze = this.props.isSmallScreenWidth && this.props.isDrawerOpen;
-
-        // the moment the ReportScreen becomes unfrozen we want to start the animation of the placeholder skeleton content
-        // (which is shown, until all the actual views of the ReportScreen have been rendered)
-        const animatePlaceholder = !freeze;
+        const freeze = this.shouldFreeze();
 
         return (
             <Freeze
@@ -237,7 +246,7 @@ class ReportScreen extends React.Component {
                     <ScreenWrapper
                         style={screenWrapperStyle}
                     >
-                        <Skeleton.Container animate={true}>
+                        <Skeleton.Container animate={this.skeletonAnimation}>
                             <ReportHeaderSkeletonView />
                             <ReportActionsSkeletonView containerHeight={this.state.skeletonViewContainerHeight} />
                         </Skeleton.Container>
