@@ -1,10 +1,13 @@
-import React from 'react';
+import React, {useEffect, useMemo} from 'react';
 import {withOnyx} from 'react-native-onyx';
 import PropTypes from 'prop-types';
-import {View} from 'react-native';
+import {View, Animated as RNA, findNodeHandle} from 'react-native';
 import lodashGet from 'lodash/get';
 import _ from 'underscore';
 import {Freeze} from 'react-freeze';
+import Animated, {
+    Easing, interpolate, useAnimatedStyle, useSharedValue, withRepeat, withTiming,
+} from 'react-native-reanimated';
 import styles from '../../styles/styles';
 import ScreenWrapper from '../../components/ScreenWrapper';
 import HeaderView from './HeaderView';
@@ -32,6 +35,7 @@ import withLocalize from '../../components/withLocalize';
 import reportPropTypes from '../reportPropTypes';
 import FullPageNotFoundView from '../../components/BlockingViews/FullPageNotFoundView';
 import ReportHeaderSkeletonView from '../../components/ReportHeaderSkeletonView';
+import * as Skeleton from '../../components/Skeleton';
 
 const propTypes = {
     /** Navigation route context info provided by react navigation */
@@ -233,8 +237,11 @@ class ReportScreen extends React.Component {
                     <ScreenWrapper
                         style={screenWrapperStyle}
                     >
-                        <ReportHeaderSkeletonView animate={animatePlaceholder} />
-                        <ReportActionsSkeletonView animate={animatePlaceholder} containerHeight={this.state.skeletonViewContainerHeight} />
+                        <Skeleton.Container animate={true}>
+                            <ReportHeaderSkeletonView />
+                            <ReportActionsSkeletonView containerHeight={this.state.skeletonViewContainerHeight} />
+                        </Skeleton.Container>
+                        {/* <JumpBall /> */}
                     </ScreenWrapper>
                 )}
             >
@@ -313,11 +320,11 @@ class ReportScreen extends React.Component {
 
                             {/* Note: The report should be allowed to mount even if the initial report actions are not loaded. If we prevent rendering the report while they are loading then
                             we'll unnecessarily unmount the ReportActionsView which will clear the new marker lines initial state. */}
-                            {(!this.isReportReadyForDisplay() || isLoadingInitialReportActions) && (
-                                <ReportActionsSkeletonView
-                                    containerHeight={this.state.skeletonViewContainerHeight}
-                                />
-                            )}
+                            {/* {(!this.isReportReadyForDisplay() || isLoadingInitialReportActions) && ( */}
+                            {/*     <ReportActionsSkeletonView */}
+                            {/*         containerHeight={this.state.skeletonViewContainerHeight} */}
+                            {/*     /> */}
+                            {/* )} */}
                         </View>
                     </FullPageNotFoundView>
                 </ScreenWrapper>
@@ -325,6 +332,48 @@ class ReportScreen extends React.Component {
         );
     }
 }
+
+const JumpBall = () => {
+    const animation = useSharedValue(0);
+
+    const style = useAnimatedStyle(() => {
+        _log(`[ReportScreen] RUNNING ANIMATION: ${animation.value}`);
+        return ({
+            backgroundColor: 'blue',
+            width: 50,
+            height: 50,
+            transform: [
+                {
+                    translateY: animation.value,
+                },
+            ],
+        });
+    },
+    [], null, 'ReportScreen');
+
+    useEffect(() => {
+        console.log('RENDER BALL');
+        animation.value = withRepeat(withTiming(100, {
+            duration: 500,
+            easing: Easing.linear,
+        }), -1, true);
+        return () => {
+            console.log('NOTICE !!!!!!');
+        };
+    }, []);
+
+    return (
+        <Animated.View
+            ref={(ref) => {
+                if (ref != null) {
+                    const viewTag = findNodeHandle(ref);
+                    console.log('VIEW TAG', viewTag);
+                }
+            }}
+            style={style}
+        />
+    );
+};
 
 ReportScreen.propTypes = propTypes;
 ReportScreen.defaultProps = defaultProps;

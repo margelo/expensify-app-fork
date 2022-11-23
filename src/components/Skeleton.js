@@ -1,4 +1,6 @@
-import React, {useContext, useEffect, useMemo} from 'react';
+import React, {
+    useContext, useEffect, useLayoutEffect, useMemo,
+} from 'react';
 import {View} from 'react-native';
 import Reanimated, {
     cancelAnimation,
@@ -40,7 +42,7 @@ function SkeletonContainer(props) {
         [animatedStyle],
     );
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (props.animate) {
             opacity.value = withRepeat(
                 withTiming(1, {easing: Easing.linear, duration: 700}),
@@ -49,6 +51,7 @@ function SkeletonContainer(props) {
             );
         } else {
             cancelAnimation(opacity);
+            opacity.value = 0.3;
         }
     }, [opacity]);
 

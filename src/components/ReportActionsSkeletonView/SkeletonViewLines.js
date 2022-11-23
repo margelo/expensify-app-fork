@@ -15,7 +15,7 @@ const defaultTypes = {
 };
 
 const SkeletonViewLines = props => (
-    <Skeleton.Container
+    <View
         animate={props.animate}
         style={{
             width: '100%',
@@ -42,7 +42,6 @@ const SkeletonViewLines = props => (
                 height={8}
                 width="20%"
                 style={{
-
                     top: 18,
                 }}
             />
@@ -51,7 +50,6 @@ const SkeletonViewLines = props => (
                 height={8}
                 width="100%"
                 style={{
-
                     top: 30,
                 }}
             />
@@ -61,7 +59,6 @@ const SkeletonViewLines = props => (
                 height={8}
                 width="50%"
                 style={{
-
                     top: 42,
                 }}
             />
@@ -77,7 +74,7 @@ const SkeletonViewLines = props => (
             />
             )}
         </View>
-    </Skeleton.Container>
+    </View>
 
     // <SkeletonViewContentLoader
     //     animate={props.animate}

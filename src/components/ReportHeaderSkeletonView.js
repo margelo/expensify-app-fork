@@ -25,7 +25,7 @@ const ReportHeaderSkeletonView = props => (
             >
                 <Icon src={Expensicons.BackArrow} />
             </Pressable>
-            <Skeleton.Container
+            <View
                 animate={props.animate}
                 style={{
                     flex: 1,
@@ -58,7 +58,7 @@ const ReportHeaderSkeletonView = props => (
                         }}
                     />
                 </View>
-            </Skeleton.Container>
+            </View>
         </View>
     </View>
 );
