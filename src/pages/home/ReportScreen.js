@@ -241,7 +241,6 @@ class ReportScreen extends React.Component {
                             <ReportHeaderSkeletonView />
                             <ReportActionsSkeletonView containerHeight={this.state.skeletonViewContainerHeight} />
                         </Skeleton.Container>
-                        {/* <JumpBall /> */}
                     </ScreenWrapper>
                 )}
             >
@@ -332,48 +331,6 @@ class ReportScreen extends React.Component {
         );
     }
 }
-
-const JumpBall = () => {
-    const animation = useSharedValue(0);
-
-    const style = useAnimatedStyle(() => {
-        _log(`[ReportScreen] RUNNING ANIMATION: ${animation.value}`);
-        return ({
-            backgroundColor: 'blue',
-            width: 50,
-            height: 50,
-            transform: [
-                {
-                    translateY: animation.value,
-                },
-            ],
-        });
-    },
-    [], null, 'ReportScreen');
-
-    useEffect(() => {
-        console.log('RENDER BALL');
-        animation.value = withRepeat(withTiming(100, {
-            duration: 500,
-            easing: Easing.linear,
-        }), -1, true);
-        return () => {
-            console.log('NOTICE !!!!!!');
-        };
-    }, []);
-
-    return (
-        <Animated.View
-            ref={(ref) => {
-                if (ref != null) {
-                    const viewTag = findNodeHandle(ref);
-                    console.log('VIEW TAG', viewTag);
-                }
-            }}
-            style={style}
-        />
-    );
-};
 
 ReportScreen.propTypes = propTypes;
 ReportScreen.defaultProps = defaultProps;
