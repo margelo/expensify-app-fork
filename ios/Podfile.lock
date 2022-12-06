@@ -1,18 +1,18 @@
 PODS:
-  - Airship (16.8.0):
-    - Airship/Automation (= 16.8.0)
-    - Airship/Basement (= 16.8.0)
-    - Airship/Core (= 16.8.0)
-    - Airship/ExtendedActions (= 16.8.0)
-    - Airship/MessageCenter (= 16.8.0)
-  - Airship/Automation (16.8.0):
+  - Airship (16.10.3):
+    - Airship/Automation (= 16.10.3)
+    - Airship/Basement (= 16.10.3)
+    - Airship/Core (= 16.10.3)
+    - Airship/ExtendedActions (= 16.10.3)
+    - Airship/MessageCenter (= 16.10.3)
+  - Airship/Automation (16.10.3):
     - Airship/Core
-  - Airship/Basement (16.8.0)
-  - Airship/Core (16.8.0):
+  - Airship/Basement (16.10.3)
+  - Airship/Core (16.10.3):
     - Airship/Basement
-  - Airship/ExtendedActions (16.8.0):
+  - Airship/ExtendedActions (16.10.3):
     - Airship/Core
-  - Airship/MessageCenter (16.8.0):
+  - Airship/MessageCenter (16.10.3):
     - Airship/Core
   - boost (1.76.0)
   - CocoaAsyncSocket (7.6.5)
@@ -458,21 +458,21 @@ PODS:
   - React-jsinspector (0.70.4-alpha.2)
   - React-logger (0.70.4-alpha.2):
     - glog
-  - react-native-blob-util (0.16.2):
+  - react-native-blob-util (0.16.4):
     - React-Core
   - react-native-cameraroll (4.1.2):
     - React-Core
-  - react-native-config (1.4.6):
-    - react-native-config/App (= 1.4.6)
-  - react-native-config/App (1.4.6):
+  - react-native-config (1.4.11):
+    - react-native-config/App (= 1.4.11)
+  - react-native-config/App (1.4.11):
     - React-Core
-  - react-native-document-picker (8.1.1):
+  - react-native-document-picker (8.1.3):
     - React-Core
   - react-native-flipper (0.159.0):
     - React-Core
   - react-native-image-manipulator (1.0.5):
     - React
-  - react-native-image-picker (4.10.1):
+  - react-native-image-picker (4.10.2):
     - React-Core
   - react-native-netinfo (8.3.1):
     - React-Core
@@ -481,9 +481,13 @@ PODS:
   - react-native-plaid-link-sdk (7.4.0):
     - Plaid (~> 2.5.1)
     - React-Core
-  - react-native-progress-bar-android (1.0.4):
+  - react-native-progress-bar-android (1.0.5):
     - React
   - react-native-progress-view (1.3.2):
+    - React-Core
+  - react-native-quick-sqlite (5.1.0):
+    - React
+    - React-callinvoker
     - React-Core
   - react-native-render-html (6.3.1):
     - React-Core
@@ -493,7 +497,7 @@ PODS:
     - RCTTypeSafety
     - React-Core
     - ReactCommon/turbomodule/core
-  - react-native-webview (11.23.0):
+  - react-native-webview (11.25.0):
     - React-Core
   - React-perflogger (0.70.4-alpha.2)
   - React-RCTActionSheet (0.70.4-alpha.2):
@@ -561,11 +565,11 @@ PODS:
     - React-jsi (= 0.70.4-alpha.2)
     - React-logger (= 0.70.4-alpha.2)
     - React-perflogger (= 0.70.4-alpha.2)
-  - RNCAsyncStorage (1.17.10):
+  - RNCAsyncStorage (1.17.11):
     - React-Core
   - RNCClipboard (1.5.1):
     - React-Core
-  - RNCPicker (2.4.4):
+  - RNCPicker (2.4.8):
     - React-Core
   - RNDateTimePicker (3.5.2):
     - React-Core
@@ -624,7 +628,7 @@ PODS:
   - RNScreens (3.17.0):
     - React-Core
     - React-RCTImage
-  - RNSVG (13.5.0):
+  - RNSVG (13.6.0):
     - React-Core
   - SDWebImage (5.11.1):
     - SDWebImage/Core (= 5.11.1)
@@ -633,8 +637,8 @@ PODS:
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.10)
   - SocketRocket (0.6.0)
-  - urbanairship-react-native (14.4.1):
-    - Airship (= 16.8.0)
+  - urbanairship-react-native (14.5.1):
+    - Airship (= 16.10.3)
     - React-Core
   - Yoga (1.14.0)
   - YogaKit (1.18.1):
@@ -703,6 +707,7 @@ DEPENDENCIES:
   - react-native-plaid-link-sdk (from `../node_modules/react-native-plaid-link-sdk`)
   - "react-native-progress-bar-android (from `../node_modules/@react-native-community/progress-bar-android`)"
   - "react-native-progress-view (from `../node_modules/@react-native-community/progress-view`)"
+  - react-native-quick-sqlite (from `../node_modules/react-native-quick-sqlite`)
   - react-native-render-html (from `../node_modules/react-native-render-html`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-webview (from `../node_modules/react-native-webview`)
@@ -851,6 +856,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/progress-bar-android"
   react-native-progress-view:
     :path: "../node_modules/@react-native-community/progress-view"
+  react-native-quick-sqlite:
+    :path: "../node_modules/react-native-quick-sqlite"
   react-native-render-html:
     :path: "../node_modules/react-native-render-html"
   react-native-safe-area-context:
@@ -917,7 +924,7 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  Airship: 4657c3d5118441240e04674d9445cbd6e363c956
+  Airship: dfdb00e0447c3773f75c817e3c740716c79bdc50
   boost: a7c83b31436843459a1961bfd74b96033dc77234
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
@@ -942,7 +949,7 @@ SPEC CHECKSUMS:
   Flipper-RSocket: d9d9ade67cbecf6ac10730304bf5607266dd2541
   FlipperKit: cbdee19bdd4e7f05472a66ce290f1b729ba3cb86
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
+  glog: 3d02b25ca00c2d456734d0bcff864cbc62f6ae1a
   GoogleAppMeasurement: 5ba1164e3c844ba84272555e916d0a6d3d977e91
   GoogleDataTransport: 1c8145da7117bd68bbbed00cf304edb6a24de00f
   GoogleUtilities: e0913149f6b0625b553d70dae12b49fc62914fd1
@@ -974,21 +981,22 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 523e742f144a346f7df32dea4fe1944d39b02473
   React-jsinspector: 7b02a02b9b9bf830102394039c80b3bf2e0200b0
   React-logger: b2c47bb0829c3c45ba3a04add9a2b4aea3f3dd4e
-  react-native-blob-util: c3b0faecd2919db568e9d552084396f3e50b57c7
+  react-native-blob-util: 60453b777610c87a22b3524032c0214e8db555db
   react-native-cameraroll: 2957f2bce63ae896a848fbe0d5352c1bd4d20866
-  react-native-config: 7cd105e71d903104e8919261480858940a6b9c0e
-  react-native-document-picker: f68191637788994baed5f57d12994aa32cf8bf88
+  react-native-config: bcafda5b4c51491ee1b0e1d0c4e3905bc7b56c1b
+  react-native-document-picker: 958e2bc82e128be69055be261aeac8d872c8d34c
   react-native-flipper: dc5290261fbeeb2faec1bdc57ae6dd8d562e1de4
   react-native-image-manipulator: c48f64221cfcd46e9eec53619c4c0374f3328a56
-  react-native-image-picker: f2ab1215d17bcfe27b0eb6417cc236fd1f4775e7
+  react-native-image-picker: bf34f3f516d139ed3e24c5f5a381a91819e349ea
   react-native-netinfo: 1a6035d3b9780221d407c277ebfb5722ace00658
   react-native-pdf: 33c622cbdf776a649929e8b9d1ce2d313347c4fa
   react-native-plaid-link-sdk: 77052f329310ff5a36ddda276793f40d27c02bc4
-  react-native-progress-bar-android: be43138ab7da30d51fc038bafa98e9ed594d0c40
+  react-native-progress-bar-android: 092e6a794f158642692f25c8839d9aa8eb779afb
   react-native-progress-view: 4d3bbe6a099ba027b1fedb1548c2c87f74249b70
+  react-native-quick-sqlite: a7bd4139fb07194ef8534d1cc14c1aec6daa4d84
   react-native-render-html: 96c979fe7452a0a41559685d2f83b12b93edac8c
   react-native-safe-area-context: 99b24a0c5acd0d5dcac2b1a7f18c49ea317be99a
-  react-native-webview: e771bc375f789ebfa02a26939a57dbc6fa897336
+  react-native-webview: a71da846ed2e9085440e1d6659c04e285528834b
   React-perflogger: b231fb9993c1b5f74e32f0a3473225f9ebaf73d3
   React-RCTActionSheet: 9064b3b78118a253f2d6a63153f6dfff0b38f19f
   React-RCTAnimation: d93c521d4ad6457fc8c1d9830ffb0495286ea036
@@ -1001,9 +1009,9 @@ SPEC CHECKSUMS:
   React-RCTVibration: eb5fb0bb3d78e31dcaeae5f127c75a7caf4b6af9
   React-runtimeexecutor: a8cee6fe3fb7994f07b735c7024a08a4fa5f8446
   ReactCommon: 1ebf2df5c764ebb52048e7a1cf42c75a6246171a
-  RNCAsyncStorage: 0c357f3156fcb16c8589ede67cc036330b6698ca
+  RNCAsyncStorage: 8616bd5a58af409453ea4e1b246521bb76578d60
   RNCClipboard: 41d8d918092ae8e676f18adada19104fa3e68495
-  RNCPicker: 0b65be85fe7954fbb2062ef079e3d1cde252d888
+  RNCPicker: 0bf8ef8f7800524f32d2bb2a8bcadd53eda0ecd1
   RNDateTimePicker: 7658208086d86d09e1627b5c34ba0cf237c60140
   RNFastImage: 1f2cab428712a4baaf78d6169eaec7f622556dd7
   RNFBAnalytics: f76bfa164ac235b00505deb9fc1776634056898c
@@ -1015,11 +1023,11 @@ SPEC CHECKSUMS:
   RNReactNativeHapticFeedback: 1e3efeca9628ff9876ee7cdd9edec1b336913f8c
   RNReanimated: 069f3aff5df4cbefaf81589c0622370073a89f1d
   RNScreens: 0df01424e9e0ed7827200d6ed1087ddd06c493f9
-  RNSVG: 38ca962c970dbce1ca38991a5aebf26d163f9efb
+  RNSVG: 3a79c0c4992213e4f06c08e62730c5e7b9e4dc17
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
-  urbanairship-react-native: 7e2e9a84c541b1d04798e51f7f390a2d5806eac0
+  urbanairship-react-native: 3e79dec940d55527df9e1d9cd06328a5f9fd6a2d
   Yoga: f77f6497bccebdcbc8efb03dbf83eadfdec6d104
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 

@@ -23,6 +23,7 @@ const provider = {
     * @return {Promise<*>}
     */
     getItem(key) {
+        console.log("sqlite get item -- just to make sure it's in use");
         return db.executeAsync('SELECT record_key, valueJSON FROM magic_map WHERE record_key = ?;', [key]).then(({rows}) => {
             if (rows.length === 0) {
                 return null;
