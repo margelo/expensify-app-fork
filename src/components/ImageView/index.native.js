@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {
     View, InteractionManager, PanResponder,
 } from 'react-native';
-import Image from '@pieter-pot/react-native-fast-image';
+import Image from 'react-native-fast-image';
 import ImageZoom from 'react-native-image-pan-zoom';
 import ImageSize from 'react-native-image-size';
 import _ from 'underscore';
@@ -102,10 +102,12 @@ class ImageView extends PureComponent {
     }
 
     imageLoadingStart() {
+        console.warn("started Loading");
         this.setState({isLoading: true});
     }
 
     imageLoadingEnd() {
+        console.warn("ended Loading");
         this.setState({isLoading: false});
     }
 
