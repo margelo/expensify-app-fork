@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import {View} from 'react-native';
 import lodashGet from 'lodash/get';
 import _ from 'underscore';
-import {Freeze} from 'react-freeze';
+// import {Freeze} from 'react-freeze';
 import styles from '../../styles/styles';
 import ScreenWrapper from '../../components/ScreenWrapper';
 import HeaderView from './HeaderView';
@@ -31,7 +31,7 @@ import Banner from '../../components/Banner';
 import withLocalize from '../../components/withLocalize';
 import reportPropTypes from '../reportPropTypes';
 import FullPageNotFoundView from '../../components/BlockingViews/FullPageNotFoundView';
-import ReportHeaderSkeletonView from '../../components/ReportHeaderSkeletonView';
+// import ReportHeaderSkeletonView from '../../components/ReportHeaderSkeletonView';
 
 const propTypes = {
     /** Navigation route context info provided by react navigation */
@@ -218,24 +218,24 @@ class ReportScreen extends React.Component {
         const isLoadingInitialReportActions = _.isEmpty(this.props.reportActions) && this.props.report.isLoadingReportActions;
 
         // When the ReportScreen is not open/in the viewport, we want to "freeze" it for performance reasons
-        const freeze = this.props.isSmallScreenWidth && this.props.isDrawerOpen;
+        // const freeze = this.props.isSmallScreenWidth && this.props.isDrawerOpen;
 
         // the moment the ReportScreen becomes unfrozen we want to start the animation of the placeholder skeleton content
         // (which is shown, until all the actual views of the ReportScreen have been rendered)
-        const animatePlaceholder = !freeze;
+        // const animatePlaceholder = !freeze;
 
         return (
-            <Freeze
-                freeze={freeze}
-                placeholder={(
-                    <ScreenWrapper
-                        style={screenWrapperStyle}
-                    >
-                        <ReportHeaderSkeletonView animate={animatePlaceholder} />
-                        <ReportActionsSkeletonView animate={animatePlaceholder} containerHeight={this.state.skeletonViewContainerHeight} />
-                    </ScreenWrapper>
-                )}
-            >
+            // <Freeze
+            //     freeze={freeze}
+            //     placeholder={(
+            //         <ScreenWrapper
+            //             style={screenWrapperStyle}
+            //         >
+            //             <ReportHeaderSkeletonView animate={animatePlaceholder} />
+            //             <ReportActionsSkeletonView animate={animatePlaceholder} containerHeight={this.state.skeletonViewContainerHeight} />
+            //         </ScreenWrapper>
+            //     )}
+            // >
                 <ScreenWrapper
                     style={screenWrapperStyle}
                 >
@@ -319,7 +319,7 @@ class ReportScreen extends React.Component {
                         </View>
                     </FullPageNotFoundView>
                 </ScreenWrapper>
-            </Freeze>
+            // </Freeze>
         );
     }
 }
