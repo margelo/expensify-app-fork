@@ -116,7 +116,7 @@
     "save": "^2.4.0",
     "shim-keyboard-event-key": "^1.0.3",
     "underscore": "^1.13.1",
-    "urbanairship-react-native": "^14.3.1"
+    "urbanairship-react-native": "github:j-piasecki/urbanairship-react-native-module#2012a60ca56e161546a7ff7cdf900f8f157cfe44"
   },
   "devDependencies": {
     "@actions/core": "1.10.0",
