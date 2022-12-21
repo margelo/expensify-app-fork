@@ -166,6 +166,7 @@ export default {
     },
     reportActionCompose: {
         addAction: 'Acción',
+        dropToUpload: 'Suelta el archivo aquí para compartirlo',
         sendAttachment: 'Enviar adjunto',
         addAttachment: 'Agregar archivo adjunto',
         writeSomething: 'Escribe algo...',
@@ -288,7 +289,6 @@ export default {
     },
     profilePage: {
         profile: 'Perfil',
-        tellUsAboutYourself: '¡Cuéntanos algo sobre tí, nos encantaría conocerte!',
         john: 'Juan',
         doe: 'Nadie',
         preferredPronouns: 'Pronombres preferidos',
@@ -332,6 +332,11 @@ export default {
         isShownOnProfile: 'Este nombre es visible en su perfil.',
         john: 'Juan',
         doe: 'Nadie',
+    },
+    timezonePage: {
+        timezone: 'Zona horaria',
+        isShownOnProfile: 'Tu zona horaria se muestra en tu perfil.',
+        getLocationAutomatically: 'Detecta tu ubicación automáticamente.',
     },
     addSecondaryLoginPage: {
         addPhoneNumber: 'Agregar número de teléfono',
@@ -412,7 +417,7 @@ export default {
         nameOnCard: 'Nombre en la tarjeta',
         debitCardNumber: 'Numero de la tarjeta de débito',
         expiration: 'Fecha de vencimiento',
-        expirationDate: 'MM/AA',
+        expirationDate: 'MMAA',
         cvv: 'CVV',
         billingAddress: 'Dirección de envio',
         expensifyTermsOfService: 'Expensify Términos de servicio',
@@ -626,6 +631,7 @@ export default {
         unknownFilename: 'Archivo desconocido',
         passwordRequired: 'Por favor introduce tu contraseña',
         passwordIncorrect: 'Contraseña incorrecta. Por favor intenta de nuevo.',
+        failedToLoadPDF: 'Hubo un error al intentar cargar el PDF.',
         pdfPasswordForm: {
             title: 'PDF protegido con contraseña',
             infoText: 'Este PDF esta protegido con contraseña.',

@@ -166,6 +166,7 @@ export default {
     },
     reportActionCompose: {
         addAction: 'Actions',
+        dropToUpload: 'Drop to upload',
         sendAttachment: 'Send attachment',
         addAttachment: 'Add attachment',
         writeSomething: 'Write something...',
@@ -288,7 +289,6 @@ export default {
     },
     profilePage: {
         profile: 'Profile',
-        tellUsAboutYourself: 'Tell us about yourself, we would love to get to know you!',
         john: 'John',
         doe: 'Doe',
         preferredPronouns: 'Preferred pronouns',
@@ -332,6 +332,11 @@ export default {
         isShownOnProfile: 'Your display name is shown on your profile.',
         john: 'John',
         doe: 'Doe',
+    },
+    timezonePage: {
+        timezone: 'Timezone',
+        isShownOnProfile: 'Your timezone is shown on your profile.',
+        getLocationAutomatically: 'Automatically determine your location.',
     },
     addSecondaryLoginPage: {
         addPhoneNumber: 'Add phone number',
@@ -412,7 +417,7 @@ export default {
         nameOnCard: 'Name on card',
         debitCardNumber: 'Debit card number',
         expiration: 'Expiration date',
-        expirationDate: 'MM/YY',
+        expirationDate: 'MMYY',
         cvv: 'CVV',
         billingAddress: 'Billing address',
         expensifyTermsOfService: 'Expensify Terms of Service',
@@ -626,6 +631,7 @@ export default {
         unknownFilename: 'Unknown filename',
         passwordRequired: 'Please enter a password',
         passwordIncorrect: 'Incorrect password. Please try again.',
+        failedToLoadPDF: 'Failed to load PDF file.',
         pdfPasswordForm: {
             title: 'Password protected PDF',
             infoText: 'This PDF is password protected.',

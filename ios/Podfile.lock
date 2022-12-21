@@ -219,9 +219,9 @@ PODS:
     - nanopb/encode (= 2.30908.0)
   - nanopb/decode (2.30908.0)
   - nanopb/encode (2.30908.0)
-  - Onfido (26.0.1)
-  - onfido-react-native-sdk (6.0.0):
-    - Onfido (= 26.0.1)
+  - Onfido (27.0.0)
+  - onfido-react-native-sdk (7.0.1):
+    - Onfido (= 27.0.0)
     - React
   - OpenSSL-Universal (1.1.1100)
   - Permission-Camera (3.6.1):
@@ -797,7 +797,7 @@ PODS:
     - React-Core
   - react-native-image-manipulator (1.0.5):
     - React
-  - react-native-image-picker (4.10.1):
+  - react-native-image-picker (4.10.2):
     - React-Core
   - react-native-netinfo (8.3.1):
     - React-Core
@@ -1375,8 +1375,8 @@ SPEC CHECKSUMS:
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   libwebp: f62cb61d0a484ba548448a4bd52aabf150ff6eef
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
-  Onfido: 91935f0dcee9a6647fdb386fa87cb4af9d9a3c70
-  onfido-react-native-sdk: bc72114ac430a2636cd2f02972ddf5b8b3b397c6
+  Onfido: bdbc3ed45598aa106ab2ea021d94e2e28c6b5be3
+  onfido-react-native-sdk: 5856e76fbfc0eb7b70b0f76fa1059830932a5c88
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
   Permission-Camera: bf6791b17c7f614b6826019fcfdcc286d3a107f6
   Permission-LocationAccuracy: 76df17de5c6b8bc2eee34e61ee92cdd7a864c73d
@@ -1407,7 +1407,7 @@ SPEC CHECKSUMS:
   react-native-document-picker: f68191637788994baed5f57d12994aa32cf8bf88
   react-native-flipper: dc5290261fbeeb2faec1bdc57ae6dd8d562e1de4
   react-native-image-manipulator: c48f64221cfcd46e9eec53619c4c0374f3328a56
-  react-native-image-picker: f2ab1215d17bcfe27b0eb6417cc236fd1f4775e7
+  react-native-image-picker: bf34f3f516d139ed3e24c5f5a381a91819e349ea
   react-native-netinfo: 1a6035d3b9780221d407c277ebfb5722ace00658
   react-native-pdf: 98810171111685a679dfb6beaf638090ba3a9eb9
   react-native-plaid-link-sdk: 77052f329310ff5a36ddda276793f40d27c02bc4
