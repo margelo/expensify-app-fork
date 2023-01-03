@@ -21,3 +21,16 @@ index e426da6..1d02de5 100644
          };
  
      final Map<String, ReactModuleInfo> reactModuleInfoMap = new HashMap<>();
+diff --git a/node_modules/react-native-reanimated/lib/module/reanimated2/NativeReanimated/NativeReanimated.js b/node_modules/react-native-reanimated/lib/module/reanimated2/NativeReanimated/NativeReanimated.js
+index 01bd931..9421ba9 100644
+--- a/node_modules/react-native-reanimated/lib/module/reanimated2/NativeReanimated/NativeReanimated.js
++++ b/node_modules/react-native-reanimated/lib/module/reanimated2/NativeReanimated/NativeReanimated.js
+@@ -1,7 +1,7 @@
+ function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+ 
+ import { NativeModules } from 'react-native';
+-import { version as jsVersion } from '../../../package.json';
++import { version as jsVersion } from '../../../../package.json';
+ export class NativeReanimated {
+   constructor() {
+     let native = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
