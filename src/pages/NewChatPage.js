@@ -245,25 +245,22 @@ class NewChatPage extends Component {
                             onCloseButtonPress={() => Navigation.dismissModal(true)}
                         />
                         <View style={[styles.flex1, styles.w100, styles.pRelative]}>
-                            {didScreenTransitionEnd ? (
-                                <OptionsSelector
-                                    canSelectMultipleOptions={this.props.isGroupChat}
-                                    sections={sections}
-                                    selectedOptions={this.state.selectedOptions}
-                                    value={this.state.searchTerm}
-                                    onSelectRow={option => (this.props.isGroupChat ? this.toggleOption(option) : this.createChat(option))}
-                                    onChangeText={this.updateOptionsWithSearchTerm}
-                                    headerMessage={headerMessage}
-                                    boldStyle
-                                    shouldFocusOnSelectRow={this.props.isGroupChat}
-                                    shouldShowConfirmButton={this.props.isGroupChat}
-                                    confirmButtonText={this.props.translate('newChatPage.createGroup')}
-                                    onConfirmSelection={this.createGroup}
-                                    placeholderText={this.props.translate('optionsSelector.nameEmailOrPhoneNumber')}
-                                />
-                            ) : (
-                                <FullScreenLoadingIndicator />
-                            )}
+                            <OptionsSelector
+                                canSelectMultipleOptions={this.props.isGroupChat}
+                                sections={sections}
+                                selectedOptions={this.state.selectedOptions}
+                                value={this.state.searchTerm}
+                                onSelectRow={option => (this.props.isGroupChat ? this.toggleOption(option) : this.createChat(option))}
+                                onChangeText={this.updateOptionsWithSearchTerm}
+                                headerMessage={headerMessage}
+                                boldStyle
+                                shouldShowOptions={didScreenTransitionEnd}
+                                shouldFocusOnSelectRow={this.props.isGroupChat}
+                                shouldShowConfirmButton={this.props.isGroupChat}
+                                confirmButtonText={this.props.translate('newChatPage.createGroup')}
+                                onConfirmSelection={this.createGroup}
+                                placeholderText={this.props.translate('optionsSelector.nameEmailOrPhoneNumber')}
+                            />
                         </View>
                     </>
                 )}
