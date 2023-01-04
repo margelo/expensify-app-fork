@@ -21,7 +21,6 @@ const PressableWithSecondaryInteraction = (props) => {
                 if (e.nativeEvent.state !== State.ACTIVE) {
                     return;
                 }
-                e.preventDefault();
                 HapticFeedback.trigger();
                 props.onSecondaryInteraction(e);
             }}
