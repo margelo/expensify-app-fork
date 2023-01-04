@@ -39,6 +39,8 @@ class ScreenWrapper extends React.Component {
         }, shortcutConfig.descriptionKey, shortcutConfig.modifiers, true);
 
         this.unsubscribeTransitionEnd = onScreenTransitionEnd(this.props.navigation, () => {
+            console.log('Screen transition ended');
+
             this.setState({didScreenTransitionEnd: true});
             this.props.onTransitionEnd();
         });
