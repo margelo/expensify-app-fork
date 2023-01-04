@@ -22,3 +22,21 @@ index 84cbe8d..6318933 100644
    };
  
    auto p = sFabricComponentsClassMap.find(name);
+diff --git a/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/ReactInstanceManager.java b/node_modules/@expensify/react-native/ReactAndroid/src/main/java/com/facebook/react/ReactInstanceManager.java
+index 67120d2..bd8febe 100644
+--- a/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/ReactInstanceManager.java
++++ b/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/ReactInstanceManager.java
+@@ -923,10 +923,11 @@ public class ReactInstanceManager {
+       if (mViewManagers == null) {
+         synchronized (mPackages) {
+           if (mViewManagers == null) {
+-            mViewManagers = new ArrayList<>();
++            ArrayList<ViewManager> viewManagers = new ArrayList<>();
+             for (ReactPackage reactPackage : mPackages) {
+-              mViewManagers.addAll(reactPackage.createViewManagers(catalystApplicationContext));
++              viewManagers.addAll(reactPackage.createViewManagers(catalystApplicationContext));
+             }
++            mViewManagers = viewManagers;
+             return mViewManagers;
+           }
+         }
