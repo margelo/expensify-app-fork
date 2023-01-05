@@ -86,9 +86,6 @@ if (Metrics.canCapturePerformanceMetrics()) {
      * Sets up an observer to capture events recorded in the native layer before the app fully initializes.
      */
     Performance.setupPerformanceObserver = () => {
-        const performanceReported = require('react-native-performance-flipper-reporter');
-        performanceReported.setupDefaultFlipperReporter();
-
         // Monitor some native marks that we want to put on the timeline
         new perfModule.PerformanceObserver((list, observer) => {
             list.getEntries()

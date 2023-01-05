@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {NavigationContainer, DefaultTheme, getPathFromState} from '@react-navigation/native';
-import {useFlipper} from '@react-navigation/devtools';
 import Navigation, {navigationRef} from './Navigation';
 import linkingConfig from './linkingConfig';
 import AppNavigator from './AppNavigator';
@@ -50,29 +49,26 @@ function parseAndLogRoute(state) {
     Navigation.setIsNavigationReady();
 }
 
-const NavigationRoot = (props) => {
-    useFlipper(navigationRef);
-    return (
-        <NavigationContainer
-            fallback={(
-                <FullScreenLoadingIndicator
-                    logDetail={{name: 'Navigation Fallback Loader', authenticated: props.authenticated}}
-                    style={styles.navigatorFullScreenLoading}
-                />
+const NavigationRoot = props => (
+    <NavigationContainer
+        fallback={(
+            <FullScreenLoadingIndicator
+                logDetail={{name: 'Navigation Fallback Loader', authenticated: props.authenticated}}
+                style={styles.navigatorFullScreenLoading}
+            />
             )}
-            onStateChange={parseAndLogRoute}
-            onReady={props.onReady}
-            theme={navigationTheme}
-            ref={navigationRef}
-            linking={linkingConfig}
-            documentTitle={{
-                enabled: false,
-            }}
-        >
-            <AppNavigator authenticated={props.authenticated} />
-        </NavigationContainer>
-    );
-};
+        onStateChange={parseAndLogRoute}
+        onReady={props.onReady}
+        theme={navigationTheme}
+        ref={navigationRef}
+        linking={linkingConfig}
+        documentTitle={{
+            enabled: false,
+        }}
+    >
+        <AppNavigator authenticated={props.authenticated} />
+    </NavigationContainer>
+);
 
 NavigationRoot.displayName = 'NavigationRoot';
 NavigationRoot.propTypes = propTypes;
