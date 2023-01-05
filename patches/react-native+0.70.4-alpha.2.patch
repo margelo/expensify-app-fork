@@ -22,6 +22,38 @@ index 84cbe8d..6318933 100644
    };
  
    auto p = sFabricComponentsClassMap.find(name);
+diff --git a/node_modules/react-native/React/Fabric/Mounting/ComponentViews/ScrollView/RCTScrollViewComponentView.mm b/node_modules/react-native/React/Fabric/Mounting/ComponentViews/ScrollView/RCTScrollViewComponentView.mm
+index e7f178c..0992f8b 100644
+--- a/node_modules/react-native/React/Fabric/Mounting/ComponentViews/ScrollView/RCTScrollViewComponentView.mm
++++ b/node_modules/react-native/React/Fabric/Mounting/ComponentViews/ScrollView/RCTScrollViewComponentView.mm
+@@ -350,23 +350,23 @@ - (void)_preserveContentOffsetIfNeededWithBlock:(void (^)())block
+ - (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
+ {
+   [_containerView insertSubview:childComponentView atIndex:index];
+-  if ([childComponentView isKindOfClass:RCTPullToRefreshViewComponentView.class]) {
++ /* if ([childComponentView isKindOfClass:RCTPullToRefreshViewComponentView.class]) {
+     // Ignore the pull to refresh component.
+   } else {
+     RCTAssert(_contentView == nil, @"RCTScrollView may only contain a single subview.");
+     _contentView = childComponentView;
+-  }
++  }*/
+ }
+ 
+ - (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
+ {
+   [childComponentView removeFromSuperview];
+-  if ([childComponentView isKindOfClass:RCTPullToRefreshViewComponentView.class]) {
++  /*if ([childComponentView isKindOfClass:RCTPullToRefreshViewComponentView.class]) {
+     // Ignore the pull to refresh component.
+   } else {
+     RCTAssert(_contentView == childComponentView, @"Attempted to remove non-existent subview");
+     _contentView = nil;
+-  }
++  }*/
+ }
+ 
+ /*
 diff --git a/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/ReactInstanceManager.java b/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/ReactInstanceManager.java
 index 67120d2..bd8febe 100644
 --- a/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/ReactInstanceManager.java
@@ -73,6 +105,13 @@ index a30a594..6246aa6 100644
  class UIManager final : public ShadowTreeDelegate {
   public:
    UIManager(
+diff --git a/node_modules/react-native/scripts/.packager.env b/node_modules/react-native/scripts/.packager.env
+new file mode 100644
+index 0000000..361f5fb
+--- /dev/null
++++ b/node_modules/react-native/scripts/.packager.env
+@@ -0,0 +1 @@
++export RCT_METRO_PORT=8081
 diff --git a/node_modules/react-native/sdks/hermes/hermes-engine.podspec b/node_modules/react-native/sdks/hermes/hermes-engine.podspec
 new file mode 100644
 index 0000000..c3ef8ad
