@@ -13,7 +13,6 @@ import withWindowDimensions, {windowDimensionsPropTypes} from '../components/wit
 import HeaderWithCloseButton from '../components/HeaderWithCloseButton';
 import Navigation from '../libs/Navigation/Navigation';
 import ScreenWrapper from '../components/ScreenWrapper';
-import FullScreenLoadingIndicator from '../components/FullscreenLoadingIndicator';
 import withLocalize, {withLocalizePropTypes} from '../components/withLocalize';
 import compose from '../libs/compose';
 import personalDetailsPropType from './personalDetailsPropType';
@@ -235,8 +234,8 @@ class NewChatPage extends Component {
             maxParticipantsReached,
         );
         return (
-            <ScreenWrapper>
-                {({didScreenTransitionEnd}) => (
+            <ScreenWrapper includeSafeAreaPaddingBottom={false}>
+                {({didScreenTransitionEnd, safeAreaPaddingBottomStyle}) => (
                     <>
                         <HeaderWithCloseButton
                             title={this.props.isGroupChat
@@ -244,7 +243,7 @@ class NewChatPage extends Component {
                                 : this.props.translate('sidebarScreen.newChat')}
                             onCloseButtonPress={() => Navigation.dismissModal(true)}
                         />
-                        <View style={[styles.flex1, styles.w100, styles.pRelative]}>
+                        <View style={[styles.flex1, styles.w100, styles.pRelative, this.state.selectedOptions.length > 0 ? safeAreaPaddingBottomStyle : {}]}>
                             <OptionsSelector
                                 canSelectMultipleOptions={this.props.isGroupChat}
                                 sections={sections}
