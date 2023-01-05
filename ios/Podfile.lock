@@ -152,6 +152,14 @@ PODS:
   - libwebp/mux (1.2.4):
     - libwebp/demux
   - libwebp/webp (1.2.4)
+  - MGWishList (0.0.1-alpha.2):
+    - RCT-Folly
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Codegen
+    - React-Core
+    - React-RCTFabric
+    - ReactCommon/turbomodule/core
   - nanopb (2.30908.0):
     - nanopb/decode (= 2.30908.0)
     - nanopb/encode (= 2.30908.0)
@@ -730,8 +738,6 @@ PODS:
     - React-Core
   - react-native-document-picker (8.1.1):
     - React-Core
-  - react-native-flipper (0.159.0):
-    - React-Core
   - react-native-image-manipulator (1.0.5):
     - React
   - react-native-image-picker (4.10.3):
@@ -780,6 +786,13 @@ PODS:
     - ReactCommon/turbomodule/core
   - react-native-webview (11.23.0):
     - React-Core
+  - react-native-worklets (0.1.5):
+    - RCT-Folly
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Codegen
+    - React-Core
+    - ReactCommon/turbomodule/core
   - React-perflogger (0.70.4-alpha.2)
   - React-RCTActionSheet (0.70.4-alpha.2):
     - React-Core/RCTActionSheetHeaders (= 0.70.4-alpha.2)
@@ -993,6 +1006,7 @@ DEPENDENCIES:
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - hermes-engine (from `../node_modules/react-native/sdks/hermes/hermes-engine.podspec`)
   - libevent (~> 2.1.12)
+  - MGWishList (from `../node_modules/react-native-wishlist`)
   - "onfido-react-native-sdk (from `../node_modules/@onfido/react-native-sdk`)"
   - Permission-Camera (from `../node_modules/react-native-permissions/ios/Camera`)
   - Permission-LocationAccuracy (from `../node_modules/react-native-permissions/ios/LocationAccuracy`)
@@ -1022,7 +1036,6 @@ DEPENDENCIES:
   - "react-native-cameraroll (from `../node_modules/@react-native-community/cameraroll`)"
   - react-native-config (from `../node_modules/react-native-config`)
   - react-native-document-picker (from `../node_modules/react-native-document-picker`)
-  - react-native-flipper (from `../node_modules/react-native-flipper`)
   - "react-native-image-manipulator (from `../node_modules/@oguzhnatly/react-native-image-manipulator`)"
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
@@ -1033,6 +1046,7 @@ DEPENDENCIES:
   - react-native-render-html (from `../node_modules/react-native-render-html`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-webview (from `../node_modules/react-native-webview`)
+  - react-native-worklets (from `../node_modules/react-native-worklets`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
   - React-RCTAnimation (from `../node_modules/react-native/Libraries/NativeAnimation`)
@@ -1103,6 +1117,8 @@ EXTERNAL SOURCES:
     :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
   hermes-engine:
     :podspec: "../node_modules/react-native/sdks/hermes/hermes-engine.podspec"
+  MGWishList:
+    :path: "../node_modules/react-native-wishlist"
   onfido-react-native-sdk:
     :path: "../node_modules/@onfido/react-native-sdk"
   Permission-Camera:
@@ -1155,8 +1171,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-config"
   react-native-document-picker:
     :path: "../node_modules/react-native-document-picker"
-  react-native-flipper:
-    :path: "../node_modules/react-native-flipper"
   react-native-image-manipulator:
     :path: "../node_modules/@oguzhnatly/react-native-image-manipulator"
   react-native-image-picker:
@@ -1177,6 +1191,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-safe-area-context"
   react-native-webview:
     :path: "../node_modules/react-native-webview"
+  react-native-worklets:
+    :path: "../node_modules/react-native-worklets"
   React-perflogger:
     :path: "../node_modules/react-native/ReactCommon/reactperflogger"
   React-RCTActionSheet:
@@ -1263,6 +1279,7 @@ SPEC CHECKSUMS:
   hermes-engine: 3623325e0d0676a45fbc544d72c57dd79fce7446
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   libwebp: f62cb61d0a484ba548448a4bd52aabf150ff6eef
+  MGWishList: 65bbec6f4f6b4f9aca657b672b5b974ec5b1a110
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
   Onfido: bdbc3ed45598aa106ab2ea021d94e2e28c6b5be3
   onfido-react-native-sdk: 5856e76fbfc0eb7b70b0f76fa1059830932a5c88
@@ -1293,7 +1310,6 @@ SPEC CHECKSUMS:
   react-native-cameraroll: 2957f2bce63ae896a848fbe0d5352c1bd4d20866
   react-native-config: 7cd105e71d903104e8919261480858940a6b9c0e
   react-native-document-picker: f68191637788994baed5f57d12994aa32cf8bf88
-  react-native-flipper: dc5290261fbeeb2faec1bdc57ae6dd8d562e1de4
   react-native-image-manipulator: c48f64221cfcd46e9eec53619c4c0374f3328a56
   react-native-image-picker: 60f4246eb5bb7187fc15638a8c1f13abd3820695
   react-native-netinfo: 1a6035d3b9780221d407c277ebfb5722ace00658
@@ -1304,6 +1320,7 @@ SPEC CHECKSUMS:
   react-native-render-html: 96c979fe7452a0a41559685d2f83b12b93edac8c
   react-native-safe-area-context: 2f75b317784a1a8e224562941e50ecbc932d2097
   react-native-webview: e771bc375f789ebfa02a26939a57dbc6fa897336
+  react-native-worklets: ef7fa88cb10c07e16dfaebe5d7c861f83e07760f
   React-perflogger: b231fb9993c1b5f74e32f0a3473225f9ebaf73d3
   React-RCTActionSheet: 9064b3b78118a253f2d6a63153f6dfff0b38f19f
   React-RCTAnimation: d93c521d4ad6457fc8c1d9830ffb0495286ea036
