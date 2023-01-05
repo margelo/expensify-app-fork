@@ -7,7 +7,14 @@ function TestCell(props) {
     const whatever = useTemplateValue(item => 'HELLO!');
 
     return (
-        <View style={{borderWidth: 1, borderColor: 'red', padding: 5}}>
+        <View style={{
+            borderWidth: 1, borderColor: 'red',
+            margin: 10,
+            padding: 10,
+            width: '70%',
+            borderRadius: 10,
+        }}
+        >
             <Wishlist.Text>{whatever}</Wishlist.Text>
         </View>
     );
@@ -18,25 +25,34 @@ export default function List({data, ...props}) {
 
     const ref = useRef();
 
-    const preparedData = data.map((it) => ({type: "test", key: `{Math.random()}`, ...it})); // only for testing
+    const x = ['hello', 'world'];
+
+    const preparedData = x.map(it => ({type: 'test', key: '{Math.random()}', ...it})); // only for testing
 
     return (
-        <Wishlist.Component
-            style={styles.list}
-            initialIndex={data.length - 1} // aka inverted
-            initialData={preparedData}
-            ref={ref}
-        >
-            <Wishlist.Template type="test">
-                <TestCell />
-            </Wishlist.Template>
-        </Wishlist.Component>
+        <View style={styles.container}>
+            <Wishlist.Component
+                style={styles.list}
+                initialIndex={preparedData.length - 1} // aka inverted
+                initialData={preparedData}
+                ref={ref}
+            >
+                <Wishlist.Template type="test">
+                    <TestCell />
+                </Wishlist.Template>
+            </Wishlist.Component>
+
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+    },
     list: {
-        width: 400,
-        height: 800,
+        flex: 1,
+        borderWidth: 1,
+        borderColor: 'green',
     },
 });
