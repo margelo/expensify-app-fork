@@ -7,7 +7,6 @@ import {UrbanAirship} from 'urbanairship-react-native';
  * @param {Number} totalCount
  */
 function updateUnread(totalCount) {
-    UrbanAirship.setBadgeNumber(totalCount);
 }
 
 export default updateUnread;
