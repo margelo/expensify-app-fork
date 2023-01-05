@@ -1,3 +1,19 @@
+diff --git a/node_modules/react-native-worklets/cpp/JsiWorklet.h b/node_modules/react-native-worklets/cpp/JsiWorklet.h
+index 2fbf9a0..8fd6605 100644
+--- a/node_modules/react-native-worklets/cpp/JsiWorklet.h
++++ b/node_modules/react-native-worklets/cpp/JsiWorklet.h
+@@ -22,7 +22,10 @@ class JsThisWrapper {
+ public:
+   JsThisWrapper(jsi::Runtime &runtime, const jsi::Value &thisValue) {
+     _oldThis = runtime.global().getProperty(runtime, PropNameJsThis);
+-    runtime.global().setProperty(runtime, PropNameJsThis, thisValue);
++    // ugly REA compatibility hotfix
++    jsi::Object newThis(runtime);
++    newThis.setProperty(runtime, "_closure", thisValue);
++    runtime.global().setProperty(runtime, PropNameJsThis, newThis);
+     _runtime = &runtime;
+   }
+ 
 diff --git a/node_modules/react-native-worklets/cpp/JsiWorkletContext.cpp b/node_modules/react-native-worklets/cpp/JsiWorkletContext.cpp
 index 854606d..b1fb58c 100644
 --- a/node_modules/react-native-worklets/cpp/JsiWorkletContext.cpp
