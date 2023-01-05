@@ -1,22 +1,23 @@
 /* eslint-disable */
-import React, {useRef} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {useTemplateValue, Wishlist} from 'react-native-wishlist';
+import ReportActionItem from '../../pages/home/report/ReportActionItem'
 
 function TestCell(props) {
-    const whatever = useTemplateValue(item => 'HELLO!');
+    const whatever = useTemplateValue(item => {
+        'worklet'
+        return item.message[0]?.text ?? 'NO MESSAGE'
+    });
 
+    const shouldDisplayNewIndicator = false /* this.props.newMarkerSequenceNumber > 0
+            && reportAction.sequenceNumber === this.props.newMarkerSequenceNumber
+            && !ReportActionsUtils.isDeletedAction(reportAction); */
     return (
-        <View style={{
-            borderWidth: 1, borderColor: 'red',
-            margin: 10,
-            padding: 10,
-            width: '70%',
-            borderRadius: 10,
-        }}
-        >
-            <Wishlist.Text>{whatever}</Wishlist.Text>
-        </View>
+        <ReportActionItem
+            // static
+            report={null}
+        />
     );
 }
 
@@ -25,9 +26,16 @@ export default function List({data, ...props}) {
 
     const ref = useRef();
 
-    const x = ['hello', 'world'];
 
-    const preparedData = x.map(it => ({type: 'test', key: '{Math.random()}', ...it})); // only for testing
+    data.map((d) => console.log(d))
+
+    const preparedData = data.map(it => ({type: 'test', key: it.reportActionID, ...it})); // only for testing
+
+
+    const [,dummy] = useState(false)
+    useEffect(() => {
+setTimeout(() => dummy(true), 500)
+    }, [])
 
     return (
         <View style={styles.container}>
