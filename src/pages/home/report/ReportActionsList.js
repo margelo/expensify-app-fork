@@ -152,10 +152,10 @@ class ReportActionsList extends React.Component {
         return (
             <Animated.View style={[StyleUtils.fade(this.state.fadeInAnimation), styles.flex1]}>
                 <InvertedFlatList
-                    accessibilityLabel="List of chat messages"
-                    ref={ReportScrollManager.flatListRef}
+                    /*accessibilityLabel="List of chat messages"
+                    ref={ReportScrollManager.flatListRef}*/
                     data={this.props.sortedReportActions}
-                    renderItem={this.renderItem}
+                    /*renderItem={this.renderItem}
                     contentContainerStyle={[
                         styles.chatContentScrollView,
                         shouldShowReportRecipientLocalTime && styles.pt0,
@@ -197,7 +197,7 @@ class ReportActionsList extends React.Component {
                         this.props.onLayout(event);
                     }}
                     onScroll={this.props.onScroll}
-                    extraData={extraData}
+                    extraData={extraData}*/
                 />
             </Animated.View>
         );

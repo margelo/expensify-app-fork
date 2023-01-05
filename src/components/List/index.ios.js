@@ -18,11 +18,13 @@ export default function List({data, ...props}) {
 
     const ref = useRef();
 
+    const preparedData = data.map((it) => ({type: "test", key: `{Math.random()}`, ...it})); // only for testing
+
     return (
         <Wishlist.Component
             style={styles.list}
             initialIndex={data.length - 1} // aka inverted
-            initialData={data}
+            initialData={preparedData}
             ref={ref}
         >
             <Wishlist.Template type="test">

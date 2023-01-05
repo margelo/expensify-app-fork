@@ -34,3 +34,15 @@ index 01bd931..9421ba9 100644
  export class NativeReanimated {
    constructor() {
      let native = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+diff --git a/node_modules/react-native-reanimated/plugin.js b/node_modules/react-native-reanimated/plugin.js
+index 50cd9f4..abceb3c 100644
+--- a/node_modules/react-native-reanimated/plugin.js
++++ b/node_modules/react-native-reanimated/plugin.js
+@@ -21,6 +21,7 @@ const functionArgsToWorkletize = new Map([
+   ['withSpring', [2]],
+   ['withDecay', [1]],
+   ['withRepeat', [3]],
++  ['useTemplateValue', [0]],
+ ]);
+ 
+ const objectHooks = new Set([
