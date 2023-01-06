@@ -29,15 +29,20 @@ export default function List({data, report, ...props}) {
     const prefix = report.reportID
 
     useEffect(() => {
+        data.forEach((d) => {
+            d.type = 'test'
+            d.key = prefix + d.reportActionID
+        })
+
         ref.current?.update((dataCopy) => {
             'worklet'
 
             // just update data - big re-render.
-            for (const i of data) {
-                dataCopy.set(prefix + i.reportActionID, i)
+            for (const d of data) {
+                dataCopy.set(prefix + d.reportActionID, d)
             }
         })
-    }, [data])
+    }, [prefix, data])
 
 
     data.map((d) => console.log(d))
@@ -54,7 +59,7 @@ return () => clearInterval(i)
     return (
         <View style={styles.container}>
             <Wishlist.Component
-                key={prefix}
+                // key={prefix}
                 style={styles.list}
                 initialIndex={preparedData.length - 1} // aka inverted
                 initialData={preparedData}
