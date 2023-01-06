@@ -14719,10 +14719,10 @@
     "escape-string-regexp" "2.0.0"
     "invariant" "2.2.4"
 
-"react-native-wishlist@^0.0.1-alpha.2":
-  "integrity" "sha512-bl96D/WBHqUbShYZr6AsDZxcvsnGiQkpQsnA90H5+kAQVYVafk7Fsc7Kqk2LwS9zAGqj0vG3IJOvkF3p2ffpow=="
-  "resolved" "https://registry.npmjs.org/react-native-wishlist/-/react-native-wishlist-0.0.1-alpha.2.tgz"
-  "version" "0.0.1-alpha.2"
+"react-native-wishlist@^0.0.1-alpha.4":
+  "integrity" "sha512-TY8ypMS9dFU2tl9ZxuQ+oO7SOOBhRdAbLoWudylLewMDijkTk2Jf+YG73MNZv6PMdv+PIg/XGE8rt+1SUFn+3Q=="
+  "resolved" "https://registry.npmjs.org/react-native-wishlist/-/react-native-wishlist-0.0.1-alpha.4.tgz"
+  "version" "0.0.1-alpha.4"
   dependencies:
     "denque" "^2.1.0"
 

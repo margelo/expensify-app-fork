@@ -112,7 +112,7 @@
     "react-native-screens": "3.18.2",
     "react-native-svg": "^13.6.0",
     "react-native-webview": "^11.17.2",
-    "react-native-wishlist": "^0.0.1-alpha.2",
+    "react-native-wishlist": "^0.0.1-alpha.4",
     "react-pdf": "5.7.2",
     "react-plaid-link": "3.3.2",
     "react-web-config": "^1.0.0",
