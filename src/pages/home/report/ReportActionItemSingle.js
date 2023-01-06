@@ -59,7 +59,7 @@ const ReportActionItemSingle = (props) => {
     return (
         <View style={props.wrapperStyles}>
             <Wishlist.Pressable
-                style={[styles.alignSelfStart, {width: 40, height: 40}]}
+                style={[styles.alignSelfStart, {width: 40, height: 40, marginRight: 8}]}
                 onPress={props.onUserPressed}
             >
                 <Wishlist.Image style={[styles.actionAvatar, {width: 40, height: 40}]} source={{uri: avatarUrl}} />
@@ -80,7 +80,7 @@ const ReportActionItemSingle = (props) => {
                             onPress={props.onUserPressed}
                         >
                             <Wishlist.Template type="report-action-item-fragment-person">
-                                <ReportActionItemFragment tooltipText="TODO" isSingleLine />
+                                <ReportActionItemFragment tooltipText="TODO" isSingleLine style={[{fontWeight: 'bold'}]} />
                             </Wishlist.Template>
 
                             <Wishlist.ForEach items={personArray} template="report-action-item-fragment-person" />
