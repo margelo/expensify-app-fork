@@ -256,7 +256,7 @@ class ReportActionsView extends React.Component {
      * @returns {Array}
      */
     getSortedReportActionsForDisplay(reportActions) {
-        const sortedReportActions = ReportActionsUtils.getSortedReportActions(_.values(reportActions), true);
+        const sortedReportActions = ReportActionsUtils.getSortedReportActions(_.values(reportActions));
         return ReportActionsUtils.filterReportActionsForDisplay(sortedReportActions);
     }
 

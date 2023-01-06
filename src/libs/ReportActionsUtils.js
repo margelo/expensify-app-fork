@@ -43,25 +43,23 @@ function isDeletedAction(reportAction) {
  * This gives us a stable order even in the case of multiple reportActions created on the same millisecond
  *
  * @param {Array} reportActions
- * @param {Boolean} shouldSortInDescendingOrder
  * @returns {Array}
  */
-function getSortedReportActions(reportActions, shouldSortInDescendingOrder = false) {
+function getSortedReportActions(reportActions) {
     if (!_.isArray(reportActions)) {
         throw new Error(`ReportActionsUtils.getSortedReportActions requires an array, received ${typeof reportActions}`);
     }
-    const invertedMultiplier = shouldSortInDescendingOrder ? -1 : 1;
     reportActions.sort((first, second) => {
         // If only one action is a report created action, return the created action first.
         if ((first.actionName === CONST.REPORT.ACTIONS.TYPE.CREATED || second.actionName === CONST.REPORT.ACTIONS.TYPE.CREATED) && first.actionName !== second.actionName) {
-            return ((first.actionName === CONST.REPORT.ACTIONS.TYPE.CREATED) ? -1 : 1) * invertedMultiplier;
+            return ((first.actionName === CONST.REPORT.ACTIONS.TYPE.CREATED) ? -1 : 1);
         }
 
         if (first.created !== second.created) {
-            return (first.created < second.created ? -1 : 1) * invertedMultiplier;
+            return (first.created < second.created ? -1 : 1);
         }
 
-        return (first.reportActionID < second.reportActionID ? -1 : 1) * invertedMultiplier;
+        return (first.reportActionID < second.reportActionID ? -1 : 1);
     });
     return reportActions;
 }

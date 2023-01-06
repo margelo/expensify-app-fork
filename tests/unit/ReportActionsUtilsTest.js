@@ -59,11 +59,6 @@ describe('ReportActionsUtils', () => {
             const result = ReportActionsUtils.getSortedReportActions(input);
             expect(result).toStrictEqual(expectedOutput);
         });
-
-        test.each(cases)('in descending order', (input, expectedOutput) => {
-            const result = ReportActionsUtils.getSortedReportActions(input, true);
-            expect(result).toStrictEqual(expectedOutput.reverse());
-        });
     });
 
     describe('filterReportActionsForDisplay', () => {
