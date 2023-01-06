@@ -63,7 +63,7 @@ function ReportActionItem(props) {
     });
 
     return (
-        <Wishlist.Pressable>
+        <View>
             <View accessibilityLabel="Chat message">
                 <View
                     style={StyleUtils.getReportActionItemStyle(
@@ -89,7 +89,7 @@ function ReportActionItem(props) {
             {/* <View style={styles.reportActionSystemMessageContainer}>
                 <InlineSystemMessage message={errorMessage} />
             </View> */}
-        </Wishlist.Pressable>
+        </View>
     );
 }
 

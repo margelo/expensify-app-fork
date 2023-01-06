@@ -45,10 +45,6 @@ const defaultProps = {
     showHeader: true,
 };
 
-const showUserDetails = (email) => {
-    Navigation.navigate(ROUTES.getDetailsRoute(email));
-};
-
 const ReportActionItemSingle = (props) => {
     // const avatarUrl = props.action.automatic
     //     ? `${CONST.CLOUDFRONT_URL}/images/icons/concierge_2019.svg`
@@ -56,7 +52,7 @@ const ReportActionItemSingle = (props) => {
     //     // Use avatar in personalDetails if we have one then fallback to avatar provided by the action
     //     : (avatar || props.action.avatar);
 
-    const personArray = useTemplateValue(action => [{type: 'TEXT', text: 'Marc'}]);
+    const personArray = useTemplateValue(action => [{type: 'TEXT', text: action.actorEmail ?? '??'}]);
 
     const avatarUrl = useTemplateValue(action => action.avatar);
 

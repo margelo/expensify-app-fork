@@ -26,6 +26,17 @@ export default function List({data, report, ...props}) {
 
     const ref = useRef();
 
+    useEffect(() => {
+        ref.current?.update((dataCopy) => {
+            'worklet'
+
+            // just update data - big re-render.
+            for (const i of data) {
+                dataCopy.set(i.key, i)
+            }
+        })
+    }, [data])
+
 
     data.map((d) => console.log(d))
 
@@ -61,7 +72,5 @@ const styles = StyleSheet.create({
     },
     list: {
         flex: 1,
-        borderWidth: 1,
-        borderColor: 'green',
     },
 });
