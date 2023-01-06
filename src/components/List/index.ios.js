@@ -34,7 +34,8 @@ export default function List({data, report, ...props}) {
 
     const [,dummy] = useState(false)
     useEffect(() => {
-setTimeout(() => dummy(true), 500)
+const i = setInterval(() => dummy(true), 500)
+return () => clearInterval(i)
     }, [])
 
     return (
