@@ -63,10 +63,10 @@ const ReportActionItemSingle = (props) => {
     return (
         <View style={props.wrapperStyles}>
             <Wishlist.Pressable
-                style={styles.alignSelfStart}
+                style={[styles.alignSelfStart, {width: 40, height: 40}]}
                 onPress={props.onUserPressed}
             >
-                <Wishlist.Image style={styles.actionAvatar} source={{uri: avatarUrl}} />
+                <Wishlist.Image style={[styles.actionAvatar, {width: 40, height: 40}]} source={{uri: avatarUrl}} />
                 {/* <Tooltip text={props.action.actorEmail}>
                     <Avatar
                         containerStyles={[styles.actionAvatar]}
