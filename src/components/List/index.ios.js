@@ -27,33 +27,12 @@ export default function List({data, report, ...props}) {
 
     const ref = useRef();
 
-    useEffect(() => {
-        setTimeout(() => {
-            ref.current?.update((dataCopy) => {
-                'worklet'
-    
-                // just update data - big re-render.
-                for (const i of data) {
-                    dataCopy.set(i.key, i)
-                }
-            })
-        }, 5000);
-        
-    }, [data])
-
-
     data.map((d) => console.log(d))
 
     const [key, preparedData] = useMemo(() => { 
         const preparedData = data.map(it => ({type: 'test', key: it.reportActionID, ...it})); // only for testing
         return [`${Math.random()}`, preparedData]; 
     }, [data]);
-
-    const [,dummy] = useState(false)
-    useEffect(() => {
-const i = setInterval(() => dummy(true), 500)
-return () => clearInterval(i)
-    }, [])
 
     return (
         <View style={styles.container}>
