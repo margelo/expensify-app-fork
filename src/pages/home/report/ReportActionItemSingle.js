@@ -58,6 +58,8 @@ const ReportActionItemSingle = (props) => {
 
     const personArray = useTemplateValue(action => [{type: 'TEXT', text: 'Marc'}]);
 
+    const avatarUrl = useTemplateValue(action => action.avatar);
+
     return (
         <View style={props.wrapperStyles}>
             <Wishlist.Pressable
@@ -66,6 +68,7 @@ const ReportActionItemSingle = (props) => {
                 onPressOut={ControlSelection.unblock}
                 onPress={props.onUserPressed}
             >
+                <Wishlist.Image style={styles.actionAvatar} source={{uri: avatarUrl}} />
                 {/* <Tooltip text={props.action.actorEmail}>
                     <Avatar
                         containerStyles={[styles.actionAvatar]}
