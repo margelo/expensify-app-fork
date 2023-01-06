@@ -48,10 +48,7 @@ export default function List({data, report, ...props}) {
     }, [prefix, data])
 
 
-    data.map((d) => console.log(d))
-
     const preparedData = data.map(it => ({type: 'test', key: prefix + it.reportActionID, ...it})); // only for testing
-
 
     const [,dummy] = useState(false)
     useEffect(() => {
