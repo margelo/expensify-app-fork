@@ -59,7 +59,7 @@ return () => clearInterval(i)
     return (
         <View style={styles.container}>
             <Wishlist.Component
-                // key={prefix}
+                 key={prefix}
                 style={styles.list}
                 initialIndex={preparedData.length - 1} // aka inverted
                 initialData={preparedData}
