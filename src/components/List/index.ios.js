@@ -4,7 +4,7 @@ import {StyleSheet, View} from 'react-native';
 import {useTemplateValue, Wishlist} from 'react-native-wishlist';
 import ReportActionItem from '../../pages/home/report/ReportActionItem'
 
-function TestCell(props) {
+function TestCell({report}) {
     const whatever = useTemplateValue(item => {
         'worklet'
         return item.message[0]?.text ?? 'NO MESSAGE'
@@ -16,12 +16,12 @@ function TestCell(props) {
     return (
         <ReportActionItem
             // static
-            report={null}
+            report={report}
         />
     );
 }
 
-export default function List({data, ...props}) {
+export default function List({data, report, ...props}) {
     console.log('Rendering <List/>... ');
 
     const ref = useRef();
@@ -46,7 +46,7 @@ setTimeout(() => dummy(true), 500)
                 ref={ref}
             >
                 <Wishlist.Template type="test">
-                    <TestCell />
+                    <TestCell report={report} />
                 </Wishlist.Template>
             </Wishlist.Component>
 

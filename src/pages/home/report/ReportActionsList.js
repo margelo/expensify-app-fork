@@ -165,6 +165,7 @@ class ReportActionsList extends React.Component {
                     initialNumToRender={this.calculateInitialNumToRender()}
                     onEndReached={this.props.loadMoreChats}
                     onEndReachedThreshold={0.75}
+                    report={this.props.report}
                     ListFooterComponent={() => {
                         if (this.props.report.isLoadingMoreReportActions) {
                             return (

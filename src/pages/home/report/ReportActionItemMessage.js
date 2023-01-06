@@ -3,6 +3,7 @@ import {View} from 'react-native';
 import PropTypes from 'prop-types';
 import _ from 'underscore';
 import lodashGet from 'lodash/get';
+import {useTemplateValue, Wishlist} from 'react-native-wishlist';
 import styles from '../../../styles/styles';
 import ReportActionItemFragment from './ReportActionItemFragment';
 import reportActionPropTypes from './reportActionPropTypes';
@@ -26,21 +27,20 @@ const defaultProps = {
     style: [],
 };
 
-const ReportActionItemMessage = props => (
-    <View style={[styles.chatItemMessage, ...props.style]}>
-        {_.map(_.compact(props.action.previousMessage || props.action.message), (fragment, index) => (
-            <ReportActionItemFragment
-                key={`actionFragment-${props.action.reportActionID}-${index}`}
-                fragment={fragment}
-                isAttachment={props.action.isAttachment}
-                attachmentInfo={props.action.attachmentInfo}
-                source={lodashGet(props.action, 'originalMessage.source')}
-                loading={props.action.isLoading}
-                style={props.style}
-            />
-        ))}
-    </View>
-);
+function ReportActionItemMessage() {
+    const message = useTemplateValue(action => action.previousMessage || action.message);
+
+    return (
+        <View style={[styles.chatItemMessage]}>
+
+            <Wishlist.Template type="report-action-item-fragment">
+                <ReportActionItemFragment />
+            </Wishlist.Template>
+
+            <Wishlist.ForEach items={message} template="report-action-item-fragment" />
+        </View>
+    );
+}
 
 ReportActionItemMessage.propTypes = propTypes;
 ReportActionItemMessage.defaultProps = defaultProps;

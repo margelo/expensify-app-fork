@@ -2,6 +2,7 @@ import React, {memo} from 'react';
 import {ActivityIndicator, View} from 'react-native';
 import PropTypes from 'prop-types';
 import Str from 'expensify-common/lib/str';
+import {useTemplateValue, Wishlist} from 'react-native-wishlist';
 import reportActionFragmentPropTypes from './reportActionFragmentPropTypes';
 import styles from '../../../styles/styles';
 import variables from '../../../styles/variables';
@@ -78,74 +79,41 @@ const defaultProps = {
     style: [],
 };
 
-const ReportActionItemFragment = (props) => {
-    switch (props.fragment.type) {
+/*
+key={`actionFragment-${props.action.reportActionID}-${index}`}
+fragment={fragment}
+isAttachment={props.action.isAttachment}
+attachmentInfo={props.action.attachmentInfo}
+source={lodashGet(props.action, 'originalMessage.source')}
+loading={props.action.isLoading}
+style={props.style}
+*/
+
+const ReportActionItemFragment = (p) => {
+    const t = 'COMMENT';
+
+    const text = useTemplateValue(f => f.text);
+
+    switch (t) {
         case 'COMMENT': {
-            // If this is an attachment placeholder, return the placeholder component
-            if (props.isAttachment && props.loading) {
-                return (
-                    Str.isImage(props.attachmentInfo.name)
-                        ? (
-                            <RenderHTML html={`<comment><img src="${props.attachmentInfo.source}" data-expensify-preview-modal-disabled="true"/></comment>`} />
-                        ) : (
-                            <View style={[styles.chatItemAttachmentPlaceholder]}>
-                                <ActivityIndicator
-                                    size="large"
-                                    color={themeColors.textSupporting}
-                                    style={[styles.flex1]}
-                                />
-                            </View>
-                        )
-                );
-            }
-            const {html, text} = props.fragment;
-
-            // If the only difference between fragment.text and fragment.html is <br /> tags
-            // we render it as text, not as html.
-            // This is done to render emojis with line breaks between them as text.
-            const differByLineBreaksOnly = Str.replaceAll(html, '<br />', '\n') === text;
-
-            // Only render HTML if we have html in the fragment
-            if (!differByLineBreaksOnly) {
-                const editedTag = props.fragment.isEdited ? '<edited></edited>' : '';
-                const htmlContent = html + editedTag;
-                return (
-                    <RenderHTML
-                        html={props.source === 'email'
-                            ? `<email-comment>${htmlContent}</email-comment>`
-                            : `<comment>${htmlContent}</comment>`}
-                    />
-                );
-            }
             return (
-                <Text
+                <Wishlist.Text
                     family="EMOJI_TEXT_FONT"
-                    selectable={!canUseTouchScreen() || !props.isSmallScreenWidth}
-                    style={[EmojiUtils.containsOnlyEmojis(text) ? styles.onlyEmojisText : undefined, styles.ltr, ...props.style]}
+                    selectable={!canUseTouchScreen()}
+                    style={[styles.ltr, ...p.style]}
                 >
-                    {StyleUtils.convertToLTR(Str.htmlDecode(text))}
-                    {props.fragment.isEdited && (
+                    {text}
+                    {/* {props.fragment.isEdited && (
                     <Text
                         fontSize={variables.fontSizeSmall}
                         color={themeColors.textSupporting}
                     >
                         {` ${props.translate('reportActionCompose.edited')}`}
                     </Text>
-                    )}
-                </Text>
+                    )} */}
+                </Wishlist.Text>
             );
         }
-        case 'TEXT':
-            return (
-                <Tooltip text={props.tooltipText}>
-                    <Text
-                        numberOfLines={props.isSingleLine ? 1 : undefined}
-                        style={[styles.chatItemMessageHeaderSender]}
-                    >
-                        {Str.htmlDecode(props.fragment.text)}
-                    </Text>
-                </Tooltip>
-            );
         case 'LINK':
             return <Text>LINK</Text>;
         case 'INTEGRATION_COMMENT':

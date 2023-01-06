@@ -1,8 +1,9 @@
-import React from 'react';
+import React, {useCallback} from 'react';
 import {View, Pressable} from 'react-native';
 import PropTypes from 'prop-types';
 import _ from 'underscore';
 import Str from 'expensify-common/lib/str';
+import {useTemplateValue, Wishlist} from 'react-native-wishlist';
 import reportActionPropTypes from './reportActionPropTypes';
 import ReportActionItemFragment from './ReportActionItemFragment';
 import styles from '../../../styles/styles';
@@ -49,56 +50,45 @@ const showUserDetails = (email) => {
 };
 
 const ReportActionItemSingle = (props) => {
-    const {avatar, displayName, login} = props.personalDetails[props.action.actorEmail] || {};
-    const avatarUrl = props.action.automatic
-        ? `${CONST.CLOUDFRONT_URL}/images/icons/concierge_2019.svg`
+    // const avatarUrl = props.action.automatic
+    //     ? `${CONST.CLOUDFRONT_URL}/images/icons/concierge_2019.svg`
 
-        // Use avatar in personalDetails if we have one then fallback to avatar provided by the action
-        : (avatar || props.action.avatar);
+    //     // Use avatar in personalDetails if we have one then fallback to avatar provided by the action
+    //     : (avatar || props.action.avatar);
 
-    // Since the display name for a report action message is delivered with the report history as an array of fragments
-    // we'll need to take the displayName from personal details and have it be in the same format for now. Eventually,
-    // we should stop referring to the report history items entirely for this information.
-    const personArray = displayName
-        ? [{type: 'TEXT', text: Str.isSMSLogin(login) ? props.toLocalPhone(displayName) : displayName}]
-        : props.action.person;
+    const personArray = useTemplateValue(action => [{type: 'TEXT', text: 'Marc'}]);
 
     return (
         <View style={props.wrapperStyles}>
-            <Pressable
+            <Wishlist.Pressable
                 style={styles.alignSelfStart}
                 onPressIn={ControlSelection.block}
                 onPressOut={ControlSelection.unblock}
-                onPress={() => showUserDetails(props.action.actorEmail)}
+                onPress={props.onUserPressed}
             >
-                <Tooltip text={props.action.actorEmail}>
+                {/* <Tooltip text={props.action.actorEmail}>
                     <Avatar
                         containerStyles={[styles.actionAvatar]}
                         source={avatarUrl}
                     />
-                </Tooltip>
-            </Pressable>
+                </Tooltip> */}
+            </Wishlist.Pressable>
             <View style={[styles.chatItemRight]}>
                 {props.showHeader ? (
                     <View style={[styles.chatItemMessageHeader]}>
-                        <Pressable
+                        <Wishlist.Pressable
                             style={[styles.flexShrink1]}
                             onPressIn={ControlSelection.block}
                             onPressOut={ControlSelection.unblock}
-                            onPress={() => showUserDetails(props.action.actorEmail)}
+                            onPress={props.onUserPressed}
                         >
-                            {_.map(personArray, (fragment, index) => (
-                                <ReportActionItemFragment
-                                    key={`person-${props.action.reportActionID}-${index}`}
-                                    fragment={fragment}
-                                    tooltipText={props.action.actorEmail}
-                                    isAttachment={props.action.isAttachment}
-                                    isLoading={props.action.isLoading}
-                                    isSingleLine
-                                />
-                            ))}
-                        </Pressable>
-                        <ReportActionItemDate created={props.action.created} />
+                            <Wishlist.Template type="report-action-item-fragment-person">
+                                <ReportActionItemFragment tooltipText="TODO" isSingleLine />
+                            </Wishlist.Template>
+
+                            <Wishlist.ForEach items={personArray} template="report-action-item-fragment-person" />
+                        </Wishlist.Pressable>
+                        {/* <ReportActionItemDate created={props.action.created} /> */}
                     </View>
                 ) : null}
                 {props.children}
