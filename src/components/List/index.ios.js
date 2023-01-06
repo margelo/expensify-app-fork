@@ -34,14 +34,17 @@ export default function List({data, report, ...props}) {
             d.key = prefix + d.reportActionID
         })
 
-        ref.current?.update((dataCopy) => {
-            'worklet'
+        setTimeout(() => {
 
-            // just update data - big re-render.
-            for (const d of data) {
-                dataCopy.set(prefix + d.reportActionID, d)
-            }
-        })
+            ref.current?.update((dataCopy) => {
+                'worklet'
+
+                // just update data - big re-render.
+                for (const d of data) {
+                    dataCopy.set(prefix + d.reportActionID, d)
+                }
+            })
+        }, 500)
     }, [prefix, data])
 
 
