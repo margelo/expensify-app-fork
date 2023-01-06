@@ -1,6 +1,7 @@
 /* eslint-disable */
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState, useMemo} from 'react';
 import {StyleSheet, View} from 'react-native';
+import { useIMGElementProps } from 'react-native-render-html';
 import {useTemplateValue, Wishlist} from 'react-native-wishlist';
 import ReportActionItem from '../../pages/home/report/ReportActionItem'
 
@@ -27,21 +28,26 @@ export default function List({data, report, ...props}) {
     const ref = useRef();
 
     useEffect(() => {
-        ref.current?.update((dataCopy) => {
-            'worklet'
-
-            // just update data - big re-render.
-            for (const i of data) {
-                dataCopy.set(i.key, i)
-            }
-        })
+        setTimeout(() => {
+            ref.current?.update((dataCopy) => {
+                'worklet'
+    
+                // just update data - big re-render.
+                for (const i of data) {
+                    dataCopy.set(i.key, i)
+                }
+            })
+        }, 5000);
+        
     }, [data])
 
 
     data.map((d) => console.log(d))
 
-    const preparedData = data.map(it => ({type: 'test', key: it.reportActionID, ...it})); // only for testing
-
+    const [key, preparedData] = useMemo(() => { 
+        const preparedData = data.map(it => ({type: 'test', key: it.reportActionID, ...it})); // only for testing
+        return [`${Math.random()}`, preparedData]; 
+    }, [data]);
 
     const [,dummy] = useState(false)
     useEffect(() => {
@@ -56,6 +62,7 @@ return () => clearInterval(i)
                 initialIndex={preparedData.length - 1} // aka inverted
                 initialData={preparedData}
                 ref={ref}
+                key={key}
             >
                 <Wishlist.Template type="test">
                     <TestCell report={report} />

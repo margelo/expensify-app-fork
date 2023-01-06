@@ -1,0 +1,97 @@
+diff --git a/node_modules/react-native-wishlist/.DS_Store b/node_modules/react-native-wishlist/.DS_Store
+new file mode 100644
+index 0000000..5172429
+Binary files /dev/null and b/node_modules/react-native-wishlist/.DS_Store differ
+diff --git a/node_modules/react-native-wishlist/ios/MGWishListComponent.mm b/node_modules/react-native-wishlist/ios/MGWishListComponent.mm
+index 488a593..fa355fc 100644
+--- a/node_modules/react-native-wishlist/ios/MGWishListComponent.mm
++++ b/node_modules/react-native-wishlist/ios/MGWishListComponent.mm
+@@ -48,6 +48,11 @@ - (instancetype)initWithFrame:(CGRect)frame
+   return self;
+ }
+ 
++- (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
++{
++    [super mountChildComponentView: childComponentView index:index];
++}
++
+ - (void)setInflatorId:(std::string)nextInflatorId
+ {
+   inflatorId = nextInflatorId;
+@@ -151,6 +156,7 @@ - (void)prepareForRecycle
+ {
+   _sharedState.reset();
+   _orchestrator = nil;
++    alreadyRendered = NO;
+   [super prepareForRecycle];
+ }
+ 
+diff --git a/node_modules/react-native-wishlist/ios/Orchestrator/MGScrollViewOrchestrator.mm b/node_modules/react-native-wishlist/ios/Orchestrator/MGScrollViewOrchestrator.mm
+index 44889c8..5b82ce7 100644
+--- a/node_modules/react-native-wishlist/ios/Orchestrator/MGScrollViewOrchestrator.mm
++++ b/node_modules/react-native-wishlist/ios/Orchestrator/MGScrollViewOrchestrator.mm
+@@ -293,7 +293,7 @@ - (void)registerWishlistBinding
+           }));
+ 
+   wishlists.setProperty(rt, _wishlistId.c_str(), binding);
+-  NSLog(@"registered binding for wishlistId: %@", [NSString stringWithUTF8String:_wishlistId.c_str()]);
++  NSLog(@"oooo registered binding for wishlistId: %@", [NSString stringWithUTF8String:_wishlistId.c_str()]);
+ }
+ 
+ - (void)unregisterWishlistBinding
+diff --git a/node_modules/react-native-wishlist/src/InflatorRepository.ts b/node_modules/react-native-wishlist/src/InflatorRepository.ts
+index c8a2c1c..a4aa68b 100644
+--- a/node_modules/react-native-wishlist/src/InflatorRepository.ts
++++ b/node_modules/react-native-wishlist/src/InflatorRepository.ts
+@@ -68,6 +68,8 @@ const maybeInit = () => {
+     createRunInWishlistFn(() => {
+       'worklet';
+ 
++      _log('oooo initialized InflatorRepository!!!!!!!');
++
+       const registry = new Map<string, InflateMethod>();
+       const mappings = new Map<
+         string,
+diff --git a/node_modules/react-native-wishlist/src/OrchestratorBinding.ts b/node_modules/react-native-wishlist/src/OrchestratorBinding.ts
+index d03d6d4..c0ea6a7 100644
+--- a/node_modules/react-native-wishlist/src/OrchestratorBinding.ts
++++ b/node_modules/react-native-wishlist/src/OrchestratorBinding.ts
+@@ -15,9 +15,11 @@ export interface ViewportObserver {
+ export function useScheduleSyncUp(wishlistId: string) {
+   return () => {
+     'worklet';
++    _log(`oooo trying to get scheduleSyncUp for ${wishlistId}`);
+     const scheduleSyncUp = global.wishlists[wishlistId]
+       .scheduleSyncUp as any as () => void;
+ 
++
+     return scheduleSyncUp();
+   };
+ }
+diff --git a/node_modules/react-native-wishlist/src/Wishlist.tsx b/node_modules/react-native-wishlist/src/Wishlist.tsx
+index be5a508..78b7cf6 100644
+--- a/node_modules/react-native-wishlist/src/Wishlist.tsx
++++ b/node_modules/react-native-wishlist/src/Wishlist.tsx
+@@ -75,10 +75,13 @@ function ComponentBase<T extends BaseItem>(
+   const nativeWishlist = useRef(null); // TODO type it properly
+   const wishlistId = useRef<string | null>(null);
+   if (!wishlistId.current) {
++    
+     wishlistId.current = generateId();
++    console.log('oooo new WishlistInstance ', wishlistId.current);
+   }
+ 
+   const data = useInternalWishlistData<T>(wishlistId.current, initialData);
++  console.log('oooo wishlistId', wishlistId.current);
+ 
+   useImperativeHandle(
+     ref,
+@@ -153,6 +156,8 @@ function ComponentBase<T extends BaseItem>(
+         data().length(),
+       );
+ 
++      _log(`oooo value: ${value}`)
++      _log(`oooo valuetype: ${value.type}`)
+       const item = pool.getComponent(value.type);
+       if (!item) {
+         return undefined;
