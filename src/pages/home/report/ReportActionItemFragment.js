@@ -100,7 +100,7 @@ const ReportActionItemFragment = (p) => {
                 <Wishlist.Text
                     family="EMOJI_TEXT_FONT"
                     selectable={!canUseTouchScreen()}
-                    style={[styles.ltr, ...p.style]}
+                    style={[styles.ltr, {color: 'red'}, ...p.style]}
                 >
                     {text}
                     {/* {props.fragment.isEdited && (

@@ -64,8 +64,6 @@ const ReportActionItemSingle = (props) => {
         <View style={props.wrapperStyles}>
             <Wishlist.Pressable
                 style={styles.alignSelfStart}
-                onPressIn={ControlSelection.block}
-                onPressOut={ControlSelection.unblock}
                 onPress={props.onUserPressed}
             >
                 <Wishlist.Image style={styles.actionAvatar} source={{uri: avatarUrl}} />
