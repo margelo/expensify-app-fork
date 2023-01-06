@@ -20,6 +20,8 @@ import CONST from '../../../CONST';
 import * as StyleUtils from '../../../styles/StyleUtils';
 import reportPropTypes from '../../reportPropTypes';
 import networkPropTypes from '../../../components/networkPropTypes';
+import Performance from '../../../libs/Performance';
+import isE2ETestSession from '../../../libs/E2E/isE2ETestSession';
 
 const propTypes = {
     /** Position of the "New" line marker */
@@ -68,6 +70,7 @@ class ReportActionsList extends React.Component {
         super(props);
         this.renderItem = this.renderItem.bind(this);
         this.keyExtractor = this.keyExtractor.bind(this);
+        this.performanceMarkOptimisticRenderedItems = this.performanceMarkOptimisticRenderedItems.bind(this);
 
         this.state = {
             fadeInAnimation: new Animated.Value(0),
@@ -79,12 +82,14 @@ class ReportActionsList extends React.Component {
         this.fadeIn();
     }
 
-    fadeIn() {
-        Animated.timing(this.state.fadeInAnimation, {
-            toValue: 1,
-            duration: 100,
-            useNativeDriver: true,
-        }).start();
+    performanceMarkOptimisticRenderedItems = ({viewableItems}) => {
+        viewableItems.forEach(({item, isViewable}) => {
+            if (!isViewable || item.pendingAction !== CONST.RED_BRICK_ROAD_PENDING_ACTION.ADD) {
+                return;
+            }
+
+            Performance.markEnd(`${CONST.TIMING.SEND_ACTION}.${item.reportActionID}`);
+        });
     }
 
     /**
@@ -98,6 +103,14 @@ class ReportActionsList extends React.Component {
         const availableHeight = this.props.windowHeight
             - (CONST.CHAT_FOOTER_MIN_HEIGHT + variables.contentHeaderHeight);
         return Math.ceil(availableHeight / minimumReportActionHeight);
+    }
+
+    fadeIn() {
+        Animated.timing(this.state.fadeInAnimation, {
+            toValue: 1,
+            duration: 100,
+            useNativeDriver: true,
+        }).start();
     }
 
     /**
@@ -196,6 +209,7 @@ class ReportActionsList extends React.Component {
                     }}
                     onScroll={this.props.onScroll}
                     extraData={extraData}
+                    onViewableItemsChanged={isE2ETestSession() && this.performanceMarkOptimisticRenderedItems}
                 />
             </Animated.View>
         );

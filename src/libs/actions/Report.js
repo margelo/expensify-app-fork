@@ -174,6 +174,8 @@ function unsubscribeFromReportChannel(reportID) {
  * @param {String} reportID
  * @param {String} [text]
  * @param {Object} [file]
+ *
+ * @return {String} The reportActionID
  */
 function addActions(reportID, text = '', file) {
     let reportCommentText = '';
@@ -266,6 +268,8 @@ function addActions(reportID, text = '', file) {
     API.write(commandName, parameters, {
         optimisticData,
     });
+
+    return parameters.reportActionID;
 }
 
 /**
@@ -285,9 +289,10 @@ function addAttachment(reportID, file, text = '') {
  *
  * @param {String} reportID
  * @param {String} text
+ * @return {String} The reportActionID
  */
 function addComment(reportID, text) {
-    addActions(reportID, text);
+    return addActions(reportID, text);
 }
 
 /**

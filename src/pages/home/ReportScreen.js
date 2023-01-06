@@ -33,6 +33,7 @@ import withLocalize from '../../components/withLocalize';
 import reportPropTypes from '../reportPropTypes';
 import FullPageNotFoundView from '../../components/BlockingViews/FullPageNotFoundView';
 import ReportHeaderSkeletonView from '../../components/ReportHeaderSkeletonView';
+import Performance from '../../libs/Performance';
 
 const propTypes = {
     /** Navigation route context info provided by react navigation */
@@ -143,7 +144,8 @@ class ReportScreen extends React.Component {
      * @param {String} text
      */
     onSubmitComment(text) {
-        Report.addComment(getReportID(this.props.route), text);
+        const reportActionID = Report.addComment(getReportID(this.props.route), text);
+        Performance.markStart(`${CONST.TIMING.SEND_ACTION}.${reportActionID}`);
     }
 
     /**
