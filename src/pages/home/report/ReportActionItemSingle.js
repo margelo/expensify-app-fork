@@ -56,6 +56,8 @@ const ReportActionItemSingle = (props) => {
 
     const avatarUrl = useTemplateValue(action => action.avatar);
 
+    const timestamp = useTemplateValue(action => '1h ago');
+
     return (
         <View style={props.wrapperStyles}>
             <Wishlist.Pressable
@@ -85,7 +87,11 @@ const ReportActionItemSingle = (props) => {
 
                             <Wishlist.ForEach items={personArray} template="report-action-item-fragment-person" />
                         </Wishlist.Pressable>
-                        {/* <ReportActionItemDate created={props.action.created} /> */}
+
+                        <Wishlist.Text style={[{marginLeft: 5}, styles.chatItemMessageHeaderTimestamp]}>
+                            {timestamp}
+                        </Wishlist.Text>
+                        {/* TODO: Use that instead of the above placeholder: <ReportActionItemDate created={props.action.created} /> */}
                     </View>
                 ) : null}
                 {props.children}
