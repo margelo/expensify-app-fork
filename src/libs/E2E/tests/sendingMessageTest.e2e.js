@@ -30,8 +30,10 @@ const test = () => {
         // Wait before trying to send message to get the screen rendered
         setTimeout(() => {
             const reportActionID = Report.addComment(reportID, 'Hello world!');
+            const perfID = `${CONST.TIMING.SEND_ACTION}.${reportActionID}`;
+            Performance.markStart(perfID);
             Performance.subscribeToMeasurements((entry) => {
-                if (entry.name !== `${CONST.TIMING.SEND_ACTION}.${reportActionID}`) {
+                if (entry.name !== perfID) {
                     return;
                 }
 
@@ -41,7 +43,7 @@ const test = () => {
                     duration: entry.duration,
                 }).then(E2EClient.submitTestDone);
             });
-        }, 10_000);
+        }, 10000);
     });
 };
 
