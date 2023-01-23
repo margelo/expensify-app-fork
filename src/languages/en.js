@@ -195,6 +195,7 @@ export default {
         expand: 'Expand',
     },
     reportActionContextMenu: {
+        addReaction: 'Add reaction',
         copyToClipboard: 'Copy to clipboard',
         copied: 'Copied!',
         copyLink: 'Copy link',

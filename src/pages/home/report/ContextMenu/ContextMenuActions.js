@@ -35,6 +35,24 @@ const CONTEXT_MENU_TYPES = {
 // A list of all the context actions in this menu.
 export default [
     {
+        textTranslateKey: 'reportActionContextMenu.addReaction',
+        icon: Expensicons.Emoji,
+        onPress: (closePopover, {reportID, reportAction}) => {
+            const addReaction = () => {
+                Report.toggleReaction('die.drei99@yahoo.de', reportID, reportAction, '👍');
+            };
+
+            if (closePopover) {
+                hideContextMenu(false, closePopover);
+                return;
+            }
+
+            addReaction();
+        },
+        shouldShow: () => true,
+        getDescription: () => {},
+    },
+    {
         textTranslateKey: 'common.download',
         icon: Expensicons.Download,
         successTextTranslateKey: 'common.download',
