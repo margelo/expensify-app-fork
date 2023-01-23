@@ -281,14 +281,19 @@ function getEmojiReactionBubbleStyle(isHovered, hasUserReacted) {
     if (hasUserReacted) {
         return {backgroundColor: '#003C73'};
     }
+    if (isHovered) {
+        return {backgroundColor: themeColors.buttonHoveredBG};
+    }
 }
 
-function getEmojiReactionTextStyle(isHovered, hasUserReacted) {
+function getEmojiReactionTextStyle(hasUserReacted) {
     if (hasUserReacted) {
         return {
             color: themeColors.link,
         };
     }
+
+    return {};
 }
 
 /**

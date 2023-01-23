@@ -13,12 +13,15 @@ const propTypes = {
 };
 
 const EmojiReactionBubble = props => (
-    <Pressable style={[styles.emojiReactionBubble, StyleUtils.getEmojiReactionBubbleStyle(false, props.hasUserReacted)]} onPress={props.onPress}>
+    <Pressable
+        style={({hovered}) => [styles.emojiReactionBubble, StyleUtils.getEmojiReactionBubbleStyle(hovered, props.hasUserReacted)]}
+        onPress={props.onPress}
+    >
         <Text style={styles.emojiReactionText}>
             {props.emojiCode}
             {' '}
         </Text>
-        <Text style={[styles.reactionCounterText, StyleUtils.getEmojiReactionTextStyle(false, props.hasUserReacted)]}>
+        <Text style={[styles.reactionCounterText, StyleUtils.getEmojiReactionTextStyle(props.hasUserReacted)]}>
             {props.count}
         </Text>
     </Pressable>
