@@ -2879,13 +2879,15 @@ const styles = {
     },
 
     emojiReactionBubble: {
-        paddingVertical: 8,
-        paddingHorizontal: 4,
+        paddingVertical: 5,
+        paddingHorizontal: 12,
         borderRadius: 28,
         backgroundColor: themeColors.border,
         alignItems: 'center',
         justifyContent: 'center',
         flexDirection: 'row',
+        alignSelf: 'flex-start',
+        marginTop: 8,
     },
 
     emojiReactionText: {
