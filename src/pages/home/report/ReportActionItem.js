@@ -209,7 +209,7 @@ class ReportActionItem extends Component {
                     const reactionCount = reaction.senders.length;
                     if (reactionCount === 0) { return null; }
 
-                    const hasUserReacted = _.find(reaction.senders, reactor => reactor.login === this.props.currentUserPersonalDetails.login);
+                    const hasUserReacted = _.find(reaction.senders, reactor => reactor.login === this.props.currentUserPersonalDetails.login) != null;
                     return (
                         <EmojiReactionBubble
                             key={emojiName}

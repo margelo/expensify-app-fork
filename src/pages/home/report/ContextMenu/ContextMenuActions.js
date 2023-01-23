@@ -43,7 +43,7 @@ export default [
             };
 
             if (closePopover) {
-                hideContextMenu(false, closePopover);
+                hideContextMenu(false, addReaction);
                 return;
             }
 
