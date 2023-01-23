@@ -554,9 +554,9 @@ describe('actions/Report', () => {
                 expect(resultAction.message[0].reactions).toEqual(expect.objectContaining({
                     [EMOJI_NAME]: expect.objectContaining({
                         emoji: EMOJI_CODE,
-                        senders: expect.objectContaining({
-                            [TEST_USER_LOGIN]: expect.any(Number),
-                        }),
+                        senders: expect.arrayContaining([
+                            expect.objectContaining({login: TEST_USER_LOGIN}),
+                        ]),
                         createdAt: expect.any(Number),
                     }),
                 }));
@@ -569,7 +569,16 @@ describe('actions/Report', () => {
                 // Expect that the reaction is removed
                 const resultAction = _.first(_.values(reportActions));
 
-                expect(resultAction.message[0].reactions).toEqual({});
+                expect(resultAction.message[0].reactions).toEqual(expect.objectContaining({
+                    [EMOJI_NAME]: expect.objectContaining({
+                        emoji: EMOJI_CODE,
+                        senders: [],
+
+                        // As there aren't any senders we expect createdAt to got set to
+                        // null, indicating that this reaction is "removed"
+                        createdAt: null,
+                    }),
+                }));
             });
     });
 });

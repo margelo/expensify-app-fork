@@ -898,20 +898,25 @@ function toggleReaction(login, reportID, originalReportAction, reaction) {
     if (!reactionObject) {
         reactionObject = {
             emoji: reaction,
-            senders: {},
+            senders: [],
             createdAt: Date.now(),
         };
     }
 
-    const isReacted = _.keys(reactionObject.senders).includes(login);
-    reactionObject.senders = isReacted ? _.omit(reactionObject.senders, login) : {...reactionObject.senders, [login]: Date.now()};
+    const isReacted = _.find(reactionObject.senders, sender => sender.login === login) != null;
+    reactionObject.senders = isReacted
+        ? _.filter(reactionObject.senders, sender => sender.login !== login)
+        : [...reactionObject.senders, {login}];
 
-    let updatedReactions = {
+    const updatedReactions = {
         ...message.reactions,
     };
-    if (_.keys(reactionObject.senders).length === 0) {
-        updatedReactions = _.omit(updatedReactions, emojiForReaction.name);
+    if (reactionObject.senders.length === 0) {
+        updatedReactions[emojiForReaction.name].createdAt = null;
     } else {
+        if (!reactionObject.createdAt) {
+            reactionObject.createdAt = Date.now();
+        }
         updatedReactions[emojiForReaction.name] = reactionObject;
     }
 
@@ -930,8 +935,7 @@ function toggleReaction(login, reportID, originalReportAction, reaction) {
 
     const optimisticData = [
         {
-            // We need to use SET as we are eventually removing data from the reactions object
-            onyxMethod: CONST.ONYX.METHOD.SET,
+            onyxMethod: CONST.ONYX.METHOD.MERGE,
             key: `${ONYXKEYS.COLLECTION.REPORT_ACTIONS}${reportID}`,
             value: optimisticReportActions,
         },
