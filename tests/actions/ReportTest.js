@@ -510,4 +510,66 @@ describe('actions/Report', () => {
                 expect(Report.showReportActionNotification).toBeCalledWith(String(REPORT_ID), REPORT_ACTION);
             });
     });
+
+    it('should properly toggle reactions on a message', () => {
+        global.fetch = TestHelper.getGlobalFetchMock();
+
+        const TEST_USER_ACCOUNT_ID = 1;
+        const TEST_USER_LOGIN = 'test@test.com';
+        const REPORT_ID = 1;
+        const EMOJI_CODE = '👍';
+        const EMOJI_NAME = '+1';
+
+        let reportActions;
+
+        Onyx.connect({
+            key: `${ONYXKEYS.COLLECTION.REPORT_ACTIONS}${REPORT_ID}`,
+            callback: val => reportActions = val,
+        });
+
+        // Set up Onyx with some test user data
+        return TestHelper.signInWithTestUser(TEST_USER_ACCOUNT_ID, TEST_USER_LOGIN)
+            .then(() => {
+                User.subscribeToUserEvents();
+                return waitForPromisesToResolve();
+            })
+            .then(() => TestHelper.setPersonalDetails(TEST_USER_LOGIN, TEST_USER_ACCOUNT_ID))
+            .then(() => {
+                // This is a fire and forget response, but once it completes we should be able to verify that we
+                // have an "optimistic" report action in Onyx.
+                Report.addComment(REPORT_ID, 'Testing a comment');
+                return waitForPromisesToResolve();
+            })
+            .then(() => {
+                const resultAction = _.first(_.values(reportActions));
+
+                // Add a reaction to the comment
+                Report.toggleReaction(TEST_USER_LOGIN, REPORT_ID, resultAction, EMOJI_CODE);
+                return waitForPromisesToResolve();
+            })
+            .then(() => {
+                const resultAction = _.first(_.values(reportActions));
+
+                // Expect to have the reaction on the message
+                expect(resultAction.message[0].reactions).toEqual(expect.objectContaining({
+                    [EMOJI_NAME]: expect.objectContaining({
+                        emoji: EMOJI_CODE,
+                        senders: expect.objectContaining({
+                            [TEST_USER_LOGIN]: expect.any(Number),
+                        }),
+                        createdAt: expect.any(Number),
+                    }),
+                }));
+
+                // Now we remove the reaction
+                Report.toggleReaction(TEST_USER_LOGIN, REPORT_ID, resultAction, EMOJI_CODE);
+                return waitForPromisesToResolve();
+            })
+            .then(() => {
+                // Expect that the reaction is removed
+                const resultAction = _.first(_.values(reportActions));
+
+                expect(resultAction.message[0].reactions).toEqual({});
+            });
+    });
 });

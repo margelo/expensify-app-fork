@@ -19,6 +19,7 @@ import * as ReportUtils from '../ReportUtils';
 import DateUtils from '../DateUtils';
 import * as ReportActionsUtils from '../ReportActionsUtils';
 import * as OptionsListUtils from '../OptionsListUtils';
+import emojis from '../../../assets/emojis';
 
 let currentUserEmail;
 let currentUserAccountID;
@@ -885,6 +886,91 @@ function editReportComment(reportID, originalReportAction, textForNewComment) {
     API.write('UpdateComment', parameters, {optimisticData, successData, failureData});
 }
 
+function toggleReaction(login, reportID, originalReportAction, reaction) {
+    const emojiForReaction = _.find(emojis, emoji => emoji.code === reaction || (emoji.types && emoji.types.includes(reaction)));
+    if (!emojiForReaction) {
+        Log.warn('Emoji not found', {reaction});
+        return;
+    }
+
+    const message = originalReportAction.message[0];
+    let reactionObject = message.reactions && message.reactions[emojiForReaction.name];
+    if (!reactionObject) {
+        reactionObject = {
+            emoji: reaction,
+            senders: {},
+            createdAt: Date.now(),
+        };
+    }
+
+    const isReacted = _.keys(reactionObject.senders).includes(login);
+    reactionObject.senders = isReacted ? _.omit(reactionObject.senders, login) : {...reactionObject.senders, [login]: Date.now()};
+
+    let updatedReactions = {
+        ...message.reactions,
+    };
+    if (_.keys(reactionObject.senders).length === 0) {
+        updatedReactions = _.omit(updatedReactions, emojiForReaction.name);
+    } else {
+        updatedReactions[emojiForReaction.name] = reactionObject;
+    }
+
+    // Optimistically update the reportAction with the reaction
+    const sequenceNumber = originalReportAction.sequenceNumber;
+    const optimisticReportActions = {
+        [sequenceNumber]: {
+            ...originalReportAction,
+            pendingAction: CONST.RED_BRICK_ROAD_PENDING_ACTION.UPDATE,
+            message: [{
+                ...message,
+                reactions: updatedReactions,
+            }],
+        },
+    };
+
+    const optimisticData = [
+        {
+            // We need to use SET as we are eventually removing data from the reactions object
+            onyxMethod: CONST.ONYX.METHOD.SET,
+            key: `${ONYXKEYS.COLLECTION.REPORT_ACTIONS}${reportID}`,
+            value: optimisticReportActions,
+        },
+    ];
+
+    const failureData = [
+        {
+            onyxMethod: CONST.ONYX.METHOD.MERGE,
+            key: `${ONYXKEYS.COLLECTION.REPORT_ACTIONS}${reportID}`,
+            value: {
+                [sequenceNumber]: {
+                    ...originalReportAction,
+                    pendingAction: null,
+                },
+            },
+        },
+    ];
+
+    const successData = [
+        {
+            onyxMethod: CONST.ONYX.METHOD.MERGE,
+            key: `${ONYXKEYS.COLLECTION.REPORT_ACTIONS}${reportID}`,
+            value: {
+                [sequenceNumber]: {
+                    pendingAction: null,
+                },
+            },
+        },
+    ];
+
+    const parameters = {
+        reportID,
+        sequenceNumber,
+        reportActionID: originalReportAction.reportActionID,
+        reaction,
+    };
+    API.write('ToggleReaction', parameters, {optimisticData, successData, failureData});
+}
+
 /**
  * Saves the draft for a comment report action. This will put the comment into "edit mode"
  *
@@ -1194,4 +1280,5 @@ export {
     getMaxSequenceNumber,
     subscribeToNewActionEvent,
     showReportActionNotification,
+    toggleReaction,
 };
