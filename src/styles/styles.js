@@ -2877,6 +2877,15 @@ const styles = {
         paddingTop: 80,
         paddingBottom: 45,
     },
+
+    emojiReactionBubble: {
+        paddingVertical: 8,
+        paddingHorizontal: 4,
+        backgroundColor: themeColors.border,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 28,
+    },
 };
 
 export default styles;

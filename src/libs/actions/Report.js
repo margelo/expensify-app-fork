@@ -924,7 +924,6 @@ function toggleReaction(login, reportID, originalReportAction, reaction) {
     const sequenceNumber = originalReportAction.sequenceNumber;
     const optimisticReportActions = {
         [sequenceNumber]: {
-            ...originalReportAction,
             pendingAction: CONST.RED_BRICK_ROAD_PENDING_ACTION.UPDATE,
             message: [{
                 ...message,

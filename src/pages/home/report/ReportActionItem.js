@@ -1,7 +1,7 @@
 import _ from 'underscore';
 import lodashGet from 'lodash/get';
 import React, {Component} from 'react';
-import {View} from 'react-native';
+import {Button, View} from 'react-native';
 import PropTypes from 'prop-types';
 import CONST from '../../../CONST';
 import ONYXKEYS from '../../../ONYXKEYS';
@@ -32,9 +32,11 @@ import * as User from '../../../libs/actions/User';
 import * as ReportUtils from '../../../libs/ReportUtils';
 import OfflineWithFeedback from '../../../components/OfflineWithFeedback';
 import * as ReportActions from '../../../libs/actions/ReportActions';
+import * as Report from '../../../libs/actions/Report';
 import reportPropTypes from '../../reportPropTypes';
 import {ShowContextMenuContext} from '../../../components/ShowContextMenuContext';
 import focusTextInputAfterAnimation from '../../../libs/focusTextInputAfterAnimation';
+import EmojiReactionBubble from './Reactions/EmojiReactionBubble';
 
 const propTypes = {
     /** Report for this action */
@@ -184,7 +186,28 @@ class ReportActionItem extends Component {
                 </ShowContextMenuContext.Provider>
             );
         }
-        return children;
+
+        // TODO: define that outside?
+        const onPress = () => {
+            Report.toggleReaction('die.drei99@yahoo.de', this.props.report.reportID, this.props.action, '👍');
+        };
+
+        const reactions = this.props.action.message && this.props.action.message[0] && this.props.action.message[0].reactions;
+
+        // Wrap content with emoji action
+        return (
+            <>
+                {children}
+                <Button title="Add test emoji" onPress={onPress} />
+                {_.map(reactions, (reaction, emojiName) => {
+                    const reactionCount = reaction.senders.length;
+                    if (reactionCount === 0) { return null; }
+                    return (
+                        <EmojiReactionBubble key={emojiName} emojiCode={reaction.emoji} count={reactionCount} />
+                    );
+                })}
+            </>
+        );
     }
 
     render() {
