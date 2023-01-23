@@ -36,6 +36,7 @@ import reportPropTypes from '../../reportPropTypes';
 import {ShowContextMenuContext} from '../../../components/ShowContextMenuContext';
 import focusTextInputAfterAnimation from '../../../libs/focusTextInputAfterAnimation';
 import EmojiReactionBubble from './Reactions/EmojiReactionBubble';
+import * as Report from '../../../libs/actions/Report';
 
 const propTypes = {
     /** Report for this action */
@@ -80,6 +81,7 @@ class ReportActionItem extends Component {
         this.checkIfContextMenuActive = this.checkIfContextMenuActive.bind(this);
         this.showPopover = this.showPopover.bind(this);
         this.renderItemContent = this.renderItemContent.bind(this);
+        this.removeReaction = this.removeReaction.bind(this);
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -135,6 +137,10 @@ class ReportActionItem extends Component {
             undefined,
             this.checkIfContextMenuActive,
         );
+    }
+
+    removeReaction(emojiCode) {
+        Report.toggleReaction('die.drei99@yahoo.de', this.props.report.reportID, this.props.action, emojiCode);
     }
 
     /**
@@ -196,7 +202,7 @@ class ReportActionItem extends Component {
                     const reactionCount = reaction.senders.length;
                     if (reactionCount === 0) { return null; }
                     return (
-                        <EmojiReactionBubble key={emojiName} emojiCode={reaction.emoji} count={reactionCount} />
+                        <EmojiReactionBubble key={emojiName} emojiCode={reaction.emoji} count={reactionCount} onPress={() => this.removeReaction(reaction.emoji)} />
                     );
                 })}
             </>
