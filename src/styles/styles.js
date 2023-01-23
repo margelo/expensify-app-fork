@@ -2881,10 +2881,20 @@ const styles = {
     emojiReactionBubble: {
         paddingVertical: 8,
         paddingHorizontal: 4,
+        borderRadius: 28,
         backgroundColor: themeColors.border,
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: 28,
+        flexDirection: 'row',
+    },
+
+    emojiReactionText: {
+        fontSize: 13,
+    },
+    reactionCounterText: {
+        fontSize: 11,
+        fontWeight: 'bold',
+        color: themeColors.textLight,
     },
 };
 

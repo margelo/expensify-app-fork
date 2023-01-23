@@ -277,6 +277,20 @@ function getButtonBackgroundColorStyle(buttonState = CONST.BUTTON_STATES.DEFAULT
     }
 }
 
+function getEmojiReactionBubbleStyle(isHovered, hasUserReacted) {
+    if (hasUserReacted) {
+        return {backgroundColor: '#003C73'};
+    }
+}
+
+function getEmojiReactionTextStyle(isHovered, hasUserReacted) {
+    if (hasUserReacted) {
+        return {
+            color: themeColors.link,
+        };
+    }
+}
+
 /**
  * Generate fill color of an icon based on its state.
  *
@@ -676,6 +690,8 @@ export {
     getBackgroundColorWithOpacityStyle,
     getBadgeColorStyle,
     getButtonBackgroundColorStyle,
+    getEmojiReactionBubbleStyle,
+    getEmojiReactionTextStyle,
     getIconFillColor,
     getAnimatedFABStyle,
     getWidthAndHeightStyle,

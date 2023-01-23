@@ -37,6 +37,10 @@ import {ShowContextMenuContext} from '../../../components/ShowContextMenuContext
 import focusTextInputAfterAnimation from '../../../libs/focusTextInputAfterAnimation';
 import EmojiReactionBubble from './Reactions/EmojiReactionBubble';
 import * as Report from '../../../libs/actions/Report';
+import withCurrentUserPersonalDetails, {
+    withCurrentUserPersonalDetailsDefaultProps,
+    withCurrentUserPersonalDetailsPropTypes,
+} from '../../../components/withCurrentUserPersonalDetails';
 
 const propTypes = {
     /** Report for this action */
@@ -64,11 +68,14 @@ const propTypes = {
     draftMessage: PropTypes.string,
 
     ...windowDimensionsPropTypes,
+    ...withCurrentUserPersonalDetailsPropTypes,
 };
 
 const defaultProps = {
     draftMessage: '',
     hasOutstandingIOU: false,
+
+    ...withCurrentUserPersonalDetailsDefaultProps,
 };
 
 class ReportActionItem extends Component {
@@ -201,8 +208,16 @@ class ReportActionItem extends Component {
                 {_.map(reactions, (reaction, emojiName) => {
                     const reactionCount = reaction.senders.length;
                     if (reactionCount === 0) { return null; }
+
+                    const hasUserReacted = _.find(reaction.senders, reactor => reactor.login === this.props.currentUserPersonalDetails.login);
                     return (
-                        <EmojiReactionBubble key={emojiName} emojiCode={reaction.emoji} count={reactionCount} onPress={() => this.removeReaction(reaction.emoji)} />
+                        <EmojiReactionBubble
+                            key={emojiName}
+                            count={reactionCount}
+                            emojiCode={reaction.emoji}
+                            hasUserReacted={hasUserReacted}
+                            onPress={() => this.removeReaction(reaction.emoji)}
+                        />
                     );
                 })}
             </>
@@ -296,6 +311,7 @@ ReportActionItem.defaultProps = defaultProps;
 
 export default compose(
     withWindowDimensions,
+    withCurrentUserPersonalDetails,
     withNetwork(),
     withBlockedFromConcierge({propName: 'blockedFromConcierge'}),
     withReportActionsDrafts({
