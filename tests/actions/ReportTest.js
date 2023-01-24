@@ -544,41 +544,36 @@ describe('actions/Report', () => {
                 const resultAction = _.first(_.values(reportActions));
 
                 // Add a reaction to the comment
-                Report.toggleReaction(TEST_USER_LOGIN, REPORT_ID, resultAction, EMOJI_CODE);
+                Report.addReaction(TEST_USER_LOGIN, REPORT_ID, resultAction, EMOJI_CODE);
                 return waitForPromisesToResolve();
             })
             .then(() => {
                 const resultAction = _.first(_.values(reportActions));
 
                 // Expect to have the reaction on the message
-                expect(resultAction.message[0].reactions).toEqual(expect.objectContaining({
-                    [EMOJI_NAME]: expect.objectContaining({
-                        emoji: EMOJI_CODE,
+                expect(resultAction.message[0].reactions).toEqual(expect.arrayContaining([
+                    expect.objectContaining({
+                        emoji: EMOJI_NAME,
                         senders: expect.arrayContaining([
                             expect.objectContaining({login: TEST_USER_LOGIN}),
                         ]),
-                        createdAt: expect.any(Number),
-                    }),
-                }));
+                    })]
+                ));
 
                 // Now we remove the reaction
-                Report.toggleReaction(TEST_USER_LOGIN, REPORT_ID, resultAction, EMOJI_CODE);
+                Report.removeReaction(TEST_USER_LOGIN, REPORT_ID, resultAction, EMOJI_CODE);
                 return waitForPromisesToResolve();
             })
             .then(() => {
                 // Expect that the reaction is removed
                 const resultAction = _.first(_.values(reportActions));
 
-                expect(resultAction.message[0].reactions).toEqual(expect.objectContaining({
-                    [EMOJI_NAME]: expect.objectContaining({
-                        emoji: EMOJI_CODE,
+                expect(resultAction.message[0].reactions).toEqual(expect.arrayContaining([
+                    expect.objectContaining({
+                        emoji: EMOJI_NAME,
                         senders: [],
-
-                        // As there aren't any senders we expect createdAt to got set to
-                        // null, indicating that this reaction is "removed"
-                        createdAt: null,
                     }),
-                }));
+                ]));
             });
     });
 });

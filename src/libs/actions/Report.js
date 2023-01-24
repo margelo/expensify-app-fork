@@ -800,6 +800,62 @@ const handleUserDeletedLinks = (newCommentText, originalHtml) => {
 };
 
 /**
+ * Internal function to help with updating the onyx state of a message of a report action.
+ * @param {Object} originalReportAction
+ * @param {Object} message
+ * @param {String} reportID
+ * @return {{failureData: Object, successData: Object, optimisticData: Object}}
+ */
+function optimisticallyUpdateReportAction(originalReportAction, message, reportID) {
+    const sequenceNumber = originalReportAction.sequenceNumber;
+    const optimisticReportActions = {
+        [sequenceNumber]: {
+            pendingAction: CONST.RED_BRICK_ROAD_PENDING_ACTION.UPDATE,
+            message: [message],
+        },
+    };
+
+    const optimisticData = [
+        {
+            onyxMethod: CONST.ONYX.METHOD.MERGE,
+            key: `${ONYXKEYS.COLLECTION.REPORT_ACTIONS}${reportID}`,
+            value: optimisticReportActions,
+        },
+    ];
+
+    const failureData = [
+        {
+            onyxMethod: CONST.ONYX.METHOD.MERGE,
+            key: `${ONYXKEYS.COLLECTION.REPORT_ACTIONS}${reportID}`,
+            value: {
+                [sequenceNumber]: {
+                    ...originalReportAction,
+                    pendingAction: null,
+                },
+            },
+        },
+    ];
+
+    const successData = [
+        {
+            onyxMethod: CONST.ONYX.METHOD.MERGE,
+            key: `${ONYXKEYS.COLLECTION.REPORT_ACTIONS}${reportID}`,
+            value: {
+                [sequenceNumber]: {
+                    pendingAction: null,
+                },
+            },
+        },
+    ];
+
+    return {
+        optimisticData,
+        failureData,
+        successData,
+    };
+}
+
+/**
  * Saves a new message for a comment. Marks the comment as edited, which will be reflected in the UI.
  *
  * @param {String} reportID
@@ -830,148 +886,127 @@ function editReportComment(reportID, originalReportAction, textForNewComment) {
         return;
     }
 
-    // Optimistically update the reportAction with the new message
-    const sequenceNumber = originalReportAction.sequenceNumber;
-    const optimisticReportActions = {
-        [sequenceNumber]: {
-            pendingAction: CONST.RED_BRICK_ROAD_PENDING_ACTION.UPDATE,
-            message: [{
-                isEdited: true,
-                html: htmlForNewComment,
-                text: markdownForNewComment,
-                type: originalReportAction.message[0].type,
-            }],
-        },
+    const updatedMessage = {
+        isEdited: true,
+        html: htmlForNewComment,
+        text: markdownForNewComment,
+        type: originalReportAction.message[0].type,
     };
 
-    const optimisticData = [
-        {
-            onyxMethod: CONST.ONYX.METHOD.MERGE,
-            key: `${ONYXKEYS.COLLECTION.REPORT_ACTIONS}${reportID}`,
-            value: optimisticReportActions,
-        },
-    ];
-
-    const failureData = [
-        {
-            onyxMethod: CONST.ONYX.METHOD.MERGE,
-            key: `${ONYXKEYS.COLLECTION.REPORT_ACTIONS}${reportID}`,
-            value: {
-                [sequenceNumber]: {
-                    ...originalReportAction,
-                    pendingAction: null,
-                },
-            },
-        },
-    ];
-
-    const successData = [
-        {
-            onyxMethod: CONST.ONYX.METHOD.MERGE,
-            key: `${ONYXKEYS.COLLECTION.REPORT_ACTIONS}${reportID}`,
-            value: {
-                [sequenceNumber]: {
-                    pendingAction: null,
-                },
-            },
-        },
-    ];
+    const {
+        optimisticData,
+        failureData,
+        successData,
+    } = optimisticallyUpdateReportAction(originalReportAction, updatedMessage, reportID);
 
     const parameters = {
         reportID,
-        sequenceNumber,
         reportComment: htmlForNewComment,
+        sequenceNumber: originalReportAction.sequenceNumber,
         reportActionID: originalReportAction.reportActionID,
     };
     API.write('UpdateComment', parameters, {optimisticData, successData, failureData});
 }
 
-function toggleReaction(login, reportID, originalReportAction, reaction) {
-    const emojiForReaction = _.find(emojis, emoji => emoji.code === reaction || (emoji.types && emoji.types.includes(reaction)));
-    if (!emojiForReaction) {
-        Log.warn('Emoji not found', {reaction});
+function getEmojiForCode(emojiCode) {
+    return _.find(emojis, emoji => emoji.code === emojiCode || (emoji.types && emoji.types.includes(emojiCode)));
+}
+
+function hasLoginReacted(login, senders) {
+    return _.find(senders, sender => sender.login === login) != null;
+}
+
+function addReaction(login, reportID, originalReportAction, emojiCode) {
+    const emoji = getEmojiForCode(emojiCode);
+    if (!emoji) {
+        Log.warn('Emoji not found', {emojiCode});
         return;
     }
 
     const message = originalReportAction.message[0];
-    let reactionObject = message.reactions && message.reactions[emojiForReaction.name];
-    if (!reactionObject) {
+    let reactionObject = message.reactions && _.find(message.reactions, reaction => reaction.emoji === emoji.name);
+    const needToInsertReactionObject = !reactionObject;
+    if (needToInsertReactionObject) {
         reactionObject = {
-            emoji: reaction,
+            emoji: emoji.name,
             senders: [],
-            createdAt: Date.now(),
         };
     }
 
-    const isReacted = _.find(reactionObject.senders, sender => sender.login === login) != null;
-    reactionObject.senders = isReacted
-        ? _.filter(reactionObject.senders, sender => sender.login !== login)
-        : [...reactionObject.senders, {login}];
-
-    const updatedReactions = {
-        ...message.reactions,
-    };
-    if (reactionObject.senders.length === 0) {
-        updatedReactions[emojiForReaction.name].createdAt = null;
-    } else {
-        if (!reactionObject.createdAt) {
-            reactionObject.createdAt = Date.now();
-        }
-        updatedReactions[emojiForReaction.name] = reactionObject;
+    const isReacted = hasLoginReacted(login, reactionObject.senders);
+    if (isReacted) {
+        return;
     }
 
-    // Optimistically update the reportAction with the reaction
-    const sequenceNumber = originalReportAction.sequenceNumber;
-    const optimisticReportActions = {
-        [sequenceNumber]: {
-            pendingAction: CONST.RED_BRICK_ROAD_PENDING_ACTION.UPDATE,
-            message: [{
-                ...message,
-                reactions: updatedReactions,
-            }],
-        },
+    reactionObject.senders = [...reactionObject.senders, {login}];
+    let updatedReactions = [...(message.reactions || [])];
+    if (needToInsertReactionObject) {
+        updatedReactions = [...updatedReactions, reactionObject];
+    } else {
+        updatedReactions = _.map(updatedReactions, reaction => (reaction.emoji === emoji.name ? reactionObject : reaction));
+    }
+
+    const updatedMessage = {
+        ...message,
+        reactions: updatedReactions,
     };
 
-    const optimisticData = [
-        {
-            onyxMethod: CONST.ONYX.METHOD.MERGE,
-            key: `${ONYXKEYS.COLLECTION.REPORT_ACTIONS}${reportID}`,
-            value: optimisticReportActions,
-        },
-    ];
-
-    const failureData = [
-        {
-            onyxMethod: CONST.ONYX.METHOD.MERGE,
-            key: `${ONYXKEYS.COLLECTION.REPORT_ACTIONS}${reportID}`,
-            value: {
-                [sequenceNumber]: {
-                    ...originalReportAction,
-                    pendingAction: null,
-                },
-            },
-        },
-    ];
-
-    const successData = [
-        {
-            onyxMethod: CONST.ONYX.METHOD.MERGE,
-            key: `${ONYXKEYS.COLLECTION.REPORT_ACTIONS}${reportID}`,
-            value: {
-                [sequenceNumber]: {
-                    pendingAction: null,
-                },
-            },
-        },
-    ];
+    // Optimistically update the reportAction with the reaction
+    const {
+        optimisticData,
+        failureData,
+        successData,
+    } = optimisticallyUpdateReportAction(originalReportAction, updatedMessage, reportID);
 
     const parameters = {
         reportID,
-        sequenceNumber,
+        reaction: emoji.name,
+        sequenceNumber: originalReportAction.sequenceNumber,
         reportActionID: originalReportAction.reportActionID,
-        reaction,
     };
-    API.write('ToggleReaction', parameters, {optimisticData, successData, failureData});
+    API.write('AddReaction', parameters, {optimisticData, successData, failureData});
+}
+
+function removeReaction(login, reportID, originalReportAction, emojiCode) {
+    const emoji = getEmojiForCode(emojiCode);
+    if (!emoji) {
+        Log.warn('Emoji not found', {emojiCode});
+        return;
+    }
+
+    const message = originalReportAction.message[0];
+    const reactionObject = message.reactions && _.find(message.reactions, reaction => reaction.emoji === emoji.name);
+    if (!reactionObject) {
+        return;
+    }
+
+    const isReacted = hasLoginReacted(login, reactionObject.senders);
+    if (!isReacted) {
+        return;
+    }
+
+    reactionObject.senders = _.filter(reactionObject.senders, sender => sender.login !== login);
+    const updatedReactions = _.map(message.reactions, reaction => (reaction.emoji === emoji.name ? reactionObject : reaction));
+
+    const updatedMessage = {
+        ...message,
+        reactions: updatedReactions,
+    };
+
+    // Optimistically update the reportAction with the reaction
+    const {
+        optimisticData,
+        failureData,
+        successData,
+    } = optimisticallyUpdateReportAction(originalReportAction, updatedMessage, reportID);
+
+    const parameters = {
+        reportID,
+        sequenceNumber: originalReportAction.sequenceNumber,
+        reportActionID: originalReportAction.reportActionID,
+        reaction: emojiCode,
+    };
+    API.write('RemoveReaction', parameters, {optimisticData, successData, failureData});
 }
 
 /**
@@ -1283,5 +1318,6 @@ export {
     getMaxSequenceNumber,
     subscribeToNewActionEvent,
     showReportActionNotification,
-    toggleReaction,
+    addReaction,
+    removeReaction,
 };
