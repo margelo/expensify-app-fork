@@ -4,6 +4,7 @@ import {Pressable} from 'react-native';
 import styles from '../../../../styles/styles';
 import Text from '../../../../components/Text';
 import * as StyleUtils from '../../../../styles/StyleUtils';
+import ReactionTooltip from './ReactionTooltip';
 
 const propTypes = {
     emojiCodes: PropTypes.arrayOf(PropTypes.string).isRequired,
@@ -14,19 +15,21 @@ const propTypes = {
 };
 
 const EmojiReactionBubble = props => (
-    <Pressable
-        style={({hovered}) => [styles.emojiReactionBubble, StyleUtils.getEmojiReactionBubbleStyle(hovered, props.hasUserReacted)]}
-        onPress={props.onPress}
-        onLongPress={props.onLongPress}
-    >
-        <Text style={styles.emojiReactionText}>
-            {props.emojiCodes.join('')}
-            {' '}
-        </Text>
-        <Text style={[styles.reactionCounterText, StyleUtils.getEmojiReactionTextStyle(props.hasUserReacted)]}>
-            {props.count}
-        </Text>
-    </Pressable>
+    <ReactionTooltip>
+        <Pressable
+            style={({hovered}) => [styles.emojiReactionBubble, StyleUtils.getEmojiReactionBubbleStyle(hovered, props.hasUserReacted)]}
+            onPress={props.onPress}
+            onLongPress={props.onLongPress}
+        >
+            <Text style={styles.emojiReactionText}>
+                {props.emojiCodes.join('')}
+                {' '}
+            </Text>
+            <Text style={[styles.reactionCounterText, StyleUtils.getEmojiReactionTextStyle(props.hasUserReacted)]}>
+                {props.count}
+            </Text>
+        </Pressable>
+    </ReactionTooltip>
 );
 
 EmojiReactionBubble.propTypes = propTypes;
