@@ -38,13 +38,27 @@ export default [
     {
         textTranslateKey: 'reportActionContextMenu.addReaction',
         icon: Expensicons.Emoji,
-        onPress: (closePopover, {reportID, reportAction}, menuItemRef, manuallyClose) => {
-            EmojiPickerAction.showEmojiPicker(() => {
-                manuallyClose();
-            }, (emoji) => {
-                Report.addReaction(reportID, reportAction, emoji);
-                manuallyClose();
-            }, menuItemRef);
+        onPress: (closePopover, {reportID, reportAction}, menuItemRef, manuallyCloseContextMenu) => {
+            const action = () => {
+                EmojiPickerAction.showEmojiPicker(
+                    manuallyCloseContextMenu,
+                    (emoji) => {
+                        Report.addReaction(reportID, reportAction, emoji);
+                        manuallyCloseContextMenu();
+                    },
+
+                    // On mobile the menuItemRef will be null
+                    menuItemRef || ReportActionComposeFocusManager.composerRef.current,
+                );
+            };
+
+            if (closePopover) {
+                hideContextMenu(false, () => {
+                    requestAnimationFrame(action);
+                });
+            } else {
+                action();
+            }
         },
         shouldShow: () => true,
         getDescription: () => {},
