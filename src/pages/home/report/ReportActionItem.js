@@ -147,7 +147,7 @@ class ReportActionItem extends Component {
     }
 
     removeReaction(emojiCode) {
-        Report.toggleReaction('die.drei99@yahoo.de', this.props.report.reportID, this.props.action, emojiCode);
+        Report.removeReaction('die.drei99@yahoo.de', this.props.report.reportID, this.props.action, emojiCode);
     }
 
     /**
@@ -205,16 +205,16 @@ class ReportActionItem extends Component {
         return (
             <>
                 {children}
-                {_.map(reactions, (reaction, emojiName) => {
+                {_.map(reactions, (reaction) => {
                     const reactionCount = reaction.senders.length;
                     if (reactionCount === 0) { return null; }
 
                     const hasUserReacted = _.find(reaction.senders, reactor => reactor.login === this.props.currentUserPersonalDetails.login) != null;
                     return (
                         <EmojiReactionBubble
-                            key={emojiName}
+                            key={reaction.emoji}
                             count={reactionCount}
-                            emojiCode={reaction.emoji}
+                            emojiCodes={reaction.emojiCodes}
                             hasUserReacted={hasUserReacted}
                             onPress={() => this.removeReaction(reaction.emoji)}
                         />

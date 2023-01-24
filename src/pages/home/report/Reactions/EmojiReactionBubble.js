@@ -6,7 +6,7 @@ import Text from '../../../../components/Text';
 import * as StyleUtils from '../../../../styles/StyleUtils';
 
 const propTypes = {
-    emojiCode: PropTypes.string.isRequired,
+    emojiCodes: PropTypes.arrayOf(PropTypes.string).isRequired,
     count: PropTypes.number.isRequired,
     onPress: PropTypes.func.isRequired,
     hasUserReacted: PropTypes.bool.isRequired,
@@ -18,7 +18,7 @@ const EmojiReactionBubble = props => (
         onPress={props.onPress}
     >
         <Text style={styles.emojiReactionText}>
-            {props.emojiCode}
+            {props.emojiCodes.join('')}
             {' '}
         </Text>
         <Text style={[styles.reactionCounterText, StyleUtils.getEmojiReactionTextStyle(props.hasUserReacted)]}>

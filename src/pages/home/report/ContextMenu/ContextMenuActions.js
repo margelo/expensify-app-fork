@@ -39,7 +39,7 @@ export default [
         icon: Expensicons.Emoji,
         onPress: (closePopover, {reportID, reportAction}) => {
             const addReaction = () => {
-                Report.toggleReaction('die.drei99@yahoo.de', reportID, reportAction, '👍');
+                Report.addReaction('die.drei99@yahoo.de', reportID, reportAction, '👍');
             };
 
             if (closePopover) {
