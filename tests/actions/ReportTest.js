@@ -636,7 +636,7 @@ describe('actions/Report', () => {
                 const resultAction = _.first(_.values(reportActions));
 
                 // Add a reaction to the comment
-                Report.addReaction(TEST_USER_LOGIN, REPORT_ID, resultAction, EMOJI_CODE);
+                Report.addReaction(REPORT_ID, resultAction, EMOJI_CODE);
                 return waitForPromisesToResolve();
             })
             .then(() => {
@@ -654,7 +654,7 @@ describe('actions/Report', () => {
                     ));
 
                 // Now we remove the reaction
-                Report.removeReaction(TEST_USER_LOGIN, REPORT_ID, resultAction, EMOJI_CODE);
+                Report.removeReaction(REPORT_ID, resultAction, EMOJI_CODE);
                 return waitForPromisesToResolve();
             })
             .then(() => {
@@ -673,10 +673,10 @@ describe('actions/Report', () => {
                 const resultAction = _.first(_.values(reportActions));
 
                 // Add the reaction to the comment, but two times with different variations
-                Report.addReaction(TEST_USER_LOGIN, REPORT_ID, resultAction, EMOJI_CODE);
+                Report.addReaction(REPORT_ID, resultAction, EMOJI_CODE);
                 return waitForPromisesToResolve()
                     .then(() => {
-                        Report.addReaction(TEST_USER_LOGIN, REPORT_ID, resultAction, EMOJI_CODE_VARIATION);
+                        Report.addReaction(REPORT_ID, resultAction, EMOJI_CODE_VARIATION);
                         return waitForPromisesToResolve();
                     })
                     .then(() => {
@@ -703,7 +703,7 @@ describe('actions/Report', () => {
                             ));
 
                         // Now we remove the reaction, and expect that both variations are removed
-                        Report.removeReaction(TEST_USER_LOGIN, REPORT_ID, resultAction, EMOJI_CODE);
+                        Report.removeReaction(REPORT_ID, resultAction, EMOJI_CODE);
                         return waitForPromisesToResolve();
                     })
                     .then(() => {

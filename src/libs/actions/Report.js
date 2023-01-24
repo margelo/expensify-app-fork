@@ -916,7 +916,7 @@ function hasLoginReacted(login, senders, emojiCode) {
     return _.find(senders, sender => sender.login === login && sender.emojiCode === emojiCode) != null;
 }
 
-function addReaction(login, reportID, originalReportAction, emojiCode) {
+function addReaction(reportID, originalReportAction, emojiCode) {
     const emoji = getEmojiForCode(emojiCode);
     if (!emoji) {
         Log.warn('Emoji not found', {emojiCode});
@@ -934,12 +934,12 @@ function addReaction(login, reportID, originalReportAction, emojiCode) {
         };
     }
 
-    const isReacted = hasLoginReacted(login, reactionObject.senders, emojiCode);
+    const isReacted = hasLoginReacted(currentUserEmail, reactionObject.senders, emojiCode);
     if (isReacted) {
         return;
     }
 
-    reactionObject.senders = [...reactionObject.senders, {login, emojiCode}];
+    reactionObject.senders = [...reactionObject.senders, {login: currentUserEmail, emojiCode}];
     if (!reactionObject.emojiCodes.includes(emojiCode)) {
         reactionObject.emojiCodes = [...reactionObject.emojiCodes, emojiCode];
     }
@@ -978,7 +978,7 @@ function addReaction(login, reportID, originalReportAction, emojiCode) {
     // API.write('AddReaction', parameters, {optimisticData, successData, failureData});
 }
 
-function removeReaction(login, reportID, originalReportAction, emojiCode) {
+function removeReaction(reportID, originalReportAction, emojiCode) {
     const emoji = getEmojiForCode(emojiCode);
     if (!emoji) {
         Log.warn('Emoji not found', {emojiCode});
@@ -991,15 +991,15 @@ function removeReaction(login, reportID, originalReportAction, emojiCode) {
         return;
     }
 
-    const isReacted = hasLoginReacted(login, reactionObject.senders, emojiCode);
+    const isReacted = hasLoginReacted(currentUserEmail, reactionObject.senders, emojiCode);
     if (!isReacted) {
         return;
     }
 
     // Get emojiCodes that are only unique in the sense that the user added them and no one else
-    reactionObject.emojiCodes = _.filter(reactionObject.emojiCodes, code => !hasLoginReacted(login, reactionObject.senders, code));
+    reactionObject.emojiCodes = _.filter(reactionObject.emojiCodes, code => !hasLoginReacted(currentUserEmail, reactionObject.senders, code));
 
-    reactionObject.senders = _.filter(reactionObject.senders, sender => sender.login !== login);
+    reactionObject.senders = _.filter(reactionObject.senders, sender => sender.login !== currentUserEmail);
     const updatedReactions = _.map(message.reactions, reaction => (reaction.emoji === emoji.name ? reactionObject : reaction));
 
     const updatedMessage = {

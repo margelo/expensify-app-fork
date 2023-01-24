@@ -147,7 +147,7 @@ class ReportActionItem extends Component {
     }
 
     removeReaction(emojiCode) {
-        Report.removeReaction('die.drei99@yahoo.de', this.props.report.reportID, this.props.action, emojiCode);
+        Report.removeReaction(this.props.report.reportID, this.props.action, emojiCode);
     }
 
     /**

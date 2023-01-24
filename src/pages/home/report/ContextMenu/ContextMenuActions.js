@@ -42,8 +42,7 @@ export default [
             EmojiPickerAction.showEmojiPicker(() => {
                 manuallyClose();
             }, (emoji) => {
-                // TODO: get the login dynamically
-                Report.addReaction('die.drei99@yahoo.de', reportID, reportAction, emoji);
+                Report.addReaction(reportID, reportAction, emoji);
                 manuallyClose();
             }, menuItemRef);
         },
