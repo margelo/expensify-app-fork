@@ -39,10 +39,15 @@ const defaultProps = {
     isArchivedRoom: false,
     ...GenericReportActionContextMenuDefaultProps,
 };
+
 class BaseReportActionContextMenu extends React.Component {
     constructor(props) {
         super(props);
         this.wrapperStyle = getReportActionContextMenuStyles(this.props.isMini);
+
+        this.state = {
+            keepOpen: false,
+        };
     }
 
     render() {
@@ -55,28 +60,44 @@ class BaseReportActionContextMenu extends React.Component {
             this.props.isChronosReport,
         );
 
-        return this.props.isVisible && (
+        return (this.props.isVisible || this.state.keepOpen) && (
             <View style={this.wrapperStyle}>
-                {_.map(_.filter(ContextMenuActions, shouldShowFilter), contextAction => (
-                    <ContextMenuItem
-                        icon={contextAction.icon}
-                        text={this.props.translate(contextAction.textTranslateKey)}
-                        successIcon={contextAction.successIcon}
-                        successText={contextAction.successTextTranslateKey
-                            ? this.props.translate(contextAction.successTextTranslateKey)
-                            : undefined}
-                        isMini={this.props.isMini}
-                        key={contextAction.textTranslateKey}
-                        onPress={() => contextAction.onPress(!this.props.isMini, {
-                            reportAction: this.props.reportAction,
-                            reportID: this.props.reportID,
-                            draftMessage: this.props.draftMessage,
-                            selection: this.props.selection,
-                        })}
-                        description={contextAction.getDescription(this.props.selection, this.props.isSmallScreenWidth)}
-                        autoReset={contextAction.autoReset}
-                    />
-                ))}
+                {_.map(_.filter(ContextMenuActions, shouldShowFilter), contextAction => {
+                    let ref = null;
+                    return (
+                        <ContextMenuItem
+                            innerRef={(el) => ref = el}
+                            icon={contextAction.icon}
+                            text={this.props.translate(contextAction.textTranslateKey)}
+                            successIcon={contextAction.successIcon}
+                            successText={contextAction.successTextTranslateKey
+                                ? this.props.translate(contextAction.successTextTranslateKey)
+                                : undefined}
+                            isMini={this.props.isMini}
+                            key={contextAction.textTranslateKey}
+                            onPress={() => {
+                                const onPress = contextAction.onPress(
+                                    !this.props.isMini,
+                                    {
+                                        reportAction: this.props.reportAction,
+                                        reportID: this.props.reportID,
+                                        draftMessage: this.props.draftMessage,
+                                        selection: this.props.selection,
+                                    },
+                                    ref,
+                                    () => this.setState({keepOpen: false}));
+
+                                if (contextAction.keepOpen) {
+                                    this.setState({keepOpen: true}, onPress);
+                                } else {
+                                    onPress();
+                                }
+                            }}
+                            description={contextAction.getDescription(this.props.selection, this.props.isSmallScreenWidth)}
+                            autoReset={contextAction.autoReset}
+                        />
+                    );
+                })}
             </View>
         );
     }

@@ -15,6 +15,7 @@ import addEncryptedAuthTokenToURL from '../../../../libs/addEncryptedAuthTokenTo
 import * as ContextMenuUtils from './ContextMenuUtils';
 import * as Environment from '../../../../libs/Environment/Environment';
 import Permissions from '../../../../libs/Permissions';
+import * as EmojiPickerAction from '../../../../libs/actions/EmojiPickerAction';
 
 /**
  * Gets the HTML version of the message in an action.
@@ -37,22 +38,18 @@ export default [
     {
         textTranslateKey: 'reportActionContextMenu.addReaction',
         icon: Expensicons.Emoji,
-        onPress: (closePopover, {reportID, reportAction}) => {
-            const addReaction = () => {
-                const thumbsUpVariations = ['👍', '👍🏻', '👍🏼', '👍🏽', '👍🏾', '👍🏿'];
-                const emoji = _.sample(thumbsUpVariations);
+        onPress: (closePopover, {reportID, reportAction}, menuItemRef, manuallyClose) => {
+            EmojiPickerAction.showEmojiPicker(() => {
+                manuallyClose();
+            }, (emoji) => {
+                // TODO: get the login dynamically
                 Report.addReaction('die.drei99@yahoo.de', reportID, reportAction, emoji);
-            };
-
-            if (closePopover) {
-                hideContextMenu(false, addReaction);
-                return;
-            }
-
-            addReaction();
+                manuallyClose();
+            }, menuItemRef);
         },
         shouldShow: () => true,
         getDescription: () => {},
+        keepOpen: true,
     },
     {
         textTranslateKey: 'common.download',

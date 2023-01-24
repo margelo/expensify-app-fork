@@ -2888,6 +2888,7 @@ const styles = {
         flexDirection: 'row',
         alignSelf: 'flex-start',
         marginTop: 8,
+        marginRight: 4,
     },
 
     emojiReactionText: {

@@ -77,6 +77,7 @@ class ContextMenuItem extends Component {
                 ? (
                     <Tooltip text={text}>
                         <Pressable
+                            ref={this.props.innerRef}
                             focusable
                             accessibilityLabel={text}
                             onPress={this.triggerPressAndUpdateSuccess}

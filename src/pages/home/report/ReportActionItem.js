@@ -205,21 +205,23 @@ class ReportActionItem extends Component {
         return (
             <>
                 {children}
-                {_.map(reactions, (reaction) => {
-                    const reactionCount = reaction.senders.length;
-                    if (reactionCount === 0) { return null; }
+                <View style={styles.flexRow}>
+                    {_.map(reactions, (reaction) => {
+                        const reactionCount = reaction.senders.length;
+                        if (reactionCount === 0) { return null; }
 
-                    const hasUserReacted = _.find(reaction.senders, reactor => reactor.login === this.props.currentUserPersonalDetails.login) != null;
-                    return (
-                        <EmojiReactionBubble
-                            key={reaction.emoji}
-                            count={reactionCount}
-                            emojiCodes={reaction.emojiCodes}
-                            hasUserReacted={hasUserReacted}
-                            onPress={() => this.removeReaction(reaction.emojiCodes[0])}
-                        />
-                    );
-                })}
+                        const hasUserReacted = _.find(reaction.senders, reactor => reactor.login === this.props.currentUserPersonalDetails.login) != null;
+                        return (
+                            <EmojiReactionBubble
+                                key={reaction.emoji}
+                                count={reactionCount}
+                                emojiCodes={reaction.emojiCodes}
+                                hasUserReacted={hasUserReacted}
+                                onPress={() => this.removeReaction(reaction.emojiCodes[0])}
+                            />
+                        );
+                    })}
+                </View>
             </>
         );
     }
