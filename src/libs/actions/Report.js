@@ -929,7 +929,7 @@ function addReaction(login, reportID, originalReportAction, emojiCode) {
     if (needToInsertReactionObject) {
         reactionObject = {
             emoji: emoji.name,
-            emojiCodes: [emoji.code],
+            emojiCodes: [emojiCode],
             senders: [],
         };
     }

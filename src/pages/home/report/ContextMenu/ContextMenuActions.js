@@ -39,7 +39,9 @@ export default [
         icon: Expensicons.Emoji,
         onPress: (closePopover, {reportID, reportAction}) => {
             const addReaction = () => {
-                Report.addReaction('die.drei99@yahoo.de', reportID, reportAction, '👍');
+                const thumbsUpVariations = ['👍', '👍🏻', '👍🏼', '👍🏽', '👍🏾', '👍🏿'];
+                const emoji = _.sample(thumbsUpVariations);
+                Report.addReaction('die.drei99@yahoo.de', reportID, reportAction, emoji);
             };
 
             if (closePopover) {
