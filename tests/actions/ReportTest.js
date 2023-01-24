@@ -714,6 +714,7 @@ describe('actions/Report', () => {
                             .toEqual(expect.arrayContaining([
                                 expect.objectContaining({
                                     emoji: EMOJI_NAME,
+                                    emojiCodes: [],
                                     senders: [],
                                 }),
                             ]));

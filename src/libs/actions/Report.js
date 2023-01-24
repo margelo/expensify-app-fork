@@ -959,17 +959,23 @@ function addReaction(login, reportID, originalReportAction, emojiCode) {
     // Optimistically update the reportAction with the reaction
     const {
         optimisticData,
-        failureData,
+
+        // failureData,
         successData,
     } = optimisticallyUpdateReportAction(originalReportAction, updatedMessage, reportID);
 
-    const parameters = {
-        reportID,
-        reaction: emoji.name,
-        sequenceNumber: originalReportAction.sequenceNumber,
-        reportActionID: originalReportAction.reportActionID,
-    };
-    API.write('AddReaction', parameters, {optimisticData, successData, failureData});
+    // TODO: only make the API call once its live
+    Onyx.update(optimisticData).then(() => {
+        Onyx.update(successData);
+    });
+
+    // const parameters = {
+    //     reportID,
+    //     reaction: emoji.name,
+    //     sequenceNumber: originalReportAction.sequenceNumber,
+    //     reportActionID: originalReportAction.reportActionID,
+    // };
+    // API.write('AddReaction', parameters, {optimisticData, successData, failureData});
 }
 
 function removeReaction(login, reportID, originalReportAction, emojiCode) {
@@ -990,6 +996,9 @@ function removeReaction(login, reportID, originalReportAction, emojiCode) {
         return;
     }
 
+    // Get emojiCodes that are only unique in the sense that the user added them and no one else
+    reactionObject.emojiCodes = _.filter(reactionObject.emojiCodes, code => !hasLoginReacted(login, reactionObject.senders, code));
+
     reactionObject.senders = _.filter(reactionObject.senders, sender => sender.login !== login);
     const updatedReactions = _.map(message.reactions, reaction => (reaction.emoji === emoji.name ? reactionObject : reaction));
 
@@ -1001,17 +1010,23 @@ function removeReaction(login, reportID, originalReportAction, emojiCode) {
     // Optimistically update the reportAction with the reaction
     const {
         optimisticData,
-        failureData,
         successData,
+
+        // failureData,
     } = optimisticallyUpdateReportAction(originalReportAction, updatedMessage, reportID);
 
-    const parameters = {
-        reportID,
-        sequenceNumber: originalReportAction.sequenceNumber,
-        reportActionID: originalReportAction.reportActionID,
-        reaction: emojiCode,
-    };
-    API.write('RemoveReaction', parameters, {optimisticData, successData, failureData});
+    // TODO: only make the API call once its live
+    Onyx.update(optimisticData).then(() => {
+        Onyx.update(successData);
+    });
+
+    // const parameters = {
+    //     reportID,
+    //     sequenceNumber: originalReportAction.sequenceNumber,
+    //     reportActionID: originalReportAction.reportActionID,
+    //     reaction: emojiCode,
+    // };
+    // API.write('RemoveReaction', parameters, {optimisticData, successData, failureData});
 }
 
 /**

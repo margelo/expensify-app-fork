@@ -216,7 +216,7 @@ class ReportActionItem extends Component {
                             count={reactionCount}
                             emojiCodes={reaction.emojiCodes}
                             hasUserReacted={hasUserReacted}
-                            onPress={() => this.removeReaction(reaction.emoji)}
+                            onPress={() => this.removeReaction(reaction.emojiCodes[0])}
                         />
                     );
                 })}
