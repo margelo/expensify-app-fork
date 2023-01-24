@@ -912,8 +912,8 @@ function getEmojiForCode(emojiCode) {
     return _.find(emojis, emoji => emoji.code === emojiCode || (emoji.types && emoji.types.includes(emojiCode)));
 }
 
-function hasLoginReacted(login, senders) {
-    return _.find(senders, sender => sender.login === login) != null;
+function hasLoginReacted(login, senders, emojiCode) {
+    return _.find(senders, sender => sender.login === login && sender.emojiCode === emojiCode) != null;
 }
 
 function addReaction(login, reportID, originalReportAction, emojiCode) {
@@ -929,16 +929,21 @@ function addReaction(login, reportID, originalReportAction, emojiCode) {
     if (needToInsertReactionObject) {
         reactionObject = {
             emoji: emoji.name,
+            emojiCodes: [emoji.code],
             senders: [],
         };
     }
 
-    const isReacted = hasLoginReacted(login, reactionObject.senders);
+    const isReacted = hasLoginReacted(login, reactionObject.senders, emojiCode);
     if (isReacted) {
         return;
     }
 
-    reactionObject.senders = [...reactionObject.senders, {login}];
+    reactionObject.senders = [...reactionObject.senders, {login, emojiCode}];
+    if (!reactionObject.emojiCodes.includes(emojiCode)) {
+        reactionObject.emojiCodes = [...reactionObject.emojiCodes, emojiCode];
+    }
+
     let updatedReactions = [...(message.reactions || [])];
     if (needToInsertReactionObject) {
         updatedReactions = [...updatedReactions, reactionObject];
@@ -980,7 +985,7 @@ function removeReaction(login, reportID, originalReportAction, emojiCode) {
         return;
     }
 
-    const isReacted = hasLoginReacted(login, reactionObject.senders);
+    const isReacted = hasLoginReacted(login, reactionObject.senders, emojiCode);
     if (!isReacted) {
         return;
     }

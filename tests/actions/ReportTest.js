@@ -34,8 +34,10 @@ describe('actions/Report', () => {
         // channel already in a subscribed state. These methods are normally used to prevent
         // duplicated subscriptions, but we don't need them for this test so forcing them to
         // return false will make the testing less complex.
-        Pusher.isSubscribed = jest.fn().mockReturnValue(false);
-        Pusher.isAlreadySubscribing = jest.fn().mockReturnValue(false);
+        Pusher.isSubscribed = jest.fn()
+            .mockReturnValue(false);
+        Pusher.isAlreadySubscribing = jest.fn()
+            .mockReturnValue(false);
 
         // Connect to Pusher
         PusherConnectionManager.init();
@@ -47,11 +49,13 @@ describe('actions/Report', () => {
 
         Onyx.init({
             keys: ONYXKEYS,
-            registerStorageEventListener: () => {},
+            registerStorageEventListener: () => {
+            },
         });
     });
 
-    beforeEach(() => Onyx.clear().then(waitForPromisesToResolve));
+    beforeEach(() => Onyx.clear()
+        .then(waitForPromisesToResolve));
 
     afterEach(() => {
         // Unsubscribe from account channel after each test since we subscribe in the function
@@ -72,8 +76,16 @@ describe('actions/Report', () => {
             actorEmail: TEST_USER_LOGIN,
             automatic: false,
             avatar: 'https://d2k5nsl2zxldvw.cloudfront.net/images/avatars/avatar_3.png',
-            message: [{type: 'COMMENT', html: 'Testing a comment', text: 'Testing a comment'}],
-            person: [{type: 'TEXT', style: 'strong', text: 'Test User'}],
+            message: [{
+                type: 'COMMENT',
+                html: 'Testing a comment',
+                text: 'Testing a comment',
+            }],
+            person: [{
+                type: 'TEXT',
+                style: 'strong',
+                text: 'Test User',
+            }],
             sequenceNumber: ACTION_ID,
             shouldShow: true,
         };
@@ -104,9 +116,12 @@ describe('actions/Report', () => {
 
                 // Store the generated clientID so that we can send it with our mock Pusher update
                 clientID = resultAction.clientID;
-                expect(resultAction.message).toEqual(REPORT_ACTION.message);
-                expect(resultAction.person).toEqual(REPORT_ACTION.person);
-                expect(resultAction.pendingAction).toEqual(CONST.RED_BRICK_ROAD_PENDING_ACTION.ADD);
+                expect(resultAction.message)
+                    .toEqual(REPORT_ACTION.message);
+                expect(resultAction.person)
+                    .toEqual(REPORT_ACTION.person);
+                expect(resultAction.pendingAction)
+                    .toEqual(CONST.RED_BRICK_ROAD_PENDING_ACTION.ADD);
 
                 // We subscribed to the Pusher channel above and now we need to simulate a reportComment action
                 // Pusher event so we can verify that action was handled correctly and merged into the reportActions.
@@ -143,12 +158,15 @@ describe('actions/Report', () => {
             })
             .then(() => {
                 // Verify there is only one action and our optimistic comment has been removed
-                expect(_.size(reportActions)).toBe(1);
+                expect(_.size(reportActions))
+                    .toBe(1);
 
                 const resultAction = reportActions[ACTION_ID];
 
                 // Verify that our action is no longer in the loading state
-                expect(resultAction.pendingAction).not.toBeDefined();
+                expect(resultAction.pendingAction)
+                    .not
+                    .toBeDefined();
             });
     });
 
@@ -175,7 +193,8 @@ describe('actions/Report', () => {
             })
             .then(() => {
                 // Test that Onyx immediately updated the report pin state.
-                expect(reportIsPinned).toEqual(true);
+                expect(reportIsPinned)
+                    .toEqual(true);
             });
     });
 
@@ -200,7 +219,8 @@ describe('actions/Report', () => {
                 Report.addComment(REPORT_ID, 'Testing a comment');
 
                 // Then we should expect that there is on persisted request
-                expect(PersistedRequests.getAll().length).toBe(1);
+                expect(PersistedRequests.getAll().length)
+                    .toBe(1);
 
                 // When we wait for the queue to run
                 return waitForPromisesToResolve();
@@ -209,7 +229,8 @@ describe('actions/Report', () => {
                 // THEN only ONE call to AddComment will happen
                 const URL_ARGUMENT_INDEX = 0;
                 const addCommentCalls = _.filter(global.fetch.mock.calls, callArguments => callArguments[URL_ARGUMENT_INDEX].includes('AddComment'));
-                expect(addCommentCalls.length).toBe(1);
+                expect(addCommentCalls.length)
+                    .toBe(1);
             });
     });
 
@@ -234,7 +255,10 @@ describe('actions/Report', () => {
         const USER_2_LOGIN = 'different-user@test.com';
         const USER_2_ACCOUNT_ID = 2;
         const channel = Pusher.getChannel(`${CONST.PUSHER.PRIVATE_USER_CHANNEL_PREFIX}${USER_1_ACCOUNT_ID}${CONFIG.PUSHER.SUFFIX}`);
-        return Onyx.set(`${ONYXKEYS.COLLECTION.REPORT}${REPORT_ID}`, {reportName: 'Test', reportID: REPORT_ID})
+        return Onyx.set(`${ONYXKEYS.COLLECTION.REPORT}${REPORT_ID}`, {
+            reportName: 'Test',
+            reportID: REPORT_ID,
+        })
             .then(() => TestHelper.signInWithTestUser(USER_1_ACCOUNT_ID, USER_1_LOGIN))
             .then(() => {
                 // Given a test user that is subscribed to Pusher events
@@ -270,8 +294,16 @@ describe('actions/Report', () => {
                                 actorEmail: USER_2_LOGIN,
                                 automatic: false,
                                 avatar: 'https://d2k5nsl2zxldvw.cloudfront.net/images/avatars/avatar_3.png',
-                                message: [{type: 'COMMENT', html: 'Comment 1', text: 'Comment 1'}],
-                                person: [{type: 'TEXT', style: 'strong', text: 'Test User'}],
+                                message: [{
+                                    type: 'COMMENT',
+                                    html: 'Comment 1',
+                                    text: 'Comment 1',
+                                }],
+                                person: [{
+                                    type: 'TEXT',
+                                    style: 'strong',
+                                    text: 'Test User',
+                                }],
                                 sequenceNumber: 1,
                                 shouldShow: true,
                                 created: reportActionCreatedDate,
@@ -284,7 +316,8 @@ describe('actions/Report', () => {
             })
             .then(() => {
                 // Then the report will be unread
-                expect(ReportUtils.isUnread(report)).toBe(true);
+                expect(ReportUtils.isUnread(report))
+                    .toBe(true);
 
                 // When the user visits the report
                 currentTime = DateUtils.getDBTime();
@@ -293,8 +326,12 @@ describe('actions/Report', () => {
             })
             .then(() => {
                 // The report will be read
-                expect(ReportUtils.isUnread(report)).toBe(false);
-                expect(moment.utc(report.lastReadTime).valueOf()).toBeGreaterThanOrEqual(moment.utc(currentTime).valueOf());
+                expect(ReportUtils.isUnread(report))
+                    .toBe(false);
+                expect(moment.utc(report.lastReadTime)
+                    .valueOf())
+                    .toBeGreaterThanOrEqual(moment.utc(currentTime)
+                        .valueOf());
 
                 // When the user manually marks a message as "unread"
                 Report.markCommentAsUnread(REPORT_ID, reportActionCreatedDate);
@@ -302,8 +339,10 @@ describe('actions/Report', () => {
             })
             .then(() => {
                 // Then the report will be unread
-                expect(ReportUtils.isUnread(report)).toBe(true);
-                expect(report.lastReadTime).toBe(DateUtils.subtractMillisecondsFromDateTime(reportActionCreatedDate, 1));
+                expect(ReportUtils.isUnread(report))
+                    .toBe(true);
+                expect(report.lastReadTime)
+                    .toBe(DateUtils.subtractMillisecondsFromDateTime(reportActionCreatedDate, 1));
 
                 // When a new comment is added by the current user
                 currentTime = DateUtils.getDBTime();
@@ -312,9 +351,14 @@ describe('actions/Report', () => {
             })
             .then(() => {
                 // The report will be read and the lastReadTime updated
-                expect(ReportUtils.isUnread(report)).toBe(false);
-                expect(moment.utc(report.lastReadTime).valueOf()).toBeGreaterThanOrEqual(moment.utc(currentTime).valueOf());
-                expect(report.lastMessageText).toBe('Current User Comment 1');
+                expect(ReportUtils.isUnread(report))
+                    .toBe(false);
+                expect(moment.utc(report.lastReadTime)
+                    .valueOf())
+                    .toBeGreaterThanOrEqual(moment.utc(currentTime)
+                        .valueOf());
+                expect(report.lastMessageText)
+                    .toBe('Current User Comment 1');
 
                 // When another comment is added by the current user
                 currentTime = DateUtils.getDBTime();
@@ -323,9 +367,14 @@ describe('actions/Report', () => {
             })
             .then(() => {
                 // The report will be read and the lastReadTime updated
-                expect(ReportUtils.isUnread(report)).toBe(false);
-                expect(moment.utc(report.lastReadTime).valueOf()).toBeGreaterThanOrEqual(moment.utc(currentTime).valueOf());
-                expect(report.lastMessageText).toBe('Current User Comment 2');
+                expect(ReportUtils.isUnread(report))
+                    .toBe(false);
+                expect(moment.utc(report.lastReadTime)
+                    .valueOf())
+                    .toBeGreaterThanOrEqual(moment.utc(currentTime)
+                        .valueOf());
+                expect(report.lastMessageText)
+                    .toBe('Current User Comment 2');
 
                 // When another comment is added by the current user
                 currentTime = DateUtils.getDBTime();
@@ -334,9 +383,14 @@ describe('actions/Report', () => {
             })
             .then(() => {
                 // The report will be read and the lastReadTime updated
-                expect(ReportUtils.isUnread(report)).toBe(false);
-                expect(moment.utc(report.lastReadTime).valueOf()).toBeGreaterThanOrEqual(moment.utc(currentTime).valueOf());
-                expect(report.lastMessageText).toBe('Current User Comment 3');
+                expect(ReportUtils.isUnread(report))
+                    .toBe(false);
+                expect(moment.utc(report.lastReadTime)
+                    .valueOf())
+                    .toBeGreaterThanOrEqual(moment.utc(currentTime)
+                        .valueOf());
+                expect(report.lastMessageText)
+                    .toBe('Current User Comment 3');
 
                 const USER_1_BASE_ACTION = {
                     actionName: CONST.REPORT.ACTIONS.TYPE.ADDCOMMENT,
@@ -344,7 +398,11 @@ describe('actions/Report', () => {
                     actorEmail: USER_1_LOGIN,
                     automatic: false,
                     avatar: 'https://d2k5nsl2zxldvw.cloudfront.net/images/avatars/avatar_3.png',
-                    person: [{type: 'TEXT', style: 'strong', text: 'Test User'}],
+                    person: [{
+                        type: 'TEXT',
+                        style: 'strong',
+                        text: 'Test User',
+                    }],
                     shouldShow: true,
                     created: DateUtils.getDBTime(Date.now() - 3),
                     reportActionID: 'derp1',
@@ -359,21 +417,33 @@ describe('actions/Report', () => {
                         [_.toArray(reportActions)[3].clientID]: null,
                         2: {
                             ...USER_1_BASE_ACTION,
-                            message: [{type: 'COMMENT', html: 'Current User Comment 1', text: 'Current User Comment 1'}],
+                            message: [{
+                                type: 'COMMENT',
+                                html: 'Current User Comment 1',
+                                text: 'Current User Comment 1',
+                            }],
                             created: DateUtils.getDBTime(Date.now() - 2),
                             sequenceNumber: 2,
                             reportActionID: 'derp2',
                         },
                         3: {
                             ...USER_1_BASE_ACTION,
-                            message: [{type: 'COMMENT', html: 'Current User Comment 2', text: 'Current User Comment 2'}],
+                            message: [{
+                                type: 'COMMENT',
+                                html: 'Current User Comment 2',
+                                text: 'Current User Comment 2',
+                            }],
                             created: DateUtils.getDBTime(Date.now() - 1),
                             sequenceNumber: 3,
                             reportActionID: 'derp3',
                         },
                         4: {
                             ...USER_1_BASE_ACTION,
-                            message: [{type: 'COMMENT', html: 'Current User Comment 3', text: 'Current User Comment 3'}],
+                            message: [{
+                                type: 'COMMENT',
+                                html: 'Current User Comment 3',
+                                text: 'Current User Comment 3',
+                            }],
                             created: DateUtils.getDBTime(),
                             sequenceNumber: 4,
                             reportActionID: 'derp4',
@@ -406,13 +476,19 @@ describe('actions/Report', () => {
             })
             .then(() => {
                 // If the user deletes a comment that is before the last read
-                Report.deleteReportComment(REPORT_ID, {...reportActions[2], sequenceNumber: 2, clientID: null});
+                Report.deleteReportComment(REPORT_ID, {
+                    ...reportActions[2],
+                    sequenceNumber: 2,
+                    clientID: null,
+                });
                 return waitForPromisesToResolve();
             })
             .then(() => {
                 // Then no change will occur
-                expect(report.lastReadTime).toBe(reportActionCreatedDate);
-                expect(ReportUtils.isUnread(report)).toBe(false);
+                expect(report.lastReadTime)
+                    .toBe(reportActionCreatedDate);
+                expect(ReportUtils.isUnread(report))
+                    .toBe(false);
 
                 // When the user manually marks a message as "unread"
                 Report.markCommentAsUnread(REPORT_ID, reportActionCreatedDate);
@@ -420,16 +496,24 @@ describe('actions/Report', () => {
             })
             .then(() => {
                 // Then we should expect the report to be to be unread
-                expect(ReportUtils.isUnread(report)).toBe(true);
-                expect(report.lastReadTime).toBe(DateUtils.subtractMillisecondsFromDateTime(reportActionCreatedDate, 1));
+                expect(ReportUtils.isUnread(report))
+                    .toBe(true);
+                expect(report.lastReadTime)
+                    .toBe(DateUtils.subtractMillisecondsFromDateTime(reportActionCreatedDate, 1));
 
                 // If the user deletes the last comment after the lastReadTime the lastMessageText will reflect the new last comment
-                Report.deleteReportComment(REPORT_ID, {...reportActions[4], sequenceNumber: 4, clientID: null});
+                Report.deleteReportComment(REPORT_ID, {
+                    ...reportActions[4],
+                    sequenceNumber: 4,
+                    clientID: null,
+                });
                 return waitForPromisesToResolve();
             })
             .then(() => {
-                expect(ReportUtils.isUnread(report)).toBe(false);
-                expect(report.lastMessageText).toBe('Current User Comment 2');
+                expect(ReportUtils.isUnread(report))
+                    .toBe(false);
+                expect(report.lastMessageText)
+                    .toBe('Current User Comment 2');
             });
     });
 
@@ -445,7 +529,8 @@ describe('actions/Report', () => {
         let afterEditCommentText = 'Original Comment www.google.com';
         let newCommentMarkdown = Report.handleUserDeletedLinks(afterEditCommentText, originalCommentHTML);
         let expectedOutput = 'Original Comment [www.google.com](https://www.google.com)';
-        expect(newCommentMarkdown).toBe(expectedOutput);
+        expect(newCommentMarkdown)
+            .toBe(expectedOutput);
 
         // User deletes www.google.com link from comment but keeps link text
         // We should not generate link
@@ -453,7 +538,8 @@ describe('actions/Report', () => {
         afterEditCommentText = 'Comment www.google.com';
         newCommentMarkdown = Report.handleUserDeletedLinks(afterEditCommentText, originalCommentHTML);
         expectedOutput = 'Comment www.google.com';
-        expect(newCommentMarkdown).toBe(expectedOutput);
+        expect(newCommentMarkdown)
+            .toBe(expectedOutput);
 
         // User Delete only () part of link but leaves the []
         // We should not generate link
@@ -461,7 +547,8 @@ describe('actions/Report', () => {
         afterEditCommentText = 'Comment [www.google.com]';
         newCommentMarkdown = Report.handleUserDeletedLinks(afterEditCommentText, originalCommentHTML);
         expectedOutput = 'Comment [www.google.com]';
-        expect(newCommentMarkdown).toBe(expectedOutput);
+        expect(newCommentMarkdown)
+            .toBe(expectedOutput);
 
         // User Generates multiple links in one edit
         // We should generate both links
@@ -469,7 +556,8 @@ describe('actions/Report', () => {
         afterEditCommentText = 'Comment www.google.com www.facebook.com';
         newCommentMarkdown = Report.handleUserDeletedLinks(afterEditCommentText, originalCommentHTML);
         expectedOutput = 'Comment [www.google.com](https://www.google.com) [www.facebook.com](https://www.facebook.com)';
-        expect(newCommentMarkdown).toBe(expectedOutput);
+        expect(newCommentMarkdown)
+            .toBe(expectedOutput);
 
         // Comment has two links but user deletes only one of them
         // Should not generate link again for the deleted one
@@ -477,7 +565,8 @@ describe('actions/Report', () => {
         afterEditCommentText = 'Comment www.google.com  [www.facebook.com](https://www.facebook.com)';
         newCommentMarkdown = Report.handleUserDeletedLinks(afterEditCommentText, originalCommentHTML);
         expectedOutput = 'Comment www.google.com  [www.facebook.com](https://www.facebook.com)';
-        expect(newCommentMarkdown).toBe(expectedOutput);
+        expect(newCommentMarkdown)
+            .toBe(expectedOutput);
     });
 
     it('should show a notification for report action updates with shouldNotify', () => {
@@ -505,9 +594,11 @@ describe('actions/Report', () => {
                     },
                 ]);
                 return waitForPromisesToResolve();
-            }).then(() => {
+            })
+            .then(() => {
                 // Ensure we show a notification for this new report action
-                expect(Report.showReportActionNotification).toBeCalledWith(String(REPORT_ID), REPORT_ACTION);
+                expect(Report.showReportActionNotification)
+                    .toBeCalledWith(String(REPORT_ID), REPORT_ACTION);
             });
     });
 
@@ -518,6 +609,7 @@ describe('actions/Report', () => {
         const TEST_USER_LOGIN = 'test@test.com';
         const REPORT_ID = 1;
         const EMOJI_CODE = '👍';
+        const EMOJI_CODE_VARIATION = '👍🏻';
         const EMOJI_NAME = '+1';
 
         let reportActions;
@@ -551,14 +643,15 @@ describe('actions/Report', () => {
                 const resultAction = _.first(_.values(reportActions));
 
                 // Expect to have the reaction on the message
-                expect(resultAction.message[0].reactions).toEqual(expect.arrayContaining([
-                    expect.objectContaining({
-                        emoji: EMOJI_NAME,
-                        senders: expect.arrayContaining([
-                            expect.objectContaining({login: TEST_USER_LOGIN}),
-                        ]),
-                    })]
-                ));
+                expect(resultAction.message[0].reactions)
+                    .toEqual(expect.arrayContaining([
+                        expect.objectContaining({
+                            emoji: EMOJI_NAME,
+                            senders: expect.arrayContaining([
+                                expect.objectContaining({login: TEST_USER_LOGIN}),
+                            ]),
+                        })],
+                    ));
 
                 // Now we remove the reaction
                 Report.removeReaction(TEST_USER_LOGIN, REPORT_ID, resultAction, EMOJI_CODE);
@@ -568,12 +661,63 @@ describe('actions/Report', () => {
                 // Expect that the reaction is removed
                 const resultAction = _.first(_.values(reportActions));
 
-                expect(resultAction.message[0].reactions).toEqual(expect.arrayContaining([
-                    expect.objectContaining({
-                        emoji: EMOJI_NAME,
-                        senders: [],
-                    }),
-                ]));
+                expect(resultAction.message[0].reactions)
+                    .toEqual(expect.arrayContaining([
+                        expect.objectContaining({
+                            emoji: EMOJI_NAME,
+                            senders: [],
+                        }),
+                    ]));
+            })
+            .then(() => {
+                const resultAction = _.first(_.values(reportActions));
+
+                // Add the reaction to the comment, but two times with different variations
+                Report.addReaction(TEST_USER_LOGIN, REPORT_ID, resultAction, EMOJI_CODE);
+                return waitForPromisesToResolve()
+                    .then(() => {
+                        Report.addReaction(TEST_USER_LOGIN, REPORT_ID, resultAction, EMOJI_CODE_VARIATION);
+                        return waitForPromisesToResolve();
+                    })
+                    .then(() => {
+                        const resultAction = _.first(_.values(reportActions));
+
+                        // Expect to have the reaction on the message
+                        console.log(resultAction.message[0].reactions)
+                        expect(resultAction.message[0].reactions)
+                            .toEqual(expect.arrayContaining([
+                                expect.objectContaining({
+                                    emoji: EMOJI_NAME,
+                                    emojiCodes: expect.arrayContaining([EMOJI_CODE, EMOJI_CODE_VARIATION]),
+                                    senders: expect.arrayContaining([
+                                        {
+                                            login: TEST_USER_LOGIN,
+                                            emojiCode: EMOJI_CODE,
+                                        },
+                                        {
+                                            login: TEST_USER_LOGIN,
+                                            emojiCode: EMOJI_CODE_VARIATION,
+                                        },
+                                    ]),
+                                })],
+                            ));
+
+                        // Now we remove the reaction, and expect that both variations are removed
+                        Report.removeReaction(TEST_USER_LOGIN, REPORT_ID, resultAction, EMOJI_CODE);
+                        return waitForPromisesToResolve();
+                    })
+                    .then(() => {
+                        // Expect that the reaction is removed
+                        const resultAction = _.first(_.values(reportActions));
+
+                        expect(resultAction.message[0].reactions)
+                            .toEqual(expect.arrayContaining([
+                                expect.objectContaining({
+                                    emoji: EMOJI_NAME,
+                                    senders: [],
+                                }),
+                            ]));
+                    });
             });
     });
 });
