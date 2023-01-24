@@ -62,11 +62,11 @@ class BaseReportActionContextMenu extends React.Component {
 
         return (this.props.isVisible || this.state.keepOpen) && (
             <View style={this.wrapperStyle}>
-                {_.map(_.filter(ContextMenuActions, shouldShowFilter), contextAction => {
+                {_.map(_.filter(ContextMenuActions, shouldShowFilter), (contextAction) => {
                     let ref = null;
                     return (
                         <ContextMenuItem
-                            innerRef={(el) => ref = el}
+                            innerRef={el => ref = el}
                             icon={contextAction.icon}
                             text={this.props.translate(contextAction.textTranslateKey)}
                             successIcon={contextAction.successIcon}
@@ -85,7 +85,8 @@ class BaseReportActionContextMenu extends React.Component {
                                         selection: this.props.selection,
                                     },
                                     ref,
-                                    () => this.setState({keepOpen: false}));
+                                    () => this.setState({keepOpen: false}),
+                                );
 
                                 if (contextAction.keepOpen) {
                                     this.setState({keepOpen: true}, onPress);

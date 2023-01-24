@@ -650,8 +650,7 @@ describe('actions/Report', () => {
                             senders: expect.arrayContaining([
                                 expect.objectContaining({login: TEST_USER_LOGIN}),
                             ]),
-                        })],
-                    ));
+                        })]));
 
                 // Now we remove the reaction
                 Report.removeReaction(REPORT_ID, resultAction, EMOJI_CODE);
@@ -680,11 +679,10 @@ describe('actions/Report', () => {
                         return waitForPromisesToResolve();
                     })
                     .then(() => {
-                        const resultAction = _.first(_.values(reportActions));
+                        const updatedResultAction = _.first(_.values(reportActions));
 
                         // Expect to have the reaction on the message
-                        console.log(resultAction.message[0].reactions)
-                        expect(resultAction.message[0].reactions)
+                        expect(updatedResultAction.message[0].reactions)
                             .toEqual(expect.arrayContaining([
                                 expect.objectContaining({
                                     emoji: EMOJI_NAME,
@@ -699,18 +697,17 @@ describe('actions/Report', () => {
                                             emojiCode: EMOJI_CODE_VARIATION,
                                         },
                                     ]),
-                                })],
-                            ));
+                                })]));
 
                         // Now we remove the reaction, and expect that both variations are removed
-                        Report.removeReaction(REPORT_ID, resultAction, EMOJI_CODE);
+                        Report.removeReaction(REPORT_ID, updatedResultAction, EMOJI_CODE);
                         return waitForPromisesToResolve();
                     })
                     .then(() => {
                         // Expect that the reaction is removed
-                        const resultAction = _.first(_.values(reportActions));
+                        const updatedResultAction = _.first(_.values(reportActions));
 
-                        expect(resultAction.message[0].reactions)
+                        expect(updatedResultAction.message[0].reactions)
                             .toEqual(expect.arrayContaining([
                                 expect.objectContaining({
                                     emoji: EMOJI_NAME,
