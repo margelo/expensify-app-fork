@@ -9,6 +9,7 @@ const propTypes = {
     emojiCodes: PropTypes.arrayOf(PropTypes.string).isRequired,
     count: PropTypes.number.isRequired,
     onPress: PropTypes.func.isRequired,
+    onLongPress: PropTypes.func.isRequired,
     hasUserReacted: PropTypes.bool.isRequired,
 };
 
@@ -16,6 +17,7 @@ const EmojiReactionBubble = props => (
     <Pressable
         style={({hovered}) => [styles.emojiReactionBubble, StyleUtils.getEmojiReactionBubbleStyle(hovered, props.hasUserReacted)]}
         onPress={props.onPress}
+        onLongPress={props.onLongPress}
     >
         <Text style={styles.emojiReactionText}>
             {props.emojiCodes.join('')}

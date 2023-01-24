@@ -25,6 +25,8 @@ import EmojiPicker from '../../../components/EmojiPicker/EmojiPicker';
 import * as ReportActionsUtils from '../../../libs/ReportActionsUtils';
 import * as ReportUtils from '../../../libs/ReportUtils';
 import reportPropTypes from '../../reportPropTypes';
+import PopoverReactionsContextMenu from './Reactions/PopoverReactionsContextMenu';
+import * as ReactionsContextMenu from './Reactions/ReactionsContextMenu';
 
 const propTypes = {
     /* Onyx Props */
@@ -382,6 +384,7 @@ class ReportActionsView extends React.Component {
                             isArchivedRoom={ReportUtils.isArchivedRoom(this.props.report)}
                             isChronosReport={ReportUtils.chatIncludesChronos(this.props.report)}
                         />
+                        <PopoverReactionsContextMenu ref={ReactionsContextMenu.contextMenuRef} />
                     </>
                 )}
                 <EmojiPicker ref={EmojiPickerAction.emojiPickerRef} />

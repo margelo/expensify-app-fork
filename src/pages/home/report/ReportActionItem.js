@@ -41,6 +41,7 @@ import withCurrentUserPersonalDetails, {
     withCurrentUserPersonalDetailsDefaultProps,
     withCurrentUserPersonalDetailsPropTypes,
 } from '../../../components/withCurrentUserPersonalDetails';
+import * as ReactionsContextMenu from './Reactions/ReactionsContextMenu';
 
 const propTypes = {
     /** Report for this action */
@@ -218,6 +219,7 @@ class ReportActionItem extends Component {
                                 emojiCodes={reaction.emojiCodes}
                                 hasUserReacted={hasUserReacted}
                                 onPress={() => this.removeReaction(reaction.emojiCodes[0])}
+                                onLongPress={ReactionsContextMenu.showContextMenu}
                             />
                         );
                     })}
