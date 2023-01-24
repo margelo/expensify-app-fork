@@ -2879,8 +2879,8 @@ const styles = {
     },
 
     emojiReactionBubble: {
-        paddingVertical: 5,
-        paddingHorizontal: 12,
+        paddingVertical: 2,
+        paddingHorizontal: 8,
         borderRadius: 28,
         backgroundColor: themeColors.border,
         alignItems: 'center',
@@ -2891,7 +2891,7 @@ const styles = {
     },
 
     emojiReactionText: {
-        fontSize: 13,
+        fontSize: 12,
     },
     reactionCounterText: {
         fontSize: 11,
