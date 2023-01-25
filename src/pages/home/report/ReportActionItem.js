@@ -212,7 +212,7 @@ class ReportActionItem extends Component {
         return (
             <>
                 {children}
-                <View style={styles.flexRow}>
+                <View style={[styles.flexRow, styles.flexWrap]}>
                     {_.map(reactions, (reaction) => {
                         const reactionCount = reaction.senders.length;
                         if (reactionCount === 0) { return null; }
