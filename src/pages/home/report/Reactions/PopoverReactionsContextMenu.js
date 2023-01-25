@@ -1,6 +1,11 @@
 import React from 'react';
-import {View} from 'react-native';
 import PopoverWithMeasuredContent from '../../../../components/PopoverWithMeasuredContent';
+import ReactionsContextMenuContent from './ReactionsContextMenuContent';
+import withWindowDimensions, {windowDimensionsPropTypes} from '../../../../components/withWindowDimensions';
+
+const propTypes = {
+    ...windowDimensionsPropTypes,
+};
 
 class PopoverReactionsContextMenu extends React.Component {
     constructor(props) {
@@ -14,22 +19,17 @@ class PopoverReactionsContextMenu extends React.Component {
         this.renderContent = this.renderContent.bind(this);
     }
 
-    showContextMenu() {
-        this.setState({isVisible: true});
+    showContextMenu(reactions) {
+        this.setState({isVisible: true, reactions});
     }
 
     hideContextMenu() {
-        this.setState({isVisible: false});
+        this.setState({isVisible: false, reactions: undefined});
     }
 
     renderContent() {
         return (
-            <View style={{
-                height: 100,
-                width: 100,
-                backgroundColor: 'red',
-            }}
-            />
+            <ReactionsContextMenuContent reactions={this.state.reactions} />
         );
     }
 
@@ -41,18 +41,22 @@ class PopoverReactionsContextMenu extends React.Component {
                 animationIn="fadeIn"
                 disableAnimation={false}
                 animationOutTiming={1}
-                measureContent={this.renderContent}
                 shouldSetModalVisibility={false}
-                fullscreen
-                anchorOrigin={{
-                    horizontal: 0,
-                    vertical: 0,
+                popoverDimensions={{
+                    width: this.props.windowWidth,
+                    height: this.props.windowHeight * 0.8,
                 }}
-            >
-                {this.renderContent()}
-            </PopoverWithMeasuredContent>
+                anchorPosition={{
+                    horizontal: this.props.windowWidth / 2,
+                    vertical: this.props.windowHeight / 2,
+                }}
+
+                // This doesn't measure, but is needed to render the content
+                measureContent={this.renderContent}
+            />
         );
     }
 }
 
-export default PopoverReactionsContextMenu;
+PopoverReactionsContextMenu.propTypes = propTypes;
+export default withWindowDimensions(PopoverReactionsContextMenu);

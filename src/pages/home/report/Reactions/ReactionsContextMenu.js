@@ -2,11 +2,11 @@ import React from 'react';
 
 const contextMenuRef = React.createRef();
 
-function showContextMenu() {
+function showContextMenu(reactions) {
     if (!contextMenuRef.current) {
         return;
     }
-    contextMenuRef.current.showContextMenu();
+    contextMenuRef.current.showContextMenu(reactions);
 }
 
 function hideContextMenu() {

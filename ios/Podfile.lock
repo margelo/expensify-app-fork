@@ -476,6 +476,8 @@ PODS:
     - React-Core
   - react-native-netinfo (8.3.1):
     - React-Core
+  - react-native-pager-view (6.1.2):
+    - React-Core
   - react-native-pdf (6.6.2):
     - React-Core
   - react-native-performance (4.0.0):
@@ -705,6 +707,7 @@ DEPENDENCIES:
   - "react-native-image-manipulator (from `../node_modules/@oguzhnatly/react-native-image-manipulator`)"
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
+  - react-native-pager-view (from `../node_modules/react-native-pager-view`)
   - react-native-pdf (from `../node_modules/react-native-pdf`)
   - react-native-performance (from `../node_modules/react-native-performance`)
   - react-native-plaid-link-sdk (from `../node_modules/react-native-plaid-link-sdk`)
@@ -851,6 +854,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-image-picker"
   react-native-netinfo:
     :path: "../node_modules/@react-native-community/netinfo"
+  react-native-pager-view:
+    :path: "../node_modules/react-native-pager-view"
   react-native-pdf:
     :path: "../node_modules/react-native-pdf"
   react-native-performance:
@@ -994,6 +999,7 @@ SPEC CHECKSUMS:
   react-native-image-manipulator: c48f64221cfcd46e9eec53619c4c0374f3328a56
   react-native-image-picker: bf34f3f516d139ed3e24c5f5a381a91819e349ea
   react-native-netinfo: 1a6035d3b9780221d407c277ebfb5722ace00658
+  react-native-pager-view: 54bed894cecebe28cede54c01038d9d1e122de43
   react-native-pdf: 33c622cbdf776a649929e8b9d1ce2d313347c4fa
   react-native-performance: 224bd53e6a835fda4353302cf891d088a0af7406
   react-native-plaid-link-sdk: 77052f329310ff5a36ddda276793f40d27c02bc4
