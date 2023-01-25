@@ -15,7 +15,7 @@ const propTypes = {
 };
 
 const EmojiReactionBubble = props => (
-    <ReactionTooltip>
+    <ReactionTooltip emojiCodes={props.emojiCodes}>
         <Pressable
             style={({hovered}) => [styles.emojiReactionBubble, StyleUtils.getEmojiReactionBubbleStyle(hovered, props.hasUserReacted)]}
             onPress={props.onPress}

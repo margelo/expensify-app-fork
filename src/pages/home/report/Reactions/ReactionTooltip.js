@@ -6,9 +6,12 @@ import Hoverable from '../../../../components/Hoverable';
 import getTooltipStyles, {TOOLTIP_VERTICAL_PADDING} from '../../../../styles/getTooltipStyles';
 import withWindowDimensions, {windowDimensionsPropTypes} from '../../../../components/withWindowDimensions';
 import styles from '../../../../styles/styles';
+import ReactionTooltipContent, {ReactionTooltipContentPropTypes} from './ReactionTooltipContent';
 
 const propTypes = {
     children: PropTypes.node.isRequired,
+
+    ...ReactionTooltipContentPropTypes,
 
     /** Props inherited from withWindowDimensions */
     ...windowDimensionsPropTypes,
@@ -73,12 +76,7 @@ class ReactionTooltip extends React.Component {
 
     renderContent() {
         return (
-            <View style={{
-                width: 30,
-                height: 30,
-                backgroundColor: 'red',
-            }}
-            />
+            <ReactionTooltipContent emojiCodes={this.props.emojiCodes} />
         );
     }
 
