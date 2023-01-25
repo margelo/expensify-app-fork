@@ -2894,6 +2894,7 @@ const styles = {
     emojiReactionText: {
         fontSize: 12,
         lineHeight: 20,
+        textAlignVertical: 'center',
     },
     reactionCounterText: {
         fontSize: 11,
