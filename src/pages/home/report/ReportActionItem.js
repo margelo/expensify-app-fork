@@ -90,6 +90,7 @@ class ReportActionItem extends Component {
         this.checkIfContextMenuActive = this.checkIfContextMenuActive.bind(this);
         this.showPopover = this.showPopover.bind(this);
         this.renderItemContent = this.renderItemContent.bind(this);
+        this.addReaction = this.addReaction.bind(this);
         this.removeReaction = this.removeReaction.bind(this);
     }
 
@@ -146,6 +147,10 @@ class ReportActionItem extends Component {
             undefined,
             this.checkIfContextMenuActive,
         );
+    }
+
+    addReaction(emojiCode) {
+        Report.addReaction(this.props.report.reportID, this.props.action, emojiCode);
     }
 
     removeReaction(emojiCode) {
@@ -227,7 +232,7 @@ class ReportActionItem extends Component {
                             />
                         );
                     })}
-                    {reactions && reactions.length > 0 && <AddReactionBubble />}
+                    {reactions && reactions.length > 0 && <AddReactionBubble onSelectEmoji={this.addReaction} />}
                 </View>
             </>
         );
