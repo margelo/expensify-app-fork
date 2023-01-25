@@ -207,18 +207,18 @@ class ReportActionItem extends Component {
         }
 
         const reactions = this.props.action.message && this.props.action.message[0] && this.props.action.message[0].reactions;
+        const filteredReactions = reactions && _.filter(reactions, r => r.senders.length > 0);
 
         // Wrap content with emoji action
         return (
             <>
                 {children}
                 <View style={[styles.flexRow, styles.flexWrap]}>
-                    {_.map(reactions, (reaction) => {
+                    {_.map(filteredReactions, (reaction) => {
                         const reactionCount = reaction.senders.length;
-                        if (reactionCount === 0) { return null; }
-
                         const hasUserReacted = _.find(reaction.senders, reactor => reactor.login === this.props.currentUserPersonalDetails.login) != null;
                         const senderIDs = _.map(reaction.senders, sender => sender.login);
+
                         return (
                             <EmojiReactionBubble
                                 key={reaction.emoji}
@@ -227,12 +227,12 @@ class ReportActionItem extends Component {
                                 emojiCodes={reaction.emojiCodes}
                                 hasUserReacted={hasUserReacted}
                                 onPress={() => this.removeReaction(reaction.emojiCodes[0])}
-                                onLongPress={ReactionsContextMenu.showContextMenu}
+                                onLongPress={() => ReactionsContextMenu.showContextMenu(reactions)}
                                 senderIDs={senderIDs}
                             />
                         );
                     })}
-                    {reactions && reactions.length > 0 && <AddReactionBubble onSelectEmoji={this.addReaction} />}
+                    {filteredReactions && filteredReactions.length > 0 && <AddReactionBubble onSelectEmoji={this.addReaction} />}
                 </View>
             </>
         );
