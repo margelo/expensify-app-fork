@@ -212,14 +212,17 @@ class ReportActionItem extends Component {
                         if (reactionCount === 0) { return null; }
 
                         const hasUserReacted = _.find(reaction.senders, reactor => reactor.login === this.props.currentUserPersonalDetails.login) != null;
+                        const senderIDs = _.map(reaction.senders, sender => sender.login);
                         return (
                             <EmojiReactionBubble
                                 key={reaction.emoji}
                                 count={reactionCount}
+                                emojiName={reaction.emoji}
                                 emojiCodes={reaction.emojiCodes}
                                 hasUserReacted={hasUserReacted}
                                 onPress={() => this.removeReaction(reaction.emojiCodes[0])}
                                 onLongPress={ReactionsContextMenu.showContextMenu}
+                                senderIDs={senderIDs}
                             />
                         );
                     })}

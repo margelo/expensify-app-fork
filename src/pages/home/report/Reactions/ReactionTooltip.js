@@ -76,7 +76,11 @@ class ReactionTooltip extends React.Component {
 
     renderContent() {
         return (
-            <ReactionTooltipContent emojiCodes={this.props.emojiCodes} />
+            <ReactionTooltipContent
+                emojiCodes={this.props.emojiCodes}
+                senderIDs={this.props.senderIDs}
+                emojiName={this.props.emojiName}
+            />
         );
     }
 

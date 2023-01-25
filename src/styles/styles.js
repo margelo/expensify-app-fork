@@ -2899,6 +2899,22 @@ const styles = {
         fontWeight: 'bold',
         color: themeColors.textLight,
     },
+
+    fontColorReactionLabel: {
+        color: '#586A64',
+    },
+
+    fontSizeReactionEmoji: {
+        fontSize: variables.iconSizeLarge,
+    },
+
+    textReactionSenders: {
+        color: themeColors.pickerOptionsTextColor,
+        ...wordBreak.breakWord,
+
+        // TODO: do we need to make this based on the screen size?
+        maxWidth: 400,
+    },
 };
 
 export default styles;

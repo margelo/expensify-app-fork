@@ -12,10 +12,16 @@ const propTypes = {
     onPress: PropTypes.func.isRequired,
     onLongPress: PropTypes.func.isRequired,
     hasUserReacted: PropTypes.bool.isRequired,
+    senderIDs: PropTypes.arrayOf(PropTypes.string).isRequired,
+    emojiName: PropTypes.string.isRequired,
 };
 
 const EmojiReactionBubble = props => (
-    <ReactionTooltip emojiCodes={props.emojiCodes}>
+    <ReactionTooltip
+        emojiCodes={props.emojiCodes}
+        senderIDs={props.senderIDs}
+        emojiName={props.emojiName}
+    >
         <Pressable
             style={({hovered}) => [styles.emojiReactionBubble, StyleUtils.getEmojiReactionBubbleStyle(hovered, props.hasUserReacted)]}
             onPress={props.onPress}
