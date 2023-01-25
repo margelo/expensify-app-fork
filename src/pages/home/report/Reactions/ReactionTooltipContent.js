@@ -29,7 +29,7 @@ const ReactionTooltipContent = (props) => {
             {_.map(props.emojiCodes, emojiCode => (
                 <Text
                     key={emojiCode}
-                    style={styles.fontSizeReactionEmoji}
+                    style={styles.reactionEmojiTitle}
                 >
                     {emojiCode}
                 </Text>

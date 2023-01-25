@@ -2893,6 +2893,7 @@ const styles = {
 
     emojiReactionText: {
         fontSize: 12,
+        lineHeight: 20,
     },
     reactionCounterText: {
         fontSize: 11,
@@ -2904,8 +2905,9 @@ const styles = {
         color: '#586A64',
     },
 
-    fontSizeReactionEmoji: {
+    reactionEmojiTitle: {
         fontSize: variables.iconSizeLarge,
+        lineHeight: variables.iconSizeXLarge,
     },
 
     textReactionSenders: {
