@@ -42,6 +42,7 @@ import withCurrentUserPersonalDetails, {
     withCurrentUserPersonalDetailsPropTypes,
 } from '../../../components/withCurrentUserPersonalDetails';
 import * as ReactionsContextMenu from './Reactions/ReactionsContextMenu';
+import AddReactionBubble from './Reactions/AddReactionBubble';
 
 const propTypes = {
     /** Report for this action */
@@ -226,6 +227,7 @@ class ReportActionItem extends Component {
                             />
                         );
                     })}
+                    {reactions && reactions.length > 0 && <AddReactionBubble />}
                 </View>
             </>
         );
