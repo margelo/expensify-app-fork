@@ -1455,6 +1455,15 @@ const styles = {
         width: '100%',
         ...spacing.ph4,
     },
+    emojiPickerSearchListContainer: {
+        position: 'absolute',
+        top: 60,
+        right: 0,
+        bottom: 4,
+        left: 0,
+        backgroundColor: themeColors.appBG,
+    },
+
     emojiPickerListLandscape: {
         height: 240,
     },
@@ -1469,6 +1478,15 @@ const styles = {
         fontWeight: fontWeightBold,
         color: themeColors.heading,
         fontSize: variables.fontSizeSmall,
+    },
+
+    emojiHeaderContainerStyle: {
+        backgroundColor: themeColors.componentBG,
+        width: '100%',
+        height: 32,
+        display: 'flex',
+        alignItems: 'center',
+        textAlignVertical: 'center',
     },
 
     emojiSkinToneTitle: {
