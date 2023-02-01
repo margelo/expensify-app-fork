@@ -951,22 +951,23 @@ function addReaction(reportID, originalReportAction, emoji, skinTone) {
     const {
         optimisticData,
 
-        // failureData,
+        failureData,
         successData,
     } = optimisticallyUpdateReportAction(originalReportAction, updatedMessage, reportID);
 
-    // TODO: only make the API call once its live
-    Onyx.update(optimisticData).then(() => {
-        Onyx.update(successData);
-    });
+    // // TODO: only make the API call once its live
+    // Onyx.update(optimisticData).then(() => {
+    //     Onyx.update(successData);
+    // });
 
-    // const parameters = {
-    //     reportID,
-    //     reaction: emoji.name,
-    //     sequenceNumber: originalReportAction.sequenceNumber,
-    //     reportActionID: originalReportAction.reportActionID,
-    // };
-    // API.write('AddReaction', parameters, {optimisticData, successData, failureData});
+    const parameters = {
+        reportID,
+        skinTone,
+        reaction: emoji.name,
+        sequenceNumber: originalReportAction.sequenceNumber,
+        reportActionID: originalReportAction.reportActionID,
+    };
+    API.write('AddReaction', parameters, {optimisticData, successData, failureData});
 }
 
 function removeReaction(reportID, originalReportAction, emoji) {

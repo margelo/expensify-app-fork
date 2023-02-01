@@ -43,6 +43,8 @@ import withCurrentUserPersonalDetails, {
 } from '../../../components/withCurrentUserPersonalDetails';
 import * as ReactionsContextMenu from './Reactions/ReactionsContextMenu';
 import AddReactionBubble from './Reactions/AddReactionBubble';
+import emojis from '../../../../assets/emojis';
+import emojisTrie from '../../../libs/EmojiTrie';
 
 const propTypes = {
     /** Report for this action */
@@ -78,6 +80,17 @@ const defaultProps = {
     hasOutstandingIOU: false,
 
     ...withCurrentUserPersonalDetailsDefaultProps,
+};
+
+const getUniqueEmojiCodes = (emoji, senders) => {
+    const emojiCodes = [];
+    senders.forEach((sender) => {
+        const emojiCode = (emoji.types && emoji.types[sender.skinTone]) ? emoji.types[sender.skinTone] : emoji.code;
+        if (emojiCode && !emojiCodes.includes(emojiCode)) {
+            emojiCodes.push(emojiCode);
+        }
+    });
+    return emojiCodes;
 };
 
 class ReportActionItem extends Component {
@@ -149,12 +162,12 @@ class ReportActionItem extends Component {
         );
     }
 
-    addReaction(emojiCode) {
-        Report.addReaction(this.props.report.reportID, this.props.action, emojiCode);
+    addReaction(emoji) {
+        Report.addReaction(this.props.report.reportID, this.props.action, emoji);
     }
 
-    removeReaction(emojiCode) {
-        Report.removeReaction(this.props.report.reportID, this.props.action, emojiCode);
+    removeReaction(emoji) {
+        Report.removeReaction(this.props.report.reportID, this.props.action, emoji);
     }
 
     /**
@@ -208,6 +221,18 @@ class ReportActionItem extends Component {
 
         const reactions = this.props.action.message && this.props.action.message[0] && this.props.action.message[0].reactions;
         const filteredReactions = reactions && _.filter(reactions, r => r.senders.length > 0);
+        const hasReaction = filteredReactions != null && filteredReactions.length > 0;
+
+        if (!hasReaction) {
+            return children;
+        }
+
+        return (
+            <>
+                {children}
+                <ActionReactions reactions={filteredReactions} />
+            </>
+        );
 
         // Wrap content with emoji action
         return (
@@ -218,13 +243,15 @@ class ReportActionItem extends Component {
                         const reactionCount = reaction.senders.length;
                         const hasUserReacted = _.find(reaction.senders, reactor => reactor.login === this.props.currentUserPersonalDetails.login) != null;
                         const senderIDs = _.map(reaction.senders, sender => sender.login);
+                        const emoji = emojisTrie.search(reaction.emoji.replace(/:/g, ''));
+                        const emojiCodes = getUniqueEmojiCodes(emoji, reaction.senders);
 
                         return (
                             <EmojiReactionBubble
                                 key={reaction.emoji}
                                 count={reactionCount}
                                 emojiName={reaction.emoji}
-                                emojiCodes={reaction.emojiCodes}
+                                emojiCodes={emojiCodes}
                                 hasUserReacted={hasUserReacted}
                                 onPress={() => this.removeReaction(reaction.emojiCodes[0])}
                                 onLongPress={() => ReactionsContextMenu.showContextMenu(reactions)}
