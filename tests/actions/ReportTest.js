@@ -609,8 +609,12 @@ describe('actions/Report', () => {
         const TEST_USER_LOGIN = 'test@test.com';
         const REPORT_ID = 1;
         const EMOJI_CODE = '👍';
-        const EMOJI_CODE_VARIATION = '👍🏻';
+        const EMOJI_SKIN_TONE = 2;
         const EMOJI_NAME = '+1';
+        const EMOJI = {
+            code: EMOJI_CODE,
+            name: EMOJI_NAME,
+        };
 
         let reportActions;
 
@@ -636,7 +640,7 @@ describe('actions/Report', () => {
                 const resultAction = _.first(_.values(reportActions));
 
                 // Add a reaction to the comment
-                Report.addReaction(REPORT_ID, resultAction, EMOJI_CODE);
+                Report.addReaction(REPORT_ID, resultAction, EMOJI);
                 return waitForPromisesToResolve();
             })
             .then(() => {
@@ -647,13 +651,13 @@ describe('actions/Report', () => {
                     .toEqual(expect.arrayContaining([
                         expect.objectContaining({
                             emoji: EMOJI_NAME,
-                            senders: expect.arrayContaining([
+                            users: expect.arrayContaining([
                                 expect.objectContaining({login: TEST_USER_LOGIN}),
                             ]),
                         })]));
 
                 // Now we remove the reaction
-                Report.removeReaction(REPORT_ID, resultAction, EMOJI_CODE);
+                Report.removeReaction(REPORT_ID, resultAction, EMOJI);
                 return waitForPromisesToResolve();
             })
             .then(() => {
@@ -664,7 +668,7 @@ describe('actions/Report', () => {
                     .toEqual(expect.arrayContaining([
                         expect.objectContaining({
                             emoji: EMOJI_NAME,
-                            senders: [],
+                            users: [],
                         }),
                     ]));
             })
@@ -672,10 +676,15 @@ describe('actions/Report', () => {
                 const resultAction = _.first(_.values(reportActions));
 
                 // Add the reaction to the comment, but two times with different variations
-                Report.addReaction(REPORT_ID, resultAction, EMOJI_CODE);
+                Report.addReaction(REPORT_ID, resultAction, EMOJI);
                 return waitForPromisesToResolve()
                     .then(() => {
-                        Report.addReaction(REPORT_ID, resultAction, EMOJI_CODE_VARIATION);
+                        Report.addReaction(
+                            REPORT_ID,
+                            resultAction,
+                            EMOJI,
+                            2,
+                        );
                         return waitForPromisesToResolve();
                     })
                     .then(() => {
@@ -686,21 +695,19 @@ describe('actions/Report', () => {
                             .toEqual(expect.arrayContaining([
                                 expect.objectContaining({
                                     emoji: EMOJI_NAME,
-                                    emojiCodes: expect.arrayContaining([EMOJI_CODE, EMOJI_CODE_VARIATION]),
-                                    senders: expect.arrayContaining([
+                                    users: expect.arrayContaining([
                                         {
                                             login: TEST_USER_LOGIN,
-                                            emojiCode: EMOJI_CODE,
                                         },
                                         {
                                             login: TEST_USER_LOGIN,
-                                            emojiCode: EMOJI_CODE_VARIATION,
+                                            skinTone: EMOJI_SKIN_TONE,
                                         },
                                     ]),
                                 })]));
 
                         // Now we remove the reaction, and expect that both variations are removed
-                        Report.removeReaction(REPORT_ID, updatedResultAction, EMOJI_CODE);
+                        Report.removeReaction(REPORT_ID, updatedResultAction, EMOJI);
                         return waitForPromisesToResolve();
                     })
                     .then(() => {
@@ -711,8 +718,7 @@ describe('actions/Report', () => {
                             .toEqual(expect.arrayContaining([
                                 expect.objectContaining({
                                     emoji: EMOJI_NAME,
-                                    emojiCodes: [],
-                                    senders: [],
+                                    users: [],
                                 }),
                             ]));
                     });

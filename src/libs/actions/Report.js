@@ -19,7 +19,6 @@ import * as ReportUtils from '../ReportUtils';
 import DateUtils from '../DateUtils';
 import * as ReportActionsUtils from '../ReportActionsUtils';
 import * as OptionsListUtils from '../OptionsListUtils';
-import emojis from '../../../assets/emojis';
 
 let currentUserEmail;
 let currentUserAccountID;
@@ -908,42 +907,34 @@ function editReportComment(reportID, originalReportAction, textForNewComment) {
     API.write('UpdateComment', parameters, {optimisticData, successData, failureData});
 }
 
-function getEmojiForCode(emojiCode) {
-    return _.find(emojis, emoji => emoji.code === emojiCode || (emoji.types && emoji.types.includes(emojiCode)));
+function hasLoginReacted(login, users, skinTone) {
+    return _.find(users, user => user.login === login && (skinTone == null ? true : user.skinTone === skinTone)) != null;
 }
 
-function hasLoginReacted(login, senders, emojiCode) {
-    return _.find(senders, sender => sender.login === login && sender.emojiCode === emojiCode) != null;
-}
-
-function addReaction(reportID, originalReportAction, emojiCode) {
-    const emoji = getEmojiForCode(emojiCode);
-    if (!emoji) {
-        Log.warn('Emoji not found', {emojiCode});
-        return;
-    }
-
+/**
+ * Adds a reaction to the report action.
+ * @param {String} reportID
+ * @param {Object} originalReportAction
+ * @param {{ name: string, code: string, types: string[] }} emoji
+ * @param {number} [skinTone] Optional.
+ */
+function addReaction(reportID, originalReportAction, emoji, skinTone) {
     const message = originalReportAction.message[0];
     let reactionObject = message.reactions && _.find(message.reactions, reaction => reaction.emoji === emoji.name);
     const needToInsertReactionObject = !reactionObject;
     if (needToInsertReactionObject) {
         reactionObject = {
             emoji: emoji.name,
-            emojiCodes: [emojiCode],
-            senders: [],
+            users: [],
         };
     }
 
-    const isReacted = hasLoginReacted(currentUserEmail, reactionObject.senders, emojiCode);
+    const isReacted = hasLoginReacted(currentUserEmail, reactionObject.users, skinTone);
     if (isReacted) {
         return;
     }
 
-    reactionObject.senders = [...reactionObject.senders, {login: currentUserEmail, emojiCode}];
-    if (!reactionObject.emojiCodes.includes(emojiCode)) {
-        reactionObject.emojiCodes = [...reactionObject.emojiCodes, emojiCode];
-    }
-
+    reactionObject.users = [...reactionObject.users, {login: currentUserEmail, skinTone}];
     let updatedReactions = [...(message.reactions || [])];
     if (needToInsertReactionObject) {
         updatedReactions = [...updatedReactions, reactionObject];
@@ -978,28 +969,19 @@ function addReaction(reportID, originalReportAction, emojiCode) {
     // API.write('AddReaction', parameters, {optimisticData, successData, failureData});
 }
 
-function removeReaction(reportID, originalReportAction, emojiCode) {
-    const emoji = getEmojiForCode(emojiCode);
-    if (!emoji) {
-        Log.warn('Emoji not found', {emojiCode});
-        return;
-    }
-
+function removeReaction(reportID, originalReportAction, emoji) {
     const message = originalReportAction.message[0];
     const reactionObject = message.reactions && _.find(message.reactions, reaction => reaction.emoji === emoji.name);
     if (!reactionObject) {
         return;
     }
 
-    const isReacted = hasLoginReacted(currentUserEmail, reactionObject.senders, emojiCode);
+    const isReacted = hasLoginReacted(currentUserEmail, reactionObject.users);
     if (!isReacted) {
         return;
     }
 
-    // Get emojiCodes that are only unique in the sense that the user added them and no one else
-    reactionObject.emojiCodes = _.filter(reactionObject.emojiCodes, code => !hasLoginReacted(currentUserEmail, reactionObject.senders, code));
-
-    reactionObject.senders = _.filter(reactionObject.senders, sender => sender.login !== currentUserEmail);
+    reactionObject.users = _.filter(reactionObject.users, sender => sender.login !== currentUserEmail);
     const updatedReactions = _.map(message.reactions, reaction => (reaction.emoji === emoji.name ? reactionObject : reaction));
 
     const updatedMessage = {
