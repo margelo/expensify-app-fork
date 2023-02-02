@@ -184,15 +184,8 @@ class EmojiPickerMenu extends Component {
 
         if (item.header) {
             return (
-                <View
-                    style={[
-                        styles.justifyContentCenter,
-                        styles.alignItemsCenter,
-                        styles.emojiHeaderContainerStyle,
-                        {height: 32},
-                    ]}
-                >
-                    <Text style={[styles.emojiHeaderStyle, {height: 16}]}>
+                <View style={styles.emojiHeaderContainer}>
+                    <Text style={styles.emojiHeaderStyle}>
                         {this.props.translate(`emojiPicker.headers.${item.code}`)}
                     </Text>
                 </View>
