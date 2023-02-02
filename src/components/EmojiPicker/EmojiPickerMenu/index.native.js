@@ -223,11 +223,8 @@ class EmojiPickerMenu extends Component {
                             styles.textInput,
                             this.state.isFocused && styles.borderColorFocus,
                         ]}
-                        onFocus={() => this.setState({
-                            isFocused: true,
-                        })}
+                        onFocus={() => this.setState({isFocused: true})}
                         onBlur={() => this.setState({isFocused: false})}
-                        autoFocus
                     />
                 </View>
 
