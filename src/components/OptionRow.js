@@ -85,17 +85,17 @@ class OptionRow extends Component {
     }
 
     // It is very important to use shouldComponentUpdate here so SectionList items will not unnecessarily re-render
-    shouldComponentUpdate(prevProps, nextProps) {
-        return prevProps.optionIsFocused === nextProps.optionIsFocused
-            && prevProps.isSelected === nextProps.isSelected
-            && prevProps.option.alternateText === nextProps.option.alternateText
-            && prevProps.option.descriptiveText === nextProps.option.descriptiveText
-            && _.isEqual(prevProps.option.icons, nextProps.option.icons)
-            && prevProps.option.text === nextProps.option.text
-            && prevProps.showSelectedState === nextProps.showSelectedState
-            && prevProps.isDisabled === nextProps.isDisabled
-            && prevProps.showTitleTooltip === nextProps.showTitleTooltip
-            && prevProps.option.brickRoadIndicator === nextProps.option.brickRoadIndicator;
+    shouldComponentUpdate(nextProps, nextState) {
+        return this.state.isDisabled !== nextState.isDisabled
+            || this.props.isDisabled !== nextProps.isDisabled
+            || this.props.isSelected !== nextProps.isSelected
+            || this.props.showSelectedState !== nextProps.showSelectedState
+            || this.props.showTitleTooltip !== nextProps.showTitleTooltip
+            || _.isEqual(this.props.option.icons, nextProps.option.icons)
+            || this.props.option.text !== nextProps.option.text
+            || this.props.option.alternateText !== nextProps.option.alternateText
+            || this.props.option.descriptiveText !== nextProps.option.descriptiveText
+            || this.props.option.brickRoadIndicator !== nextProps.option.brickRoadIndicator;
     }
 
     componentDidUpdate(prevProps) {
@@ -132,6 +132,11 @@ class OptionRow extends Component {
         // We only create tooltips for the first 10 users or so since some reports have hundreds of users, causing performance to degrade.
         const displayNamesWithTooltips = ReportUtils.getDisplayNamesWithTooltips((this.props.option.participantsList || []).slice(0, 10), isMultipleParticipant);
         const avatarTooltips = this.props.showTitleTooltip && !this.props.option.isChatRoom && !this.props.option.isArchivedRoom ? _.pluck(displayNamesWithTooltips, 'tooltip') : undefined;
+
+        let subscriptColor = themeColors.appBG;
+        if (this.props.optionIsFocused) {
+            subscriptColor = focusedBackgroundColor;
+        }
 
         return (
             <OfflineWithFeedback
@@ -191,12 +196,18 @@ class OptionRow extends Component {
                                                     mainTooltip={this.props.option.ownerEmail}
                                                     secondaryTooltip={this.props.option.subtitle}
                                                     size={CONST.AVATAR_SIZE.DEFAULT}
+                                                    backgroundColor={
+                                                    hovered && !this.props.optionIsFocused
+                                                        ? hoveredBackgroundColor
+                                                        : subscriptColor
+                                                    }
                                                 />
                                             ) : (
                                                 <MultipleAvatars
                                                     icons={this.props.option.icons}
                                                     size={CONST.AVATAR_SIZE.DEFAULT}
                                                     secondAvatarStyle={[
+                                                        StyleUtils.getBackgroundAndBorderStyle(themeColors.appBG),
                                                         this.props.optionIsFocused
                                                             ? StyleUtils.getBackgroundAndBorderStyle(focusedBackgroundColor)
                                                             : undefined,
