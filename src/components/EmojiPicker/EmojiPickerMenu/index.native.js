@@ -233,7 +233,7 @@ class EmojiPickerMenu extends Component {
                     ]}
                     stickyHeaderIndices={this.unfilteredHeaderIndices}
                 />
-                {this.state.value && (
+                {!!this.state.value && (
                 <View style={styles.emojiPickerSearchListContainer}>
                     <FlatList
                         keyboardShouldPersistTaps="handled"

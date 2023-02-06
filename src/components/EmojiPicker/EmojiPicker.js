@@ -1,5 +1,5 @@
 import React from 'react';
-import {Dimensions, Keyboard, Platform} from 'react-native';
+import {Dimensions, Keyboard} from 'react-native';
 import _ from 'underscore';
 import EmojiPickerMenu from './EmojiPickerMenu';
 import CONST from '../../CONST';
@@ -149,8 +149,7 @@ class EmojiPicker extends React.Component {
                 shouldSetModalVisibility={false}
                 animationInTiming={1}
                 animationOutTiming={1}
-                avoidKeyboard={Platform.OS === 'ios'}
-                isUseKeyboardAvoidingView={Platform.OS === 'android'}
+                isUseKeyboardAvoidingView
                 anchorPosition={{
                     vertical: this.state.emojiPopoverAnchorPosition.vertical,
                     horizontal: this.state.emojiPopoverAnchorPosition.horizontal,

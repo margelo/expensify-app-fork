@@ -161,7 +161,6 @@ class BaseModal extends PureComponent {
                         return this.props.isUseKeyboardAvoidingView ? (
                             <KeyboardAvoidingView
                                 behavior="padding"
-                                pointerEvents="box-none"
                             >
                                 {content}
                             </KeyboardAvoidingView>
