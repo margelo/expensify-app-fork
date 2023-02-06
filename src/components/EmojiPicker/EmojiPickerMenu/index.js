@@ -473,22 +473,24 @@ class EmojiPickerMenu extends Component {
                 style={[styles.emojiPickerContainer, StyleUtils.getEmojiPickerStyle(this.props.isSmallScreenWidth)]}
                 pointerEvents={this.state.arePointerEventsDisabled ? 'none' : 'auto'}
             >
-                <View style={[styles.pt4, styles.ph4, styles.pb1]}>
-                    <Composer
-                        textAlignVertical="top"
-                        placeholder={this.props.translate('common.search')}
-                        placeholderTextColor={themeColors.textSupporting}
-                        onChangeText={this.filterEmojis}
-                        style={[styles.textInput, this.state.isFocused && styles.borderColorFocus]}
-                        defaultValue=""
-                        ref={el => this.searchInput = el}
-                        autoFocus
-                        selectTextOnFocus={this.state.selectTextOnFocus}
-                        onSelectionChange={this.onSelectionChange}
-                        onFocus={() => this.setState({isFocused: true, highlightedIndex: -1, isUsingKeyboardMovement: false})}
-                        onBlur={() => this.setState({isFocused: false})}
-                    />
-                </View>
+                {!this.props.isSmallScreenWidth && (
+                    <View style={[styles.pt4, styles.ph4, styles.pb1]}>
+                        <Composer
+                            textAlignVertical="top"
+                            placeholder={this.props.translate('common.search')}
+                            placeholderTextColor={themeColors.textSupporting}
+                            onChangeText={this.filterEmojis}
+                            style={[styles.textInput, this.state.isFocused && styles.borderColorFocus]}
+                            defaultValue=""
+                            ref={el => this.searchInput = el}
+                            autoFocus
+                            selectTextOnFocus={this.state.selectTextOnFocus}
+                            onSelectionChange={this.onSelectionChange}
+                            onFocus={() => this.setState({isFocused: true, highlightedIndex: -1, isUsingKeyboardMovement: false})}
+                            onBlur={() => this.setState({isFocused: false})}
+                        />
+                    </View>
+                )}
                 {this.state.filteredEmojis.length === 0
                     ? (
                         <Text

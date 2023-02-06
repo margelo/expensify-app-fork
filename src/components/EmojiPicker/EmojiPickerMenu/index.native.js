@@ -15,8 +15,7 @@ import withLocalize, {withLocalizePropTypes} from '../../withLocalize';
 import EmojiSkinToneList from '../EmojiSkinToneList';
 import * as EmojiUtils from '../../../libs/EmojiUtils';
 import * as User from '../../../libs/actions/User';
-import themeColors from '../../../styles/themes/default';
-import RNTextInput from '../../RNTextInput';
+import TextInput from '../../TextInput';
 
 const propTypes = {
     /** Function to add the selected emoji to the main compose text input */
@@ -67,7 +66,6 @@ class EmojiPickerMenu extends Component {
 
         this.state = {
             filteredEmojis: this.emojis,
-            isFocused: false,
             value: '',
         };
     }
@@ -207,17 +205,10 @@ class EmojiPickerMenu extends Component {
     render() {
         return (
             <View style={[styles.emojiPickerContainer]}>
-                <View style={[styles.pt4, styles.ph4, styles.pb1]}>
-                    <RNTextInput
-                        placeholder={this.props.translate('common.search')}
-                        placeholderTextColor={themeColors.textSupporting}
+                <View style={[styles.ph4, styles.pb1]}>
+                    <TextInput
+                        label={this.props.translate('common.search')}
                         onChangeText={this.filterEmojis}
-                        style={[
-                            styles.textInput,
-                            this.state.isFocused && styles.borderColorFocus,
-                        ]}
-                        onFocus={() => this.setState({isFocused: true})}
-                        onBlur={() => this.setState({isFocused: false})}
                     />
                 </View>
 
