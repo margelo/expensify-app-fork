@@ -37,6 +37,7 @@ import {ShowContextMenuContext} from '../../../components/ShowContextMenuContext
 import focusTextInputAfterAnimation from '../../../libs/focusTextInputAfterAnimation';
 import ReportActionItemReactions from '../../../components/Reactions/ReportActionItemReactions';
 import * as Report from '../../../libs/actions/Report';
+import * as PopoverReactionsUserListAction from '../../../components/Reactions/PopoverReactionsUserListAction';
 
 const propTypes = {
     /** Report for this action */
@@ -146,6 +147,15 @@ class ReportActionItem extends Component {
     }
 
     /**
+     * Shows the list of users who reacted with this emoji.
+     * @param {Object} reaction
+     * @param {Object} emoji
+     */
+    showReactionUsers(reaction, emoji) {
+        PopoverReactionsUserListAction.showReactionsUserList(reaction.users, emoji);
+    }
+
+    /**
      * Get the content of ReportActionItem
      * @param {Boolean} hovered whether the ReportActionItem is hovered
      * @returns {Object} child component(s)
@@ -211,6 +221,7 @@ class ReportActionItem extends Component {
                     <ReportActionItemReactions
                         reactions={reactions}
                         toggleReaction={this.toggleReaction}
+                        onReactionListOpen={this.showReactionUsers}
                     />
                 )}
             </>

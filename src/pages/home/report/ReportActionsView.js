@@ -24,6 +24,8 @@ import EmojiPicker from '../../../components/EmojiPicker/EmojiPicker';
 import * as ReportActionsUtils from '../../../libs/ReportActionsUtils';
 import * as ReportUtils from '../../../libs/ReportUtils';
 import reportPropTypes from '../../reportPropTypes';
+import * as PopoverReactionsUserListAction from '../../../components/Reactions/PopoverReactionsUserListAction';
+import PopoverReactionsUserList from '../../../components/Reactions/PopoverReactionsUserList';
 
 const propTypes = {
     /** The report currently being looked at */
@@ -394,6 +396,7 @@ class ReportActionsView extends React.Component {
                     </>
                 )}
                 <EmojiPicker ref={EmojiPickerAction.emojiPickerRef} />
+                <PopoverReactionsUserList ref={PopoverReactionsUserListAction.reactionsUserListRef} />
                 <CopySelectionHelper />
             </>
         );

@@ -1,6 +1,5 @@
-import React from 'react';
+import React, {forwardRef} from 'react';
 import PropTypes from 'prop-types';
-import {Pressable} from 'react-native';
 import _ from 'underscore';
 import styles from '../../styles/styles';
 import Text from '../Text';
@@ -9,6 +8,7 @@ import withCurrentUserPersonalDetails, {
     withCurrentUserPersonalDetailsDefaultProps,
     withCurrentUserPersonalDetailsPropTypes,
 } from '../withCurrentUserPersonalDetails';
+import PressableWithSecondaryInteraction from '../PressableWithSecondaryInteraction';
 
 const propTypes = {
     /**
@@ -59,13 +59,14 @@ const defaultProps = {
 const EmojiReactionBubble = (props) => {
     const hasUserReacted = _.find(props.reactionUsers, accountID => `${accountID}` === `${props.currentUserPersonalDetails.accountID}`) != null;
     return (
-        <Pressable
+        <PressableWithSecondaryInteraction
+            ref={props.forwardedRef}
             style={({hovered}) => [
                 styles.emojiReactionBubble,
                 StyleUtils.getEmojiReactionBubbleStyle(hovered, hasUserReacted, props.sizeScale),
             ]}
             onPress={props.onPress}
-            onLongPress={props.onReactionListOpen}
+            onSecondaryInteraction={props.onReactionListOpen}
         >
             <Text style={[
                 styles.emojiReactionText,
@@ -83,7 +84,7 @@ const EmojiReactionBubble = (props) => {
                     {props.count}
                 </Text>
             )}
-        </Pressable>
+        </PressableWithSecondaryInteraction>
     );
 };
 
@@ -91,4 +92,7 @@ EmojiReactionBubble.propTypes = propTypes;
 EmojiReactionBubble.defaultProps = defaultProps;
 EmojiReactionBubble.displayName = 'EmojiReactionBubble';
 
-export default withCurrentUserPersonalDetails(EmojiReactionBubble);
+export default withCurrentUserPersonalDetails(forwardRef((props, ref) => (
+    // eslint-disable-next-line react/jsx-props-no-spreading
+    <EmojiReactionBubble {...props} forwardedRef={ref} />
+)));

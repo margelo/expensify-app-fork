@@ -40,6 +40,12 @@ const propTypes = {
      * hence this function asks to toggle the reaction by emoji.
      */
     toggleReaction: PropTypes.func.isRequired,
+
+    onReactionListOpen: PropTypes.func,
+};
+
+const defaultProps = {
+    onReactionListOpen: undefined,
 };
 
 const ReportActionItemReactions = props => (
@@ -49,19 +55,27 @@ const ReportActionItemReactions = props => (
             const reactionUsers = _.map(reaction.users, sender => sender.accountID);
             const emoji = _.find(emojis, e => e.name === reaction.emoji);
             const emojiCodes = getUniqueEmojiCodes(emoji, reaction.users);
+            let ref;
 
             const onPress = () => {
                 props.toggleReaction(emoji);
             };
+            const onReactionListOpen = () => {
+                props.onReactionListOpen(ref, reaction, emoji);
+            };
 
             return (
                 <EmojiReactionBubble
+                    ref={(refArg) => {
+                        ref = refArg;
+                    }}
                     key={reaction.emoji}
                     count={reactionCount}
                     emojiName={reaction.emoji}
                     emojiCodes={emojiCodes}
                     onPress={onPress}
                     reactionUsers={reactionUsers}
+                    onReactionListOpen={onReactionListOpen}
                 />
             );
         })}
@@ -71,4 +85,5 @@ const ReportActionItemReactions = props => (
 
 ReportActionItemReactions.displayName = 'ReportActionItemReactions';
 ReportActionItemReactions.propTypes = propTypes;
+ReportActionItemReactions.defaultProps = defaultProps;
 export default ReportActionItemReactions;
