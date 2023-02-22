@@ -148,11 +148,12 @@ class ReportActionItem extends Component {
 
     /**
      * Shows the list of users who reacted with this emoji.
+     * @param {Element} anchorElement
      * @param {Object} reaction
      * @param {Object} emoji
      */
-    showReactionUsers(reaction, emoji) {
-        PopoverReactionsUserListAction.showReactionsUserList(reaction.users, emoji);
+    showReactionUsers(anchorElement, reaction, emoji) {
+        PopoverReactionsUserListAction.showReactionsUserList(anchorElement, reaction.users, emoji);
     }
 
     /**
