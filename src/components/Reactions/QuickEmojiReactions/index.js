@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import BaseQuickEmojiReactions, {baseQuickEmojiReactionsPropTypes} from './BaseQuickEmojiReactions';
-import {contextMenuRef} from '../../../pages/home/report/ContextMenu/ReportActionContextMenu';
+// eslint-disable-next-line rulesdir/prefer-import-module-contents
+import {popoverModalRef} from '../../../pages/home/report/PopoverModal/PopoverModalController';
 import CONST from '../../../CONST';
 
 const propTypes = {
@@ -17,7 +18,7 @@ const propTypes = {
 
 const QuickEmojiReactions = (props) => {
     const onPressOpenPicker = (openPicker) => {
-        openPicker(contextMenuRef.current.contentRef.current, {
+        openPicker(popoverModalRef.current.contentRef.current, {
             horizontal: CONST.MODAL.ANCHOR_ORIGIN_HORIZONTAL.RIGHT,
             vertical: CONST.MODAL.ANCHOR_ORIGIN_VERTICAL.TOP,
         });

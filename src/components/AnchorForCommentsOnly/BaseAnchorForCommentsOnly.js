@@ -6,8 +6,8 @@ import lodashGet from 'lodash/get';
 import Str from 'expensify-common/lib/str';
 import Text from '../Text';
 import PressableWithSecondaryInteraction from '../PressableWithSecondaryInteraction';
-import * as ReportActionContextMenu from '../../pages/home/report/ContextMenu/ReportActionContextMenu';
-import * as ContextMenuActions from '../../pages/home/report/ContextMenu/ContextMenuActions';
+import * as PopoverModalController from '../../pages/home/report/PopoverModal/PopoverModalController';
+import * as ContextMenuActions from '../../pages/home/report/PopoverModal/ContextMenuActions';
 import Tooltip from '../Tooltip';
 import * as DeviceCapabilities from '../../libs/DeviceCapabilities';
 import styles from '../../styles/styles';
@@ -53,12 +53,13 @@ const BaseAnchorForCommentsOnly = (props) => {
             inline
             onSecondaryInteraction={
                 (event) => {
-                    ReportActionContextMenu.showContextMenu(
-                        Str.isValidEmailMarkdown(props.displayName) ? ContextMenuActions.CONTEXT_MENU_TYPES.EMAIL : ContextMenuActions.CONTEXT_MENU_TYPES.LINK,
+                    PopoverModalController.showPopoverModal({
+                        popupContentType: 'contextMenu',
+                        type: Str.isValidEmailMarkdown(props.displayName) ? ContextMenuActions.CONTEXT_MENU_TYPES.EMAIL : ContextMenuActions.CONTEXT_MENU_TYPES.LINK,
                         event,
-                        props.href,
-                        lodashGet(linkRef, 'current'),
-                    );
+                        selection: props.href,
+                        popoverModalAnchor: lodashGet(linkRef, 'current'),
+                    });
                 }
             }
             onPress={linkProps.onPress}

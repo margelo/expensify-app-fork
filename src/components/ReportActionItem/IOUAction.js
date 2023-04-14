@@ -27,7 +27,7 @@ const propTypes = {
     isMostRecentIOUReportAction: PropTypes.bool.isRequired,
 
     /** Popover context menu anchor, used for showing context menu */
-    contextMenuAnchor: PropTypes.shape({current: PropTypes.elementType}),
+    popoverModalAnchor: PropTypes.shape({current: PropTypes.elementType}),
 
     /** Callback for updating context menu active state, used for showing context menu */
     checkIfContextMenuActive: PropTypes.func,
@@ -55,7 +55,7 @@ const propTypes = {
 };
 
 const defaultProps = {
-    contextMenuAnchor: undefined,
+    popoverModalAnchor: undefined,
     checkIfContextMenuActive: () => {},
     chatReport: {
         participants: [],
@@ -92,7 +92,7 @@ const IOUAction = (props) => {
             <IOUQuote
                 action={props.action}
                 chatReportID={props.chatReportID}
-                contextMenuAnchor={props.contextMenuAnchor}
+                popoverModalAnchor={props.popoverModalAnchor}
                 shouldAllowViewDetails={Boolean(props.action.originalMessage.IOUReportID)}
                 onViewDetailsPressed={launchDetailsModal}
                 checkIfContextMenuActive={props.checkIfContextMenuActive}
@@ -103,7 +103,7 @@ const IOUAction = (props) => {
                     iouReportID={props.action.originalMessage.IOUReportID.toString()}
                     chatReportID={props.chatReportID}
                     action={props.action}
-                    contextMenuAnchor={props.contextMenuAnchor}
+                    popoverModalAnchor={props.popoverModalAnchor}
                     checkIfContextMenuActive={props.checkIfContextMenuActive}
                     shouldShowPendingConversionMessage={shouldShowPendingConversionMessage}
                     onPayButtonPressed={launchDetailsModal}

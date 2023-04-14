@@ -50,7 +50,7 @@ const propTypes = {
     action: PropTypes.shape(reportActionPropTypes),
 
     /** Popover context menu anchor, used for showing context menu */
-    contextMenuAnchor: PropTypes.shape({current: PropTypes.elementType}),
+    popoverModalAnchor: PropTypes.shape({current: PropTypes.elementType}),
 
     /** Callback for updating context menu active state, used for showing context menu */
     checkIfContextMenuActive: PropTypes.func,
@@ -115,7 +115,7 @@ const defaultProps = {
     onPayButtonPressed: null,
     onPreviewPressed: () => {},
     action: undefined,
-    contextMenuAnchor: undefined,
+    popoverModalAnchor: undefined,
     checkIfContextMenuActive: () => {},
     containerStyles: [],
     walletTerms: {},
@@ -172,7 +172,7 @@ const IOUPreview = (props) => {
 
         showContextMenuForReport(
             event,
-            props.contextMenuAnchor,
+            props.popoverModalAnchor,
             props.chatReportID,
             props.action,
             props.checkIfContextMenuActive,

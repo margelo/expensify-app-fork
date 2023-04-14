@@ -21,9 +21,9 @@ import compose from '../../../libs/compose';
 import withWindowDimensions, {windowDimensionsPropTypes} from '../../../components/withWindowDimensions';
 import ControlSelection from '../../../libs/ControlSelection';
 import * as DeviceCapabilities from '../../../libs/DeviceCapabilities';
-import MiniReportActionContextMenu from './ContextMenu/MiniReportActionContextMenu';
-import * as ReportActionContextMenu from './ContextMenu/ReportActionContextMenu';
-import * as ContextMenuActions from './ContextMenu/ContextMenuActions';
+import MiniReportActionContextMenu from './PopoverModal/components/MiniReportActionContextMenu';
+import * as PopoverModalController from './PopoverModal/PopoverModalController';
+import * as ContextMenuActions from './PopoverModal/ContextMenuActions';
 import {withBlockedFromConcierge, withNetwork, withReportActionsDrafts} from '../../../components/OnyxProvider';
 import RenameAction from '../../../components/ReportActionItem/RenameAction';
 import InlineSystemMessage from '../../../components/InlineSystemMessage';
@@ -83,7 +83,7 @@ class ReportActionItem extends Component {
         super(props);
         this.popoverAnchor = undefined;
         this.state = {
-            isContextMenuActive: ReportActionContextMenu.isActiveReportAction(props.action.reportActionID),
+            isContextMenuActive: PopoverModalController.isActiveReportAction(props.action.reportActionID),
         };
         this.checkIfContextMenuActive = this.checkIfContextMenuActive.bind(this);
         this.showPopover = this.showPopover.bind(this);
@@ -113,11 +113,11 @@ class ReportActionItem extends Component {
     }
 
     checkIfContextMenuActive() {
-        this.setState({isContextMenuActive: ReportActionContextMenu.isActiveReportAction(this.props.action.reportActionID)});
+        this.setState({isContextMenuActive: PopoverModalController.isActiveReportAction(this.props.action.reportActionID)});
     }
 
     /**
-     * Show the ReportActionContextMenu modal popover.
+     * Show the PopoverModalController modal popover.
      *
      * @param {Object} [event] - A press event.
      */
@@ -130,19 +130,20 @@ class ReportActionItem extends Component {
         this.setState({isContextMenuActive: true});
 
         const selection = SelectionScraper.getCurrentSelection();
-        ReportActionContextMenu.showContextMenu(
-            ContextMenuActions.CONTEXT_MENU_TYPES.REPORT_ACTION,
+        PopoverModalController.showPopoverModal({
+            popupContentType: 'contextMenu',
+            type: ContextMenuActions.CONTEXT_MENU_TYPES.REPORT_ACTION,
             event,
             selection,
-            this.popoverAnchor,
-            this.props.report.reportID,
-            this.props.action,
-            this.props.draftMessage,
-            undefined,
-            this.checkIfContextMenuActive,
-            ReportUtils.isArchivedRoom(this.props.report),
-            ReportUtils.chatIncludesChronos(this.props.report),
-        );
+            popoverModalAnchor: this.popoverAnchor,
+            reportID: this.props.report.reportID,
+            reportAction: this.props.action,
+            draftMessage: this.props.draftMessage,
+            onShow: undefined,
+            onHide: this.checkIfContextMenuActive,
+            isArchivedRoom: ReportUtils.isArchivedRoom(this.props.report),
+            isChronosReport: ReportUtils.chatIncludesChronos(this.props.report),
+        });
     }
 
     toggleReaction(emoji) {
@@ -163,7 +164,7 @@ class ReportActionItem extends Component {
                     action={this.props.action}
                     isMostRecentIOUReportAction={this.props.isMostRecentIOUReportAction}
                     isHovered={hovered}
-                    contextMenuAnchor={this.popoverAnchor}
+                    popoverModalAnchor={this.popoverAnchor}
                     checkIfContextMenuActive={this.checkIfContextMenuActive}
                 />
             );

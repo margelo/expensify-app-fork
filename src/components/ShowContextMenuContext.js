@@ -1,6 +1,6 @@
 import React from 'react';
-import * as ReportActionContextMenu from '../pages/home/report/ContextMenu/ReportActionContextMenu';
-import * as ContextMenuActions from '../pages/home/report/ContextMenu/ContextMenuActions';
+import * as PopoverModalController from '../pages/home/report/PopoverModal/PopoverModalController';
+import * as ContextMenuActions from '../pages/home/report/PopoverModal/ContextMenuActions';
 
 const ShowContextMenuContext = React.createContext({
     anchor: null,
@@ -21,17 +21,18 @@ ShowContextMenuContext.displayName = 'ShowContextMenuContext';
  * @param {Function} checkIfContextMenuActive Callback to update context menu active state
  */
 function showContextMenuForReport(event, anchor, reportID, action, checkIfContextMenuActive) {
-    ReportActionContextMenu.showContextMenu(
-        ContextMenuActions.CONTEXT_MENU_TYPES.REPORT_ACTION,
+    PopoverModalController.showPopoverModal({
+        popupContentType: 'contextMenu',
+        type: ContextMenuActions.CONTEXT_MENU_TYPES.REPORT_ACTION,
         event,
-        '',
-        anchor,
+        selection: '',
+        popoverModalAnchor: anchor,
         reportID,
-        action,
-        '',
-        checkIfContextMenuActive,
-        checkIfContextMenuActive,
-    );
+        reportAction: action,
+        draftMessage: '',
+        onShow: checkIfContextMenuActive,
+        onHide: checkIfContextMenuActive,
+    });
 }
 
 export {

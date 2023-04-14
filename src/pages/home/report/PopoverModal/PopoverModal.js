@@ -7,15 +7,18 @@ import lodashGet from 'lodash/get';
 import * as Report from '../../../../libs/actions/Report';
 import withLocalize, {withLocalizePropTypes} from '../../../../components/withLocalize';
 import PopoverWithMeasuredContent from '../../../../components/PopoverWithMeasuredContent';
-import BaseReportActionContextMenu from './BaseReportActionContextMenu';
+import BaseReportActionContextMenu from './components/BaseReportActionContextMenu';
 import ConfirmModal from '../../../../components/ConfirmModal';
 import CONST from '../../../../CONST';
+import BaseReactionList from './components/BaseReactionList';
+import compose from '../../../../libs/compose';
+import withWindowDimensions from '../../../../components/withWindowDimensions';
 
 const propTypes = {
     ...withLocalizePropTypes,
 };
 
-class PopoverReportActionContextMenu extends React.Component {
+class PopoverModal extends React.Component {
     constructor(props) {
         super(props);
 
@@ -43,11 +46,11 @@ class PopoverReportActionContextMenu extends React.Component {
         this.onPopoverShow = () => {};
         this.onPopoverHide = () => {};
         this.onPopoverHideActionCallback = () => {};
-        this.contextMenuAnchor = undefined;
-        this.showContextMenu = this.showContextMenu.bind(this);
-        this.hideContextMenu = this.hideContextMenu.bind(this);
+        this.popoverModalAnchor = undefined;
+        this.showPopoverModal = this.showPopoverModal.bind(this);
+        this.hidePopoverModal = this.hidePopoverModal.bind(this);
         this.measureContent = this.measureContent.bind(this);
-        this.measureContextMenuAnchorPosition = this.measureContextMenuAnchorPosition.bind(this);
+        this.measurePopoverModalAnchorPosition = this.measurePopoverModalAnchorPosition.bind(this);
         this.confirmDeleteAndHideModal = this.confirmDeleteAndHideModal.bind(this);
         this.hideDeleteModal = this.hideDeleteModal.bind(this);
         this.showDeleteModal = this.showDeleteModal.bind(this);
@@ -66,7 +69,7 @@ class PopoverReportActionContextMenu extends React.Component {
     }
 
     componentDidMount() {
-        this.dimensionsEventListener = Dimensions.addEventListener('change', this.measureContextMenuAnchorPosition);
+        this.dimensionsEventListener = Dimensions.addEventListener('change', this.measurePopoverModalAnchorPosition);
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -93,8 +96,8 @@ class PopoverReportActionContextMenu extends React.Component {
      */
     getContextMenuMeasuredLocation() {
         return new Promise((resolve) => {
-            if (this.contextMenuAnchor) {
-                this.contextMenuAnchor.measureInWindow((x, y) => resolve({x, y}));
+            if (this.popoverModalAnchor) {
+                this.popoverModalAnchor.measureInWindow((x, y) => resolve({x, y}));
             } else {
                 resolve({x: 0, y: 0});
             }
@@ -117,7 +120,7 @@ class PopoverReportActionContextMenu extends React.Component {
      * @param {string} type - context menu type [EMAIL, LINK, REPORT_ACTION]
      * @param {Object} [event] - A press event.
      * @param {String} [selection] - Copied content.
-     * @param {Element} contextMenuAnchor - popoverAnchor
+     * @param {Element} popoverModalAnchor - popoverAnchor
      * @param {String} reportID - Active Report Id
      * @param {Object} reportAction - ReportAction for ContextMenu
      * @param {String} draftMessage - ReportAction Draftmessage
@@ -126,11 +129,11 @@ class PopoverReportActionContextMenu extends React.Component {
      * @param {Boolean} isArchivedRoom - Whether the provided report is an archived room
      * @param {Boolean} isChronosReport - Flag to check if the chat participant is Chronos
      */
-    showContextMenu(
+    showPopoverModal({
         type,
         event,
         selection,
-        contextMenuAnchor,
+        popoverModalAnchor, // anchor for popover -reactionListAnchor
         reportID,
         reportAction,
         draftMessage,
@@ -138,9 +141,17 @@ class PopoverReportActionContextMenu extends React.Component {
         onHide = () => {},
         isArchivedRoom,
         isChronosReport,
-    ) {
+
+        //
+        popupContentType = 'contextMenu',
+        users,
+        emojiName,
+        emojiCodes,
+        emojiCount,
+        hasUserReacted,
+        reactionListAnchor,
+    }) {
         const nativeEvent = event.nativeEvent || {};
-        this.contextMenuAnchor = contextMenuAnchor;
         this.contextMenuTargetNode = nativeEvent.target;
 
         // Singleton behaviour of ContextMenu creates race conditions when user requests multiple contextMenus.
@@ -149,6 +160,35 @@ class PopoverReportActionContextMenu extends React.Component {
 
         this.onPopoverShow = onShow;
         this.onPopoverHide = onHide;
+
+        let state = {};
+        this.popoverModalAnchor = popoverModalAnchor;
+        switch (popupContentType) {
+            case 'contextMenu':
+                state = {
+                    type,
+                    reportID,
+                    reportAction,
+                    selection,
+                    reportActionDraftMessage: draftMessage,
+                    isArchivedRoom,
+                    isChronosReport,
+                };
+
+                break;
+            case 'emojiReactionList':
+                this.popoverModalAnchor = reactionListAnchor;
+                state = {
+                    users,
+                    emojiName,
+                    emojiCodes,
+                    emojiCount,
+                    hasUserReacted,
+                };
+                break;
+            default:
+                break;
+        }
 
         this.getContextMenuMeasuredLocation().then(({x, y}) => {
             this.setState({
@@ -160,14 +200,9 @@ class PopoverReportActionContextMenu extends React.Component {
                     horizontal: nativeEvent.pageX,
                     vertical: nativeEvent.pageY,
                 },
-                type,
-                reportID,
-                reportAction,
-                selection,
+                ...state,
                 isPopoverVisible: true,
-                reportActionDraftMessage: draftMessage,
-                isArchivedRoom,
-                isChronosReport,
+                popupContentType,
             });
         });
     }
@@ -175,7 +210,7 @@ class PopoverReportActionContextMenu extends React.Component {
     /**
      * This gets called on Dimensions change to find the anchor coordinates for the action context menu.
      */
-    measureContextMenuAnchorPosition() {
+    measurePopoverModalAnchorPosition() {
         if (!this.state.isPopoverVisible) {
             return;
         }
@@ -216,15 +251,33 @@ class PopoverReportActionContextMenu extends React.Component {
      * Hide the ReportActionContextMenu modal popover.
      * @param {Function} onHideActionCallback Callback to be called after popover is completely hidden
      */
-    hideContextMenu(onHideActionCallback) {
+    hidePopoverModal(onHideActionCallback) {
         if (_.isFunction(onHideActionCallback)) {
             this.onPopoverHideActionCallback = onHideActionCallback;
         }
-        this.setState({
-            selection: '',
-            reportActionDraftMessage: '',
-            isPopoverVisible: false,
-        });
+        let state = {};
+        switch (this.state.popupContentType) {
+            case 'contextMenu':
+                state = {
+                    selection: '',
+                    reportActionDraftMessage: '',
+                    isPopoverVisible: false,
+                };
+
+                break;
+            case 'emojiReactionList':
+                state = {
+                    isPopoverVisible: false,
+                };
+                break;
+            default:
+                state = {
+                    isPopoverVisible: false,
+                };
+                break;
+        }
+
+        this.setState(state);
     }
 
     /**
@@ -233,19 +286,37 @@ class PopoverReportActionContextMenu extends React.Component {
      * @returns {JSX}
      */
     measureContent() {
-        return (
-            <BaseReportActionContextMenu
-                type={this.state.type}
-                isVisible
-                selection={this.state.selection}
-                reportID={this.state.reportID}
-                reportAction={this.state.reportAction}
-                isArchivedRoom={this.state.isArchivedRoom}
-                isChronosReport={this.state.isChronosReport}
-                anchor={this.contextMenuTargetNode}
-                contentRef={this.setContentRef}
-            />
-        );
+        switch (this.state.popupContentType) {
+            case 'contextMenu':
+                return (
+                    <BaseReportActionContextMenu
+                        type={this.state.type}
+                        isVisible
+                        selection={this.state.selection}
+                        reportID={this.state.reportID}
+                        reportAction={this.state.reportAction}
+                        isArchivedRoom={this.state.isArchivedRoom}
+                        isChronosReport={this.state.isChronosReport}
+                        anchor={this.contextMenuTargetNode}
+                        contentRef={this.setContentRef}
+                    />
+                );
+            case 'emojiReactionList':
+                return (
+                    <BaseReactionList
+                        type={this.state.type}
+                        isVisible
+                        users={this.state.users}
+                        emojiName={this.state.emojiName}
+                        emojiCodes={this.state.emojiCodes}
+                        emojiCount={this.state.emojiCount}
+                        onClose={this.hidePopoverModal}
+                        hasUserReacted={this.state.hasUserReacted}
+                    />
+                );
+            default:
+                return null;
+        }
     }
 
     /**
@@ -296,21 +367,10 @@ class PopoverReportActionContextMenu extends React.Component {
     }
 
     render() {
-        return (
-            <>
-                <PopoverWithMeasuredContent
-                    isVisible={this.state.isPopoverVisible}
-                    onClose={this.hideContextMenu}
-                    onModalShow={this.runAndResetOnPopoverShow}
-                    onModalHide={this.runAndResetOnPopoverHide}
-                    anchorPosition={this.state.popoverAnchorPosition}
-                    animationIn="fadeIn"
-                    disableAnimation={false}
-                    animationOutTiming={1}
-                    measureContent={this.measureContent}
-                    shouldSetModalVisibility={false}
-                    fullscreen
-                >
+        let popupContent;
+        switch (this.state.popupContentType) {
+            case 'contextMenu':
+                popupContent = (
                     <BaseReportActionContextMenu
                         isVisible
                         type={this.state.type}
@@ -322,6 +382,42 @@ class PopoverReportActionContextMenu extends React.Component {
                         anchor={this.contextMenuTargetNode}
                         contentRef={this.contentRef}
                     />
+                );
+                break;
+            case 'emojiReactionList':
+                popupContent = (
+                    <BaseReactionList
+                        type={this.state.type}
+                        isVisible
+                        users={this.state.users}
+                        emojiName={this.state.emojiName}
+                        emojiCodes={this.state.emojiCodes}
+                        emojiCount={this.state.emojiCount}
+                        onClose={this.hidePopoverModal}
+                        hasUserReacted={this.state.hasUserReacted}
+                    />
+                );
+                break;
+            default:
+                popupContent = null;
+        }
+        return (
+            <>
+                <PopoverWithMeasuredContent
+                    isVisible={this.state.isPopoverVisible}
+                    onClose={this.hidePopoverModal}
+                    onModalShow={this.runAndResetOnPopoverShow}
+                    onModalHide={this.runAndResetOnPopoverHide}
+                    anchorPosition={this.state.popoverAnchorPosition}
+                    animationIn={this.props.isSmallScreenWidth ? 'slideInUp' : 'fadeIn'}
+                    animationOut={this.props.isSmallScreenWidth ? 'slideOutDown' : 'fadeOut'}
+                    disableAnimation={false}
+                    animationOutTiming={this.props.isSmallScreenWidth ? 200 : 1}
+                    measureContent={this.measureContent}
+                    shouldSetModalVisibility={false}
+                    fullscreen
+                >
+                    {popupContent}
                 </PopoverWithMeasuredContent>
                 <ConfirmModal
                     title={this.props.translate('reportActionContextMenu.deleteComment')}
@@ -340,6 +436,9 @@ class PopoverReportActionContextMenu extends React.Component {
     }
 }
 
-PopoverReportActionContextMenu.propTypes = propTypes;
+PopoverModal.propTypes = propTypes;
 
-export default withLocalize(PopoverReportActionContextMenu);
+export default compose(
+    withLocalize,
+    withWindowDimensions,
+)(PopoverModal);

@@ -9,7 +9,8 @@ import * as Download from '../../../../libs/actions/Download';
 import Clipboard from '../../../../libs/Clipboard';
 import * as ReportUtils from '../../../../libs/ReportUtils';
 import ReportActionComposeFocusManager from '../../../../libs/ReportActionComposeFocusManager';
-import {hideContextMenu, showDeleteModal} from './ReportActionContextMenu';
+// eslint-disable-next-line rulesdir/prefer-import-module-contents
+import {hidePopoverModal, showDeleteModal} from './PopoverModalController';
 import CONST from '../../../../CONST';
 import getAttachmentDetails from '../../../../libs/fileDownload/getAttachmentDetails';
 import fileDownload from '../../../../libs/fileDownload';
@@ -53,7 +54,7 @@ export default [
                         onHideCallback();
                     }
                 } else {
-                    hideContextMenu(false, onHideCallback);
+                    hidePopoverModal(false, onHideCallback);
                 }
             };
 
@@ -73,6 +74,7 @@ export default [
                 );
             }
 
+            // return null
             return (
                 <QuickEmojiReactions
                     key="BaseQuickEmojiReactions"
@@ -104,7 +106,7 @@ export default [
             Download.setDownload(sourceID, true);
             fileDownload(sourceURLWithAuth, originalFileName).then(() => Download.setDownload(sourceID, false));
             if (closePopover) {
-                hideContextMenu(true, ReportActionComposeFocusManager.focus);
+                hidePopoverModal(true, ReportActionComposeFocusManager.focus);
             }
         },
         getDescription: () => {},
@@ -117,7 +119,7 @@ export default [
         shouldShow: type => type === CONTEXT_MENU_TYPES.LINK,
         onPress: (closePopover, {selection}) => {
             Clipboard.setString(selection);
-            hideContextMenu(true, ReportActionComposeFocusManager.focus);
+            hidePopoverModal(true, ReportActionComposeFocusManager.focus);
         },
         getDescription: ContextMenuUtils.getPopoverDescription,
     },
@@ -129,7 +131,7 @@ export default [
         shouldShow: type => type === CONTEXT_MENU_TYPES.EMAIL,
         onPress: (closePopover, {selection}) => {
             Clipboard.setString(selection.replace('mailto:', ''));
-            hideContextMenu(true, ReportActionComposeFocusManager.focus);
+            hidePopoverModal(true, ReportActionComposeFocusManager.focus);
         },
         getDescription: () => {},
     },
@@ -167,7 +169,7 @@ export default [
                 Clipboard.setString(messageHtml);
             }
             if (closePopover) {
-                hideContextMenu(true, ReportActionComposeFocusManager.focus);
+                hidePopoverModal(true, ReportActionComposeFocusManager.focus);
             }
         },
         getDescription: () => {},
@@ -191,7 +193,7 @@ export default [
                     const reportActionID = parseInt(lodashGet(reportAction, 'reportActionID'), 10);
                     Clipboard.setString(`${environmentURL}/r/${reportID}/${reportActionID}`);
                 });
-            hideContextMenu(true, ReportActionComposeFocusManager.focus);
+            hidePopoverModal(true, ReportActionComposeFocusManager.focus);
         },
         getDescription: () => {},
     },
@@ -204,7 +206,7 @@ export default [
         onPress: (closePopover, {reportAction, reportID}) => {
             Report.markCommentAsUnread(reportID, reportAction.created);
             if (closePopover) {
-                hideContextMenu(true, ReportActionComposeFocusManager.focus);
+                hidePopoverModal(true, ReportActionComposeFocusManager.focus);
             }
         },
         getDescription: () => {},
@@ -225,7 +227,7 @@ export default [
 
             if (closePopover) {
                 // Hide popover, then call editAction
-                hideContextMenu(false, editAction);
+                hidePopoverModal(false, editAction);
                 return;
             }
 
@@ -242,7 +244,7 @@ export default [
         onPress: (closePopover, {reportID, reportAction}) => {
             if (closePopover) {
                 // Hide popover, then call showDeleteConfirmModal
-                hideContextMenu(
+                hidePopoverModal(
                     false,
                     () => showDeleteModal(reportID, reportAction),
                 );

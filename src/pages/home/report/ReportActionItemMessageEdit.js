@@ -17,7 +17,7 @@ import Button from '../../../components/Button';
 import ReportActionComposeFocusManager from '../../../libs/ReportActionComposeFocusManager';
 import compose from '../../../libs/compose';
 import EmojiPickerButton from '../../../components/EmojiPicker/EmojiPickerButton';
-import * as ReportActionContextMenu from './ContextMenu/ReportActionContextMenu';
+import * as PopoverModalController from './PopoverModal/PopoverModalController';
 import * as ReportUtils from '../../../libs/ReportUtils';
 import * as EmojiUtils from '../../../libs/EmojiUtils';
 import reportPropTypes from '../../reportPropTypes';
@@ -212,7 +212,7 @@ class ReportActionItemMessageEdit extends React.Component {
 
         // When user tries to save the empty message, it will delete it. Prompt the user to confirm deleting.
         if (!trimmedNewDraft) {
-            ReportActionContextMenu.showDeleteModal(
+            PopoverModalController.showDeleteModal(
                 this.props.reportID,
                 this.props.action,
                 false,

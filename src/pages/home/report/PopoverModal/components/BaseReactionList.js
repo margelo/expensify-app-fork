@@ -3,14 +3,14 @@ import React from 'react';
 import {FlatList} from 'react-native';
 import PropTypes from 'prop-types';
 import Str from 'expensify-common/lib/str';
-import styles from '../../../../styles/styles';
+import styles from '../../../../../styles/styles';
 import HeaderReactionList from './HeaderReactionList';
-import * as ReportUtils from '../../../../libs/ReportUtils';
-import CONST from '../../../../CONST';
-import participantPropTypes from '../../../../components/participantPropTypes';
+import * as ReportUtils from '../../../../../libs/ReportUtils';
+import CONST from '../../../../../CONST';
+import participantPropTypes from '../../../../../components/participantPropTypes';
 import reactionPropTypes from './reactionPropTypes';
-import OptionRow from '../../../../components/OptionRow';
-import variables from '../../../../styles/variables';
+import OptionRow from '../../../../../components/OptionRow';
+import variables from '../../../../../styles/variables';
 
 const propTypes = {
 

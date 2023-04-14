@@ -15,8 +15,8 @@ import PressableWithSecondaryInteraction from '../../components/PressableWithSec
 import ControlSelection from '../../libs/ControlSelection';
 import withWindowDimensions, {windowDimensionsPropTypes} from '../../components/withWindowDimensions';
 import * as DeviceCapabilities from '../../libs/DeviceCapabilities';
-import * as ReportActionContextMenu from '../home/report/ContextMenu/ReportActionContextMenu';
-import * as ContextMenuActions from '../home/report/ContextMenu/ContextMenuActions';
+import * as PopoverModalController from '../home/report/PopoverModal/PopoverModalController';
+import * as ContextMenuActions from '../home/report/PopoverModal/ContextMenuActions';
 
 const propTypes = {
     ...withLocalizePropTypes,
@@ -57,18 +57,18 @@ const AppDownloadLinksPage = (props) => {
     ];
 
     /**
-     * Show the ReportActionContextMenu modal popover.
+     * Show the PopoverModalController modal popover.
      *
      * @param {Object} [event] - A press event.
      * @param {String} [selection] - Copied content.
      */
     const showPopover = (event, selection) => {
-        ReportActionContextMenu.showContextMenu(
-            ContextMenuActions.CONTEXT_MENU_TYPES.LINK,
+        PopoverModalController.showPopoverModal({
+            type: ContextMenuActions.CONTEXT_MENU_TYPES.LINK,
             event,
             selection,
-            popoverAnchor,
-        );
+            popoverModalAnchor: popoverAnchor,
+        });
     };
 
     return (

@@ -23,7 +23,7 @@ const propTypes = {
     chatReportID: PropTypes.string.isRequired,
 
     /** Popover context menu anchor, used for showing context menu */
-    contextMenuAnchor: PropTypes.shape({current: PropTypes.elementType}),
+    popoverModalAnchor: PropTypes.shape({current: PropTypes.elementType}),
 
     /** Whether it is allowed to view details. */
     shouldAllowViewDetails: PropTypes.bool,
@@ -41,7 +41,7 @@ const propTypes = {
 };
 
 const defaultProps = {
-    contextMenuAnchor: null,
+    popoverModalAnchor: null,
     shouldAllowViewDetails: false,
     isHovered: false,
     onViewDetailsPressed: () => {},
@@ -60,7 +60,7 @@ const IOUQuote = props => (
                 onPressOut={() => ControlSelection.unblock()}
                 onLongPress={event => showContextMenuForReport(
                     event,
-                    props.contextMenuAnchor,
+                    props.popoverModalAnchor,
                     props.chatReportID,
                     props.action,
                     props.checkIfContextMenuActive,

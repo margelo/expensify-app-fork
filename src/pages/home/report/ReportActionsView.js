@@ -21,8 +21,6 @@ import CopySelectionHelper from '../../../components/CopySelectionHelper';
 import * as ReportActionsUtils from '../../../libs/ReportActionsUtils';
 import * as ReportUtils from '../../../libs/ReportUtils';
 import reportPropTypes from '../../reportPropTypes';
-import * as ReactionList from './ReactionList/ReactionList';
-import PopoverReactionList from './ReactionList/PopoverReactionList';
 import getIsReportFullyVisible from '../../../libs/getIsReportFullyVisible';
 
 const propTypes = {
@@ -351,7 +349,6 @@ class ReportActionsView extends React.Component {
                     loadMoreChats={this.loadMoreChats}
                     newMarkerReportActionID={this.state.newMarkerReportActionID}
                 />
-                <PopoverReactionList ref={ReactionList.reactionListRef} />
                 <CopySelectionHelper />
             </>
         );

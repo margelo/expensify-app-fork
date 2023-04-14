@@ -10,7 +10,7 @@ import withCurrentUserPersonalDetails, {withCurrentUserPersonalDetailsDefaultPro
 import getPreferredEmojiCode from './getPreferredEmojiCode';
 import * as PersonalDetailsUtils from '../../libs/PersonalDetailsUtils';
 import * as Report from '../../libs/actions/Report';
-import * as ReactionList from '../../pages/home/report/ReactionList/ReactionList';
+import * as PopoverModalController from '../../pages/home/report/PopoverModal/PopoverModalController';
 import Tooltip from '../Tooltip';
 import ReactionTooltipContent from './ReactionTooltipContent';
 
@@ -85,15 +85,16 @@ const ReportActionItemReactions = (props) => {
                 };
                 const onReactionListOpen = (event) => {
                     const users = PersonalDetailsUtils.getPersonalDetailsByIDs(reactionUsers);
-                    ReactionList.showReactionList(
+                    PopoverModalController.showPopoverModal({
+                        popupContentType: 'emojiReactionList',
                         event,
-                        popoverReactionListAnchor.current,
+                        reactionListAnchor: popoverReactionListAnchor.current,
                         users,
-                        reaction.emoji,
+                        emojiName: reaction.emoji,
                         emojiCodes,
-                        reactionCount,
+                        emojiCount: reactionCount,
                         hasUserReacted,
-                    );
+                    });
                 };
 
                 return (
