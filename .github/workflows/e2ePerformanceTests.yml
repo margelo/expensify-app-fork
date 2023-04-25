@@ -120,6 +120,9 @@ jobs:
           name: delta-apk-${{ needs.prepare.outputs.DELTA_REF }}.apk
           path: zip
 
+      - name: Rename APK files
+        run: mv zip/baseline-apk-${{ needs.prepare.outputs.VERSION }}.apk zip/app-e2eRelease-baseline.apk && mv zip/delta-apk-${{ needs.prepare.outputs.DELTA_REF }}.apk zip/app-e2eRelease-compare.apk
+
       - name: Copy e2e code into zip folder
         run: cp -r tests/e2e zip
 
