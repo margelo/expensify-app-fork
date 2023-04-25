@@ -45,9 +45,9 @@ const {GitHub, getOctokitOptions} = __nccwpck_require__(3030);
 const {throttling} = __nccwpck_require__(9968);
 const {paginateRest} = __nccwpck_require__(4193);
 
-const GITHUB_OWNER = 'Expensify';
-const APP_REPO = 'App';
-const APP_REPO_URL = 'https://github.com/Expensify/App';
+const GITHUB_OWNER = 'margelo';
+const APP_REPO = 'expensify-app-fork';
+const APP_REPO_URL = 'https://github.com/margelo/expensify-app-fork';
 
 const GITHUB_BASE_URL_REGEX = new RegExp('https?://(?:github\\.com|api\\.github\\.com)');
 const PULL_REQUEST_REGEX = new RegExp(`${GITHUB_BASE_URL_REGEX.source}/.*/.*/pull/([0-9]+).*`);

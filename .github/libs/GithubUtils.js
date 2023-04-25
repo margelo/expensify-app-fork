@@ -5,9 +5,9 @@ const {GitHub, getOctokitOptions} = require('@actions/github/lib/utils');
 const {throttling} = require('@octokit/plugin-throttling');
 const {paginateRest} = require('@octokit/plugin-paginate-rest');
 
-const GITHUB_OWNER = 'Expensify';
-const APP_REPO = 'App';
-const APP_REPO_URL = 'https://github.com/Expensify/App';
+const GITHUB_OWNER = 'margelo';
+const APP_REPO = 'expensify-app-fork';
+const APP_REPO_URL = 'https://github.com/margelo/expensify-app-fork';
 
 const GITHUB_BASE_URL_REGEX = new RegExp('https?://(?:github\\.com|api\\.github\\.com)');
 const PULL_REQUEST_REGEX = new RegExp(`${GITHUB_BASE_URL_REGEX.source}/.*/.*/pull/([0-9]+).*`);
