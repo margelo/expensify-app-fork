@@ -58,7 +58,7 @@ jobs:
         id: checkForExistingArtifact
         uses: xSAVIKx/artifact-exists-action@3c5206b1411c0d2fc0840f56b7140646933d9d6a
         with:
-          name: baseline-apk-${{ needs.prepare.outputs.VERSION }}
+          name: baseline-apk-${{ needs.prepare.outputs.VERSION }}.apk
 
       - name: Skip build if there's already an existing artifact for the baseline
         if: ${{ fromJSON(steps.checkForExistingArtifact.outputs.exists) }}
@@ -72,7 +72,7 @@ jobs:
         if: ${{ !fromJSON(steps.checkForExistingArtifact.outputs.exists) }}
         uses: margelo/expensify-app-fork/.github/actions/composite/buildAndroidAPK@chore/fix-ci-perf-regression-test-pipeline
         with:
-          ARTIFACT_NAME: baseline-apk-${{ needs.prepare.outputs.VERSION }}
+          ARTIFACT_NAME: baseline-apk-${{ needs.prepare.outputs.VERSION }}.apk
 
   buildDelta:
     runs-on: ubuntu-latest
@@ -93,7 +93,7 @@ jobs:
       - name: Build APK
         uses: margelo/expensify-app-fork/.github/actions/composite/buildAndroidAPK@chore/fix-ci-perf-regression-test-pipeline
         with:
-          ARTIFACT_NAME: delta-apk-${{ needs.prepare.outputs.DELTA_REF }}
+          ARTIFACT_NAME: delta-apk-${{ needs.prepare.outputs.DELTA_REF }}.apk
 
   runTestsInAWS:
     runs-on: ubuntu-latest
@@ -111,13 +111,13 @@ jobs:
         uses: actions/download-artifact@e9ef242655d12993efdcda9058dee2db83a2cb9b
         id: downloadBaselineAPK
         with:
-          name: baseline-apk-${{ needs.prepare.outputs.VERSION }}
+          name: baseline-apk-${{ needs.prepare.outputs.VERSION }}.apk
           path: zip
 
       - name: Download delta APK
         uses: actions/download-artifact@e9ef242655d12993efdcda9058dee2db83a2cb9b
         with:
-          name: delta-apk-${{ needs.prepare.outputs.DELTA_REF }}
+          name: delta-apk-${{ needs.prepare.outputs.DELTA_REF }}.apk
           path: zip
 
       - name: Copy e2e code into zip folder
@@ -139,7 +139,7 @@ jobs:
           name: App E2E Performance Regression Tests
           project_arn: ${{ secrets.AWS_PROJECT_ARN }}
           device_pool_arn: ${{ secrets.AWS_DEVICE_POOL_ARN }}
-          app_file: ${{ steps.downloadBaselineAPK.outputs.download-path }}
+          app_file: zip/baseline-apk-${{ needs.prepare.outputs.VERSION }}.apk
           app_type: ANDROID_APP
           test_type: APPIUM_NODE
           test_package_file: App.zip
