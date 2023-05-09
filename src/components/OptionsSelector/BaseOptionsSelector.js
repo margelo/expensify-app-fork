@@ -93,7 +93,7 @@ class BaseOptionsSelector extends Component {
             true,
         );
 
-        this.scrollToIndex(this.state.focusedIndex, false);
+        this.scrollToIndex(this.props.selectedOptions.length ? 0 : this.state.focusedIndex, false);
 
         if (!this.props.autoFocus) {
             return;
@@ -153,6 +153,9 @@ class BaseOptionsSelector extends Component {
      * @returns {Number}
      */
     getInitiallyFocusedIndex(allOptions) {
+        if (this.props.selectedOptions.length > 0) {
+            return this.props.selectedOptions.length;
+        }
         const defaultIndex = this.props.shouldTextInputAppearBelowOptions ? allOptions.length : 0;
         if (_.isUndefined(this.props.initiallyFocusedOptionKey)) {
             return defaultIndex;
@@ -305,7 +308,9 @@ class BaseOptionsSelector extends Component {
                 isDisabled={this.props.isDisabled}
                 shouldHaveOptionSeparator={this.props.shouldHaveOptionSeparator}
                 onLayout={() => {
-                    this.scrollToIndex(this.state.focusedIndex, false);
+                    if (this.props.selectedOptions.length === 0) {
+                        this.scrollToIndex(this.state.focusedIndex, false);
+                    }
 
                     if (this.props.onLayout) {
                         this.props.onLayout();
@@ -329,14 +334,14 @@ class BaseOptionsSelector extends Component {
                                     <View style={[styles.flexGrow0, styles.flexShrink1, styles.flexBasisAuto, styles.w100, styles.flexRow]}>
                                         {optionsList}
                                     </View>
-                                    <View style={[styles.ph5, styles.pv5, styles.flexGrow1, styles.flexShrink0]}>
+                                    <View style={this.props.shouldUseStyleForChildren ? [styles.ph5, styles.pv5, styles.flexGrow1, styles.flexShrink0] : []}>
                                         {this.props.children}
                                         {this.props.shouldShowTextInput && textInput}
                                     </View>
                                 </>
                             ) : (
                                 <>
-                                    <View style={[styles.ph5, styles.pv3]}>
+                                    <View style={this.props.shouldUseStyleForChildren ? [styles.ph5, styles.pb3] : []}>
                                         {this.props.children}
                                         {this.props.shouldShowTextInput && textInput}
                                     </View>
