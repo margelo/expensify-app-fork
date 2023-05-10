@@ -254,7 +254,9 @@ class PopoverReportActionContextMenu extends React.Component {
      * @returns {Function}
      */
     runAndResetCallback(callback) {
-        callback();
+        requestAnimationFrame(() => {
+            callback();
+        });
         return () => {};
     }
 
