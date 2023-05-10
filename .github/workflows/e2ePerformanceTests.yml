@@ -121,7 +121,7 @@ jobs:
           path: zip
 
       - name: Rename APK files
-        run:
+        run: |
           mv "${{steps.downloadBaselineAPK.outputs.download-path}}/delta-apk-${{ needs.prepare.outputs.DELTA_REF }}.apk" "${{steps.downloadBaselineAPK.outputs.download-path}}/app-e2eRelease-compare.apk"
           mv "${{steps.downloadBaselineAPK.outputs.download-path}}/baseline-apk-${{ needs.prepare.outputs.VERSION }}.apk" "${{steps.downloadBaselineAPK.outputs.download-path}}/app-e2eRelease-baseline.apk"
 
