@@ -5,7 +5,7 @@ import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import Onyx from 'react-native-onyx';
 import {PortalProvider} from '@gorhom/portal';
-import {PickerStateProvider} from 'react-native-picker-select';
+import PickerStateProvider from 'react-native-picker-select';
 import CustomStatusBar from './components/CustomStatusBar';
 import ErrorBoundary from './components/ErrorBoundary';
 import Expensify from './Expensify';
@@ -32,6 +32,8 @@ LogBox.ignoreLogs([
 
 const fill = {flex: 1};
 
+console.log('picker', PickerStateProvider)
+
 const App = () => (
     <GestureHandlerRootView style={fill}>
         <ComposeProviders
@@ -44,7 +46,7 @@ const App = () => (
                 HTMLEngineProvider,
                 WindowDimensionsProvider,
                 KeyboardStateProvider,
-                PickerStateProvider,
+                //PickerStateProvider
             ]}
         >
             <CustomStatusBar />

@@ -10,7 +10,22 @@ const propTypes = {
     children: PropTypes.node.isRequired,
 };
 
-const ComposeProviders = (props) => (
+const ComposeProviders = (props) => {
+    _.reduceRight(
+        props.components,
+        (memo, Component) => {
+            if (Component !== undefined) {
+                console.log('component', Component.displayName ?? Component)
+            } else {
+                console.log('component')
+            }
+            
+            return (
+            <Component>{memo}</Component>
+        )},
+        props.children,
+    )
+    return (
     <>
         {_.reduceRight(
             props.components,
@@ -20,7 +35,7 @@ const ComposeProviders = (props) => (
             props.children,
         )}
     </>
-);
+)};
 
 ComposeProviders.propTypes = propTypes;
 ComposeProviders.displayName = 'ComposeProviders';

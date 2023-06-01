@@ -3,7 +3,7 @@ import React from 'react';
 import _ from 'underscore';
 import {withOnyx} from 'react-native-onyx';
 import lodashGet from 'lodash/get';
-import {PickerAvoidingView} from 'react-native-picker-select';
+import PickerAvoidingView from 'react-native-picker-select';
 import KeyboardAvoidingView from '../KeyboardAvoidingView';
 import CONST from '../../CONST';
 import KeyboardShortcut from '../../libs/KeyboardShortcut';
@@ -127,10 +127,7 @@ class ScreenWrapper extends React.Component {
                                 style={[styles.w100, styles.h100, {maxHeight}]}
                                 behavior={this.props.keyboardAvoidingViewBehavior}
                             >
-                                <PickerAvoidingView
-                                    style={styles.flex1}
-                                    enabled={this.props.shouldEnablePickerAvoiding}
-                                >
+                               
                                     <HeaderGap />
                                     {this.props.environment === CONST.ENVIRONMENT.DEV && <TestToolsModal />}
                                     {this.props.environment === CONST.ENVIRONMENT.DEV && <CustomDevMenu />}
@@ -145,7 +142,7 @@ class ScreenWrapper extends React.Component {
                                             : this.props.children
                                     }
                                     {this.props.isSmallScreenWidth && <OfflineIndicator />}
-                                </PickerAvoidingView>
+                               
                             </KeyboardAvoidingView>
                         </View>
                     );
