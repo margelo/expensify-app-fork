@@ -41,6 +41,8 @@ import TaskHeader from '../../components/TaskHeader';
 import MoneyRequestHeader from '../../components/MoneyRequestHeader';
 import * as ComposerActions from '../../libs/actions/Composer';
 
+import ChatExample from '../../Chat/ChatExample'
+
 const propTypes = {
     /** Navigation route context info provided by react navigation */
     route: PropTypes.shape({
@@ -381,7 +383,7 @@ class ReportScreen extends React.Component {
 ReportScreen.propTypes = propTypes;
 ReportScreen.defaultProps = defaultProps;
 
-export default compose(
+/*export default compose(
     withViewportOffsetTop,
     withLocalize,
     withWindowDimensions,
@@ -415,4 +417,12 @@ export default compose(
             key: ONYXKEYS.PERSONAL_DETAILS,
         },
     }),
-)(ReportScreen);
+)(ReportScreen); */
+
+export default function Screen() {
+    return (
+        <View style={{flex: 1}}>
+            <ChatExample/>
+        </View>
+    )
+}

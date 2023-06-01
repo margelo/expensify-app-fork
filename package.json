@@ -134,7 +134,8 @@
     "save": "^2.4.0",
     "semver": "^7.3.8",
     "shim-keyboard-event-key": "^1.0.3",
-    "underscore": "^1.13.1"
+    "underscore": "^1.13.1",
+    "react-native-worklets": "janicduplessis/react-native-worklets#react-native-worklets-v0.1.0-alpha.2-gitpkg"
   },
   "devDependencies": {
     "@actions/core": "1.10.0",

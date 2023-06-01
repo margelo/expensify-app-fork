@@ -6,6 +6,9 @@
 const {getDefaultConfig} = require('metro-config');
 const _ = require('underscore');
 require('dotenv').config();
+const path = require('path');
+
+const root = path.resolve(__dirname, '..');
 
 /* eslint arrow-body-style: 0 */
 module.exports = (() => {
@@ -17,6 +20,7 @@ module.exports = (() => {
 
     return getDefaultConfig().then((config) => {
         return {
+            watchFolders: [root],
             resolver: {
                 assetExts: _.filter(config.resolver.assetExts, (ext) => ext !== 'svg'),
                 sourceExts: ['jsx', 'js', 'ts', 'tsx', 'json', 'svg'],
