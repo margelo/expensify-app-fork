@@ -576,6 +576,8 @@ function getModalPaddingStyles({
  * @returns {String}
  */
 function getFontFamilyMonospace({fontStyle, fontWeight}) {
+    'worklet';
+
     const italic = fontStyle === 'italic' && fontFamily.MONOSPACE_ITALIC;
     const bold = fontWeight === 'bold' && fontFamily.MONOSPACE_BOLD;
     const italicBold = italic && bold && fontFamily.MONOSPACE_BOLD_ITALIC;
@@ -1200,6 +1202,8 @@ function getEmojiPickerListHeight(hasAdditionalSpace, windowHeight) {
  * @returns {Object}
  */
 function getMentionStyle(isOurMention) {
+    'worklet';
+
     const backgroundColor = isOurMention ? themeColors.ourMentionBG : themeColors.mentionBG;
     return {
         backgroundColor,
@@ -1214,6 +1218,8 @@ function getMentionStyle(isOurMention) {
  * @returns {Object}
  */
 function getMentionTextColor(isOurMention) {
+    'worklet';
+
     return isOurMention ? themeColors.ourMentionText : themeColors.mentionText;
 }
 

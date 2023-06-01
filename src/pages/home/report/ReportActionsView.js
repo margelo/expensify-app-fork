@@ -1,8 +1,9 @@
-import React, {useRef, useEffect, useContext, useMemo} from 'react';
+import React, {useRef, useEffect, useContext, useMemo, useState} from 'react';
 import PropTypes from 'prop-types';
 import _ from 'underscore';
 import lodashGet from 'lodash/get';
 import {useIsFocused} from '@react-navigation/native';
+import {Switch} from 'react-native';
 import * as Report from '../../../libs/actions/Report';
 import reportActionPropTypes from './reportActionPropTypes';
 import Timing from '../../../libs/actions/Timing';
@@ -20,6 +21,7 @@ import reportPropTypes from '../../reportPropTypes';
 import PopoverReactionList from './ReactionList/PopoverReactionList';
 import getIsReportFullyVisible from '../../../libs/getIsReportFullyVisible';
 import ReportScreenContext from '../ReportScreenContext';
+import WishlistReportActionsList from './Wishlist/ReportActionsList';
 
 const propTypes = {
     /** The report currently being looked at */
@@ -65,6 +67,7 @@ function ReportActionsView(props) {
     const mostRecentIOUReportActionID = useRef(ReportActionsUtils.getMostRecentIOURequestActionID(props.reportActions));
     const prevNetworkRef = useRef(props.network);
     const prevIsSmallScreenWidthRef = useRef(props.isSmallScreenWidth);
+    const [wishlist, setWishlist] = useState(true);
 
     const isFocused = useIsFocused();
     const reportID = props.report.reportID;
@@ -180,15 +183,34 @@ function ReportActionsView(props) {
 
     return (
         <>
-            <ReportActionsList
-                report={props.report}
-                onLayout={recordTimeToMeasureItemLayout}
-                sortedReportActions={props.reportActions}
-                mostRecentIOUReportActionID={mostRecentIOUReportActionID.current}
-                isLoadingMoreReportActions={props.report.isLoadingMoreReportActions}
-                loadMoreChats={loadMoreChats}
-                policy={props.policy}
+            <Switch
+                value={wishlist}
+                onValueChange={() => {
+                    setWishlist((state) => !state);
+                }}
             />
+            {wishlist ? (
+                <WishlistReportActionsList
+                    report={props.report}
+                    onLayout={recordTimeToMeasureItemLayout}
+                    sortedReportActions={props.reportActions}
+                    mostRecentIOUReportActionID={mostRecentIOUReportActionID.current}
+                    isLoadingMoreReportActions={props.report.isLoadingMoreReportActions}
+                    loadMoreChats={loadMoreChats}
+                    policy={props.policy}
+                    token={props.token}
+                />
+            ) : (
+                <ReportActionsList
+                    report={props.report}
+                    onLayout={recordTimeToMeasureItemLayout}
+                    sortedReportActions={props.reportActions}
+                    mostRecentIOUReportActionID={mostRecentIOUReportActionID.current}
+                    isLoadingMoreReportActions={props.report.isLoadingMoreReportActions}
+                    loadMoreChats={loadMoreChats}
+                    policy={props.policy}
+                />
+            )}
             <PopoverReactionList ref={context.reactionListRef} />
         </>
     );

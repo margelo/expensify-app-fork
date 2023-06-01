@@ -2,7 +2,18 @@ const {getDefaultConfig, mergeConfig} = require('@react-native/metro-config');
 const defaultAssetExts = require('metro-config/src/defaults/defaults').assetExts;
 const defaultSourceExts = require('metro-config/src/defaults/defaults').sourceExts;
 const _ = require('underscore');
+const path = require('path');
+const escape = require('escape-string-regexp');
+const exclusionList = require('metro-config/src/defaults/exclusionList');
+
 require('dotenv').config();
+
+const root = path.resolve(__dirname, '..');
+const pak = require('../react-native-wishlist/package.json');
+
+const modules = Object.keys({
+    ...pak.peerDependencies,
+});
 
 const defaultConfig = getDefaultConfig(__dirname);
 
@@ -19,6 +30,7 @@ if (isUsingMockAPI) {
  * @type {import('metro-config').MetroConfig}
  */
 const config = {
+    watchFolders: [__dirname, path.resolve(__dirname, '../react-native-wishlist')],
     resolver: {
         assetExts: _.filter(defaultAssetExts, (ext) => ext !== 'svg'),
         sourceExts: [...defaultSourceExts, 'jsx', 'svg'],
@@ -33,6 +45,11 @@ const config = {
             }
             return resolution;
         },
+        blacklistRE: exclusionList(modules.map((m) => new RegExp(`^${escape(path.join(root, 'react-native-wishlist', 'node_modules', m))}\\/.*$`))),
+        extraNodeModules: modules.reduce((acc, name) => {
+            acc[name] = path.join(__dirname, 'node_modules', name);
+            return acc;
+        }, {}),
     },
     transformer: {
         babelTransformerPath: require.resolve('react-native-svg-transformer'),

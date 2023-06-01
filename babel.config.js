@@ -1,3 +1,5 @@
+const path = require('path');
+
 require('dotenv').config();
 
 const defaultPresets = ['@babel/preset-react', '@babel/preset-env', '@babel/preset-flow', '@babel/preset-typescript'];
@@ -14,6 +16,15 @@ const defaultPlugins = [
 
     // Keep it last
     'react-native-reanimated/plugin',
+    [
+        'module-resolver',
+        {
+            extensions: ['.tsx', '.ts', '.js', '.json', 'jsx'],
+            alias: {
+                'react-native-wishlist': path.join(__dirname, '..', 'react-native-wishlist', 'src', 'index'),
+            },
+        },
+    ],
 ];
 
 const webpack = {
@@ -40,7 +51,7 @@ const metro = {
         ['@babel/plugin-proposal-private-methods', {loose: true}],
         ['@babel/plugin-proposal-private-property-in-object', {loose: true}],
         // The reanimated babel plugin needs to be last, as stated here: https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/installation
-        'react-native-reanimated/plugin',
+        ['react-native-reanimated/plugin', {globals: ['Promise']}],
     ],
 };
 
@@ -49,8 +60,7 @@ const metro = {
  * By default <React.Profiler> is disabled in production as it adds small overhead
  * When CAPTURE_METRICS is set we're explicitly saying that we want to capture metrics
  * To enable the <Profiler> for release builds we add these aliases */
-if (process.env.CAPTURE_METRICS === 'true') {
-    const path = require('path');
+if (false && process.env.CAPTURE_METRICS === 'true') {
     const profilingRenderer = path.resolve(__dirname, './node_modules/react-native/Libraries/Renderer/implementations/ReactNativeRenderer-profiling');
 
     metro.plugins.push([

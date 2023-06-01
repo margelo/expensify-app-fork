@@ -152,6 +152,7 @@
     "react-plaid-link": "3.3.2",
     "react-web-config": "^1.0.0",
     "react-window": "^1.8.9",
+    "react-native-worklets": "janicduplessis/react-native-worklets#react-native-worklets-v0.1.0-alpha.2-gitpkg",
     "save": "^2.4.0",
     "semver": "^7.3.8",
     "shim-keyboard-event-key": "^1.0.3",

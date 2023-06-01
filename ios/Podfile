@@ -10,7 +10,7 @@ require Pod::Executable.execute_command('node', ['-p',
   )', __dir__]).strip
 
 # Our min supported iOS version is higher than the default (min_ios_version_supported) to support libraires such as Airship
-platform :ios, 13
+platform :ios, 13.4
 prepare_react_native_project!
 
 # If you are using a `react-native-flipper` your iOS build will fail when `NO_FLIPPER=1` is set.

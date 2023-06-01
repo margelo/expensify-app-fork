@@ -1,11 +1,13 @@
 #import "AppDelegate.h"
 
 #import <Firebase.h>
+#import <React/CoreModulesPlugins.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTI18nUtil.h>
 #import <React/RCTLinkingManager.h>
 #import <UserNotifications/UserNotifications.h>
 
+#import "MGWishlistManager.h"
 #import "RCTBootSplash.h"
 #import "RCTStartupTimer.h"
 #import <HardwareShortcuts.h>
@@ -22,7 +24,7 @@
   // You can add your custom initial props in the dictionary below.
   // They will be passed down to the ViewController used by React Native.
   self.initialProps = @{};
-  
+
   // Configure firebase
   [FIRApp configure];
 
@@ -32,9 +34,12 @@
 
   [super application:application didFinishLaunchingWithOptions:launchOptions];
 
-  [RCTBootSplash initWithStoryboard:@"BootSplash"
-                           rootView:(RCTRootView *)self.window.rootViewController.view]; // <- initialization using the storyboard file name
-  
+  [RCTBootSplash
+      initWithStoryboard:@"BootSplash"
+                rootView:(RCTRootView *)self.window.rootViewController
+                             .view]; // <- initialization using the storyboard
+                                     // file name
+
   // Define UNUserNotificationCenter
   UNUserNotificationCenter *center =
       [UNUserNotificationCenter currentNotificationCenter];
@@ -44,7 +49,7 @@
   // stopped by a native module in the JS so we can measure total time starting
   // in the native layer and ending in the JS layer.
   [RCTStartupTimer start];
-  
+
   return YES;
 }
 
@@ -75,6 +80,13 @@
   return [[NSBundle mainBundle] URLForResource:@"main"
                                  withExtension:@"jsbundle"];
 #endif
+}
+
+- (Class)getModuleClassFromName:(const char *)name {
+  if (strcmp(name, "WishlistManager") == 0) {
+    return MGWishlistManager.class;
+  }
+  return RCTCoreModulesClassProvider(name);
 }
 
 // This methods is needed to support the hardware keyboard shortcuts

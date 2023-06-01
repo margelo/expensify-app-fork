@@ -1,0 +1,54 @@
+import PropTypes from 'prop-types';
+import React from 'react';
+import {useTemplateValue, Wishlist} from 'react-native-wishlist';
+import personalDetailsPropType from '../../../personalDetailsPropType';
+import ReportActionContent from './ReportActionContent';
+import ReportActionItemGrouped from './ReportActionItemGrouped';
+import ReportActionItemSingle from './ReportActionItemSingle';
+
+const propTypes = {
+    /** All of the personalDetails */
+    personalDetails: PropTypes.objectOf(personalDetailsPropType),
+};
+
+const defaultProps = {
+    personalDetails: {},
+};
+
+function ReportActionItem(props) {
+    const action = useTemplateValue((item) => item.action);
+    const type = useTemplateValue((item) => {
+        if (item.action.displayAsGroup) {
+            return 'grouped-message';
+        }
+        return 'single-message';
+    });
+
+    return (
+        <>
+            <Wishlist.Switch value={type}>
+                <Wishlist.Case value="single-message">
+                    <ReportActionItemSingle
+                        action={action}
+                        personalDetails={props.personalDetails}
+                    >
+                        <ReportActionContent />
+                    </ReportActionItemSingle>
+                </Wishlist.Case>
+                <Wishlist.Case value="grouped-message">
+                    <ReportActionItemGrouped
+                        action={action}
+                        personalDetails={props.personalDetails}
+                    >
+                        <ReportActionContent />
+                    </ReportActionItemGrouped>
+                </Wishlist.Case>
+            </Wishlist.Switch>
+        </>
+    );
+}
+
+ReportActionItem.propTypes = propTypes;
+ReportActionItem.defaultProps = defaultProps;
+
+export default ReportActionItem;

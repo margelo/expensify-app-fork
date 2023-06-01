@@ -1,3 +1,5 @@
+const path = require('path');
+
 module.exports = {
     project: {
         ios: {sourceDir: 'ios'},
@@ -8,6 +10,9 @@ module.exports = {
             platforms: {
                 ios: null,
             },
+        },
+        wishlist: {
+            root: path.join(__dirname, '..', 'react-native-wishlist'),
         },
     },
     assets: ['./assets/fonts/native'],

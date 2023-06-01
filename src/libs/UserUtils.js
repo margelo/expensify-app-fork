@@ -121,14 +121,14 @@ function getDefaultAvatarURL(accountID = '', isNewDot = false) {
  */
 function isDefaultAvatar(avatarURL) {
     if (
-        _.isString(avatarURL) &&
+        typeof avatarURL === 'string' &&
         (avatarURL.includes('images/avatars/avatar_') || avatarURL.includes('images/avatars/default-avatar_') || avatarURL.includes('images/avatars/user/default'))
     ) {
         return true;
     }
 
     // We use a hardcoded "default" Concierge avatar
-    if (_.isString(avatarURL) && (avatarURL === CONST.CONCIERGE_ICON_URL_2021 || avatarURL === CONST.CONCIERGE_ICON_URL)) {
+    if (typeof avatarURL === 'string' && (avatarURL === CONST.CONCIERGE_ICON_URL_2021 || avatarURL === CONST.CONCIERGE_ICON_URL)) {
         return true;
     }
 

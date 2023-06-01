@@ -42,6 +42,7 @@ export default function () {
             },
         },
     });
+    Onyx.set(ONYXKEYS.COLLECTION.REPORT_ACTIONS, []);
 
     exposeGlobalMemoryOnlyKeysMethods();
 
