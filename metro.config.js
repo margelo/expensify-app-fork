@@ -9,6 +9,15 @@ require('dotenv').config();
 const path = require('path');
 
 const root = path.resolve(__dirname, '..');
+const pak = require('../react-native-wishlist/package.json');
+
+const escape = require('escape-string-regexp');
+const exclusionList = require('metro-config/src/defaults/exclusionList');
+
+const modules = Object.keys({
+    ...pak.peerDependencies,
+});
+  
 
 /* eslint arrow-body-style: 0 */
 module.exports = (() => {
@@ -34,6 +43,16 @@ module.exports = (() => {
                     }
                     return resolution;
                 },
+                blacklistRE: exclusionList(
+                    modules.map(
+                        (m) =>
+                        new RegExp(`^${escape(path.join(root,'react-native-wishlist', 'node_modules', m))}\\/.*$`),
+                    ),
+                ),
+                extraNodeModules: modules.reduce((acc, name) => {
+                    acc[name] = path.join(__dirname, 'node_modules', name);
+                    return acc;
+                }, {}),
             },
             transformer: {
                 getTransformOptions: () => ({

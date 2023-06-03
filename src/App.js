@@ -32,8 +32,6 @@ LogBox.ignoreLogs([
 
 const fill = {flex: 1};
 
-console.log('picker', PickerStateProvider)
-
 const App = () => (
     <GestureHandlerRootView style={fill}>
         <ComposeProviders

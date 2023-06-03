@@ -1,5 +1,7 @@
 require('dotenv').config();
 
+const path = require('path');
+
 const defaultPresets = ['@babel/preset-react', '@babel/preset-env', '@babel/preset-flow'];
 const defaultPlugins = [
     // Adding the commonjs: true option to react-native-web plugin can cause styling conflicts
@@ -41,7 +43,17 @@ const metro = {
         ['@babel/plugin-proposal-class-properties', {loose: true}],
         ['@babel/plugin-proposal-private-methods', {loose: true}],
         ['@babel/plugin-proposal-private-property-in-object', {loose: true}],
+        [
+            'module-resolver',
+            {
+              extensions: ['.tsx', '.ts', '.js', '.json', 'jsx'],
+              alias: {
+                'react-native-wishlist': path.join(__dirname, '..', 'react-native-wishlist', 'src', 'index')
+              }
+            },
+        ],
     ],
+    
 };
 
 /*
@@ -49,7 +61,7 @@ const metro = {
  * By default <React.Profiler> is disabled in production as it adds small overhead
  * When CAPTURE_METRICS is set we're explicitly saying that we want to capture metrics
  * To enable the <Profiler> for release builds we add these aliases */
-if (process.env.CAPTURE_METRICS === 'true') {
+if (false && process.env.CAPTURE_METRICS === 'true') {
     const path = require('path');
     const profilingRenderer = path.resolve(__dirname, './node_modules/react-native/Libraries/Renderer/implementations/ReactNativeRenderer-profiling');
 
