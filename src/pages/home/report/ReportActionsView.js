@@ -17,6 +17,7 @@ import {withNetwork} from '../../../components/OnyxProvider';
 import FloatingMessageCounter from './FloatingMessageCounter';
 import networkPropTypes from '../../../components/networkPropTypes';
 import ReportActionsList from './ReportActionsList';
+import WishlistReportActionsList from './Wishlist/ReportActionsList';
 import CopySelectionHelper from '../../../components/CopySelectionHelper';
 import * as ReportActionsUtils from '../../../libs/ReportActionsUtils';
 import * as ReportUtils from '../../../libs/ReportUtils';
@@ -24,6 +25,8 @@ import reportPropTypes from '../../reportPropTypes';
 import * as ReactionList from './ReactionList/ReactionList';
 import PopoverReactionList from './ReactionList/PopoverReactionList';
 import getIsReportFullyVisible from '../../../libs/getIsReportFullyVisible';
+
+const USE_WISHLIST = true;
 
 const propTypes = {
     /** The report currently being looked at */
@@ -335,13 +338,16 @@ class ReportActionsView extends React.Component {
         if (!_.size(this.props.reportActions)) {
             return null;
         }
+
+        const ListComponent = USE_WISHLIST ? WishlistReportActionsList : ReportActionsList;
+
         return (
             <>
                 <FloatingMessageCounter
                     isActive={this.state.isFloatingMessageCounterVisible && !_.isEmpty(this.state.newMarkerReportActionID)}
                     onClick={this.scrollToBottomAndMarkReportAsRead}
                 />
-                <ReportActionsList
+                <ListComponent
                     report={this.props.report}
                     onScroll={this.trackScroll}
                     onLayout={this.recordTimeToMeasureItemLayout}

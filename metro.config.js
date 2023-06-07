@@ -17,7 +17,6 @@ const exclusionList = require('metro-config/src/defaults/exclusionList');
 const modules = Object.keys({
     ...pak.peerDependencies,
 });
-  
 
 /* eslint arrow-body-style: 0 */
 module.exports = (() => {
@@ -29,7 +28,7 @@ module.exports = (() => {
 
     return getDefaultConfig().then((config) => {
         return {
-            watchFolders: [root],
+            watchFolders: [__dirname, path.resolve(__dirname, '../react-native-wishlist')],
             resolver: {
                 assetExts: _.filter(config.resolver.assetExts, (ext) => ext !== 'svg'),
                 sourceExts: ['jsx', 'js', 'ts', 'tsx', 'json', 'svg'],
@@ -43,12 +42,7 @@ module.exports = (() => {
                     }
                     return resolution;
                 },
-                blacklistRE: exclusionList(
-                    modules.map(
-                        (m) =>
-                        new RegExp(`^${escape(path.join(root,'react-native-wishlist', 'node_modules', m))}\\/.*$`),
-                    ),
-                ),
+                blacklistRE: exclusionList(modules.map((m) => new RegExp(`^${escape(path.join(root, 'react-native-wishlist', 'node_modules', m))}\\/.*$`))),
                 extraNodeModules: modules.reduce((acc, name) => {
                     acc[name] = path.join(__dirname, 'node_modules', name);
                     return acc;

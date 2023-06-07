@@ -80,6 +80,8 @@ function hashLogin(login, range) {
  * @returns {String}
  */
 function getDefaultAvatar(login = '') {
+    'worklet';
+
     if (!login) {
         return Expensicons.FallbackAvatar;
     }
@@ -120,8 +122,10 @@ function getDefaultAvatarURL(login = '', isNewDot = false) {
  * @returns {Boolean}
  */
 function isDefaultAvatar(avatarURL) {
+    'worklet';
+
     if (
-        _.isString(avatarURL) &&
+        typeof avatarURL === 'string' &&
         (avatarURL.includes('images/avatars/avatar_') || avatarURL.includes('images/avatars/default-avatar_') || avatarURL.includes('images/avatars/user/default'))
     ) {
         return true;
@@ -143,6 +147,8 @@ function isDefaultAvatar(avatarURL) {
  * @returns {String|Function}
  */
 function getAvatar(avatarURL, login) {
+    'worklet';
+
     return isDefaultAvatar(avatarURL) ? getDefaultAvatar(login) : avatarURL;
 }
 

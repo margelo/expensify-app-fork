@@ -41,8 +41,6 @@ import TaskHeader from '../../components/TaskHeader';
 import MoneyRequestHeader from '../../components/MoneyRequestHeader';
 import * as ComposerActions from '../../libs/actions/Composer';
 
-import ChatExample from '../../Chat/ChatExample'
-
 const propTypes = {
     /** Navigation route context info provided by react navigation */
     route: PropTypes.shape({
@@ -250,19 +248,19 @@ class ReportScreen extends React.Component {
         return (
             <ScreenWrapper style={screenWrapperStyle}>
                 {shouldFreeze && (
-                        <>
-                            <ReportHeaderSkeletonView shouldAnimate={shouldAnimate} />
-                            <View style={[styles.flex1, styles.justifyContentEnd, styles.overflowHidden]}>
-                                <ReportActionsSkeletonView
-                                    shouldAnimate={shouldAnimate}
-                                    containerHeight={this.state.skeletonViewContainerHeight}
-                                />
-                                <ReportFooter
-                                    shouldDisableCompose
-                                    isOffline={this.props.network.isOffline}
-                                />
-                            </View>
-                        </>
+                    <>
+                        <ReportHeaderSkeletonView shouldAnimate={shouldAnimate} />
+                        <View style={[styles.flex1, styles.justifyContentEnd, styles.overflowHidden]}>
+                            <ReportActionsSkeletonView
+                                shouldAnimate={shouldAnimate}
+                                containerHeight={this.state.skeletonViewContainerHeight}
+                            />
+                            <ReportFooter
+                                shouldDisableCompose
+                                isOffline={this.props.network.isOffline}
+                            />
+                        </View>
+                    </>
                 )}
                 {!shouldFreeze && (
                     <FullPageNotFoundView
@@ -383,7 +381,7 @@ class ReportScreen extends React.Component {
 ReportScreen.propTypes = propTypes;
 ReportScreen.defaultProps = defaultProps;
 
-/*export default compose(
+export default compose(
     withViewportOffsetTop,
     withLocalize,
     withWindowDimensions,
@@ -417,12 +415,12 @@ ReportScreen.defaultProps = defaultProps;
             key: ONYXKEYS.PERSONAL_DETAILS,
         },
     }),
-)(ReportScreen); */
+)(ReportScreen);
 
-export default function Screen() {
-    return (
-        <View style={{flex: 1}}>
-            <ChatExample/>
-        </View>
-    )
-}
+// export default function Screen() {
+//     return (
+//         <View style={{flex: 1}}>
+//             <ChatExample/>
+//         </View>
+//     )
+// }
