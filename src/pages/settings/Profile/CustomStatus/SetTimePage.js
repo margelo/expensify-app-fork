@@ -5,8 +5,9 @@ import ROUTES from '../../../../ROUTES';
 import Navigation from '../../../../libs/Navigation/Navigation';
 import styles from '../../../../styles/styles';
 import Form from '../../../../components/Form';
-import NewDatePicker from '../../../../components/NewDatePicker';
 import withLocalize, {withLocalizePropTypes} from '../../../../components/withLocalize';
+import TextInput from '../../../../components/TextInput';
+import TimeOfDayTabs from '../../../../components/CustomStatus/TimeOfDayTabs';
 
 // TODO: connect to onyx for existing data, or use the form id
 function SetTimePage(props) {
@@ -23,17 +24,15 @@ function SetTimePage(props) {
             />
             <Form
                 style={[styles.flexGrow1, styles.ph5]}
-                formID="doesthishavetobeset"
+                formID="settime"
                 validate={() => ({})}
                 onSubmit={onSubmit}
                 submitButtonText={props.translate('common.save')}
                 enabledWhenOffline
             >
-                <NewDatePicker
-                    inputID="clearaftertime"
-                    minDate={new Date()}
-                    label={props.translate('common.date')}
-                />
+                <TextInput />
+
+                <TimeOfDayTabs />
             </Form>
         </ScreenWrapper>
     );
