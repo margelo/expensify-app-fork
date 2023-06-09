@@ -23,7 +23,7 @@ function ReportActionItem(props) {
         if (item.action.displayAsGroup) {
             return 'grouped-message';
         } 
-        return 'single-messsage';
+        return 'single-message';
     })
 
     return (

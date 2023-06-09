@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import {View} from 'react-native';
-import {Wishlist} from 'react-native-wishlist';
+import {Wishlist, useTemplateValue} from 'react-native-wishlist';
 import _ from 'underscore';
 import CONST from '../../../../CONST';
 import * as StyleUtils from '../../../../styles/StyleUtils';

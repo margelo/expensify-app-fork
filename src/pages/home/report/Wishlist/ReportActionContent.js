@@ -13,6 +13,7 @@ import personalDetailsPropType from '../../../personalDetailsPropType';
 import reportActionPropTypes from '../reportActionPropTypes';
 import ReportActionItemDate from './ReportActionItemDate';
 import Text from './Text';
+import ReportActionImageContent from './ReportActionImageContent'
 
 const propTypes = {
 
@@ -24,15 +25,15 @@ const defaultProps = {
 const MessageTypeUtils = {
     isImage: (message) => {
         'worklet'
-        message.startsWith('<img')
+        message.startsWith('<img');
     },
     isAttachment: (item) => {
         'worklet'
-        return item.action.isAttachment
+        return item.action.isAttachment;
     },
     isPureText: (item) => {
         'worklet'
-        return item.action.message[0].isOnlyEmoji
+        return item.action.message[0].isOnlyEmoji;
     }
 };
 
@@ -55,8 +56,7 @@ const ReportActionContent = () => {
     return (
         <Wishlist.Switch value={contentType} > 
             <Wishlist.Case value="Image" >
-                {false && <ReportActionImageContent/>}
-                <Text> dummy image </Text>
+                <ReportActionImageContent/>
             </Wishlist.Case>
             <Wishlist.Case value="Attachment" >
                 {false && <ReportActionAttachmentContent/>}

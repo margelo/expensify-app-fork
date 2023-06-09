@@ -39,6 +39,12 @@ const MessageTypeUtils = {
 const ReportActionImageContent = () => {
     
     const source = useTemplateValue((item) => {
+        if (item.isAttachment) {
+            console.log(`attachment: ${item.action.attachmentInfo}`)
+        } else {
+            return null
+        }
+        
         return item.action.attachmentInfo.source;
     });
 
