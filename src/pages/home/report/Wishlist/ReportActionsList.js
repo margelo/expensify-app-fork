@@ -43,6 +43,7 @@ const ReportActionsList = (props) => {
                 message: _.map(a.message, (m) => ({
                     ...m,
                     isOnlyEmoji: EmojiUtils.containsOnlyEmojis(m.text),
+                    
                 })),
                 createdFormatted: props.datetimeToCalendarTime(a.created),
                 displayAsGroup: ReportActionsUtils.isConsecutiveActionMadeByPreviousActor(props.sortedReportActions, index),

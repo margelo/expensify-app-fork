@@ -6,6 +6,7 @@ import personalDetailsPropType from '../../../personalDetailsPropType';
 import ReportActionItemFragment from './ReportActionItemFragment';
 import ReportActionItemGrouped from './ReportActionItemGrouped';
 import Text from './Text';
+import ReportActionContent from './ReportActionContent';
 
 const propTypes = {
     /** All of the personalDetails */
@@ -18,30 +19,33 @@ const defaultProps = {
 
 function ReportActionItem(props) {
     const action = useTemplateValue((item) => item.action);
-    const text = useTemplateValue((item) => item.action.message[0].text);
-    const isSingleItem = useTemplateValue((item) => !item.action.displayAsGroup);
-    const isGrouped = useTemplateValue((item) => item.action.displayAsGroup);
-
-    const content = <Text>{text}</Text>;
+    const type = useTemplateValue((item) => {
+        if (item.action.displayAsGroup) {
+            return 'grouped-message';
+        } 
+        return 'single-messsage';
+    })
 
     return (
         <>
-            <Wishlist.IF condition={isSingleItem}>
-                <ReportActionItemSingle
-                    action={action}
-                    personalDetails={props.personalDetails}
-                >
-                    {content}
-                </ReportActionItemSingle>
-            </Wishlist.IF>
-            <Wishlist.IF condition={isGrouped}>
-                <ReportActionItemGrouped
-                    action={action}
-                    personalDetails={props.personalDetails}
-                >
-                    {content}
-                </ReportActionItemGrouped>
-            </Wishlist.IF>
+            <Wishlist.Switch value={type}>
+                <Wishlist.Case value="single-message" >
+                    <ReportActionItemSingle
+                        action={action}
+                        personalDetails={props.personalDetails}
+                    >
+                        <ReportActionContent/>
+                    </ReportActionItemSingle>
+                </Wishlist.Case>
+                <Wishlist.Case value="grouped-message" >
+                    <ReportActionItemGrouped
+                        action={action}
+                        personalDetails={props.personalDetails}
+                    >
+                        <ReportActionContent/>
+                    </ReportActionItemGrouped>
+                </Wishlist.Case>
+            </Wishlist.Switch>
         </>
     );
 }

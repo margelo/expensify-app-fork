@@ -47,7 +47,9 @@ const ReportActionItemSingle = (props) => {
     const actorEmail = useTemplateValue(() => action.value().actorEmail.replace(CONST.REGEX.MERGED_ACCOUNT_PREFIX, ''));
     const actorPersonalDetails = useTemplateValue(() => personalDetails[actorEmail.value()]);
     const displayName = useTemplateValue(() => actorPersonalDetails.value()?.displayName);
-    const avatarSource = useTemplateValue(() => UserUtils.getAvatar(actorPersonalDetails.value()?.avatar, actorEmail.value()));
+    const avatarSource = useTemplateValue(() => {
+        return UserUtils.getAvatar(actorPersonalDetails.value()?.avatar, actorEmail.value())
+    });
 
     const createdFormatted = useTemplateValue((item) => item.action.createdFormatted);
 

@@ -71,8 +71,12 @@ function getLoginListBrickRoadIndicator(loginList) {
  * @returns {Number}
  */
 function hashLogin(login, range) {
+    'worklet'
     return Math.abs(hashCode(login.toLowerCase())) % range;
 }
+
+
+global.js_tread = true
 
 /**
  * Helper method to return the default avatar associated with the given login
@@ -81,6 +85,10 @@ function hashLogin(login, range) {
  */
 function getDefaultAvatar(login = '') {
     'worklet';
+
+    if (global.js_thread == null) {
+        return 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/132.png';
+    }
 
     if (!login) {
         return Expensicons.FallbackAvatar;
