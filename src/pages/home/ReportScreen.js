@@ -85,6 +85,12 @@ const propTypes = {
 
     /** All of the personal details for everyone */
     personalDetails: PropTypes.objectOf(personalDetailsPropType),
+    /* Onyx Props */
+    /** Session info for the currently logged in user. */
+    session: PropTypes.shape({
+        /** Currently logged in user authToken */
+        authToken: PropTypes.string,
+    }),
 
     ...windowDimensionsPropTypes,
     ...withDrawerPropTypes,
@@ -337,6 +343,7 @@ class ReportScreen extends React.Component {
                                     isComposerFullSize={this.props.isComposerFullSize}
                                     isDrawerOpen={this.props.isDrawerOpen}
                                     parentViewHeight={this.state.skeletonViewContainerHeight}
+                                    token={lodashGet(this.props, 'session.encryptedAuthToken', null)}
                                 />
                             )}
 
@@ -413,6 +420,9 @@ export default compose(
         },
         personalDetails: {
             key: ONYXKEYS.PERSONAL_DETAILS,
+        },
+        session: {
+            key: ONYXKEYS.SESSION,
         },
     }),
 )(ReportScreen);

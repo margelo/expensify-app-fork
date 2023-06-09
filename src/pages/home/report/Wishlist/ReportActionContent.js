@@ -25,7 +25,7 @@ const defaultProps = {
 const MessageTypeUtils = {
     isImage: (message) => {
         'worklet'
-        message.startsWith('<img');
+        return message.startsWith('<img');
     },
     isAttachment: (item) => {
         'worklet'
@@ -59,15 +59,12 @@ const ReportActionContent = () => {
                 <ReportActionImageContent/>
             </Wishlist.Case>
             <Wishlist.Case value="Attachment" >
-                {false && <ReportActionAttachmentContent/>}
                 <Text> dummy attachment </Text>
             </Wishlist.Case>
             <Wishlist.Case value="PureText" >
-            {false && <ReportActionTextContent/>}
                 <Text> dummy pure Text </Text>
             </Wishlist.Case>
             <Wishlist.Case value="HTML">
-            {false && <ReportActionHTMLFallbackContent/>}
                 <Text> dummy HTML </Text>
             </Wishlist.Case>
         </Wishlist.Switch>

@@ -21,35 +21,35 @@ const propTypes = {
 const defaultProps = {
 };
 
-const MessageTypeUtils = {
-    isImage: (message) => {
-        'worklet'
-        message.startsWith('<img')
-    },
-    isAttachment: (item) => {
-        'worklet'
-        return item.isAttachment
-    },
-    isPureText: (item) => {
-        'worklet'
-        return item.action.message[0].isOnlyEmoji
-    }
-};
 
 const ReportActionImageContent = () => {
-    
     const source = useTemplateValue((item) => {
-        if (item.isAttachment) {
-            console.log(`attachment: ${item.action.attachmentInfo}`)
-        } else {
-            return null
+        if (item?.action?.message[0]?.html?.startsWith('<img')) {
+            const html = item.action.message[0].html;
+            const url = html.split(`"`)[1];
+            console.log(`attachment: ${url}`);
+
+
+            //TODO get token
+            const authToken = lodashGet(props, 'session.encryptedAuthToken', null);
+            const imageSource = {
+                source: {uri: url},
+                headers: authToken
+                    ? {
+                        [CONST.CHAT_ATTACHMENT_TOKEN_KEY]: authToken,
+                    }
+                    : null,
+            };
+            return imageSource;
         }
-        
-        return item.action.attachmentInfo.source;
+        return {uri: ''};
     });
 
     return (
-        <Wishlist.Image source={{uri: source}} style={{width: 10, height: 10}} />
+        <View style={{borderWidth: 1, borderColor: 'green'}}>
+            <Wishlist.Image source={source} style={{width: 100, height: 100}} />
+            
+        </View>
     );
 };
 
