@@ -19,6 +19,7 @@ import CONST from '../../CONST';
 import FormHelpMessage from '../FormHelpMessage';
 import isInputAutoFilled from '../../libs/isInputAutoFilled';
 import * as Pressables from '../Pressable';
+import AutoGrowView from './AutoGrowView';
 
 const PressableWithoutFeedback = Pressables.PressableWithoutFeedback;
 
@@ -213,10 +214,10 @@ function BaseTextInput(props) {
         [
             styles.textInputContainer,
             ...props.textInputContainerStyles,
-            props.autoGrow && StyleUtils.getWidthStyle(textInputWidth),
+            // TODO: props.autoGrow && StyleUtils.getWidthStyle(textInputWidth),
             !props.hideFocusedState && isFocused && styles.borderColorFocus,
             (props.hasError || props.errorText) && styles.borderColorDanger,
-            props.autoGrowHeight && {scrollPaddingTop: 2 * maxHeight},
+            // TODO: props.autoGrowHeight && {scrollPaddingTop: 2 * maxHeight},
         ],
         (finalStyles, s) => ({...finalStyles, ...s}),
         {},
@@ -240,7 +241,7 @@ function BaseTextInput(props) {
                             textInputContainerStyles,
 
                             // When autoGrow is on and minWidth is not supplied, add a minWidth to allow the input to be focusable.
-                            props.autoGrow && !textInputContainerStyles.minWidth && styles.mnw2,
+                            // TODO: props.autoGrow && !textInputContainerStyles.minWidth && styles.mnw2,
                         ]}
                     >
                         {hasLabel ? (
@@ -295,8 +296,8 @@ function BaseTextInput(props) {
                                 placeholderTextColor={themeColors.placeholderText}
                                 underlineColorAndroid="transparent"
                                 style={[
-                                    styles.flex1,
-                                    styles.w100,
+                                    !props.autoGrow && styles.flex1,
+                                    !props.autoGrow && styles.w100,
                                     props.inputStyle,
                                     (!hasLabel || isMultiline) && styles.pv0,
                                     props.prefixCharacter && StyleUtils.getPaddingLeft(prefixWidth + styles.pl1.paddingLeft),
@@ -307,7 +308,7 @@ function BaseTextInput(props) {
                                     !isMultiline && {height, lineHeight: undefined},
 
                                     // Stop scrollbar flashing when breaking lines with autoGrowHeight enabled.
-                                    props.autoGrowHeight && StyleUtils.getAutoGrowHeightInputStyle(textInputHeight, maxHeight),
+                                    // TODO: props.autoGrowHeight && StyleUtils.getAutoGrowHeightInputStyle(textInputHeight, maxHeight),
                                 ]}
                                 multiline={isMultiline}
                                 maxLength={props.maxLength}
@@ -355,24 +356,8 @@ function BaseTextInput(props) {
                     />
                 )}
             </View>
-            {/*
-                Text input component doesn't support auto grow by default.
-                We're using a hidden text input to achieve that.
-                This text view is used to calculate width or height of the input value given textStyle in this component.
-                This Text component is intentionally positioned out of the screen.
-            */}
-            {(props.autoGrow || props.autoGrowHeight) && (
-                // Add +2 to width so that the first digit of amount do not cut off on mWeb - https://github.com/Expensify/App/issues/8158.
-                <Text
-                    style={[...props.inputStyle, props.autoGrowHeight && styles.autoGrowHeightHiddenInput(width, maxHeight), styles.hiddenElementOutsideOfWindow, styles.visibilityHidden]}
-                    onLayout={(e) => {
-                        setTextInputWidth(e.nativeEvent.layout.width + 2);
-                        setTextInputHeight(e.nativeEvent.layout.height);
-                    }}
-                >
-                    {props.value || props.placeholder}
-                </Text>
-            )}
+            {/* TODO: idea, do we need to put shit on the styles, when we could make the container grow by this view (on web)? */}
+            {(props.autoGrow || props.autoGrowHeight) && <AutoGrowView inputStyle={[...props.inputStyle, props.autoGrowHeight && styles.autoGrowHeightHiddenInput(width, maxHeight)]} />}
         </>
     );
 }
