@@ -21,16 +21,6 @@ import isInputAutoFilled from '../../libs/isInputAutoFilled';
 import * as Pressables from '../Pressable';
 import AutoGrowView from './AutoGrowView';
 
-const PressableWithoutFeedback = Pressables.PressableWithoutFeedback;
-
-function dismissKeyboardWhenBackgrounded(nextAppState) {
-    if (!nextAppState.match(/inactive|background/)) {
-        return;
-    }
-
-    Keyboard.dismiss();
-}
-
 function BaseTextInput(props) {
     const inputValue = props.value || '';
     const initialActiveLabel = props.forceActiveLabel || inputValue.length > 0 || Boolean(props.prefixCharacter);
@@ -51,9 +41,26 @@ function BaseTextInput(props) {
     useEffect(() => {
         let appStateSubscription;
         if (props.disableKeyboard) {
-            appStateSubscription = AppState.addEventListener('change', dismissKeyboardWhenBackgrounded);
+            appStateSubscription = AppState.addEventListener('change', (nextAppState) => {
+                if (!nextAppState.match(/inactive|background/)) {
+                    return;
+                }
+
+                Keyboard.dismiss();
+            });
         }
 
+        return () => {
+            if (!props.disableKeyboard || !appStateSubscription) {
+                return;
+            }
+
+            appStateSubscription.remove();
+        };
+    }, [props.disableKeyboard]);
+
+    // AutoFocus which only works on mount:
+    useEffect(() => {
         // We are manually managing focus to prevent this issue: https://github.com/Expensify/App/issues/4514
         if (!props.autoFocus || !input.current) {
             return;
@@ -67,17 +74,14 @@ function BaseTextInput(props) {
         input.current.focus();
 
         return () => {
-            if (focusTimeout) {
-                clearTimeout(focusTimeout);
-            }
-
-            if (!props.disableKeyboard || !appStateSubscription) {
+            if (!focusTimeout) {
                 return;
             }
-
-            appStateSubscription.remove();
+            clearTimeout(focusTimeout);
         };
-    }, [props.autoFocus, props.disableKeyboard, props.shouldDelayFocus]);
+        // We only want this to run on mount
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const animateLabel = useCallback(
         (translateY, scale) => {
@@ -189,7 +193,6 @@ function BaseTextInput(props) {
             props.onInputChange(value);
         }
 
-        // TODO: what is the next line used for?
         Str.result(props.onChangeText, value);
         activateLabel();
     };
@@ -202,7 +205,6 @@ function BaseTextInput(props) {
         setPrefixWidth(Math.abs(event.nativeEvent.layout.width));
     }, []);
 
-    // TODO: don't do that all here?
     // eslint-disable-next-line react/forbid-foreign-prop-types
     const inputProps = _.omit(props, _.keys(baseTextInputPropTypes.propTypes));
     const hasLabel = Boolean(props.label.length);
@@ -210,24 +212,20 @@ function BaseTextInput(props) {
     const inputHelpText = props.errorText || props.hint;
     const placeholder = props.prefixCharacter || isFocused || !hasLabel || (hasLabel && props.forceActiveLabel) ? props.placeholder : null;
     const maxHeight = StyleSheet.flatten(props.containerStyles).maxHeight;
-    const textInputContainerStyles = _.reduce(
-        [
-            styles.textInputContainer,
-            ...props.textInputContainerStyles,
-            // TODO: props.autoGrow && StyleUtils.getWidthStyle(textInputWidth),
-            !props.hideFocusedState && isFocused && styles.borderColorFocus,
-            (props.hasError || props.errorText) && styles.borderColorDanger,
-            // TODO: props.autoGrowHeight && {scrollPaddingTop: 2 * maxHeight},
-        ],
-        (finalStyles, s) => ({...finalStyles, ...s}),
-        {},
-    );
+    const textInputContainerStyles = StyleSheet.flatten([
+        styles.textInputContainer,
+        ...props.textInputContainerStyles,
+        // TODO: props.autoGrow && StyleUtils.getWidthStyle(textInputWidth),
+        !props.hideFocusedState && isFocused && styles.borderColorFocus,
+        (props.hasError || props.errorText) && styles.borderColorDanger,
+        // TODO: props.autoGrowHeight && {scrollPaddingTop: 2 * maxHeight},
+    ]);
     const isMultiline = props.multiline || props.autoGrowHeight;
 
     return (
         <>
             <View>
-                <PressableWithoutFeedback
+                <Pressables.PressableWithoutFeedback
                     onPress={onPress}
                     focusable={false}
                     accessibilityLabel={props.label}
@@ -348,7 +346,7 @@ function BaseTextInput(props) {
                             )}
                         </View>
                     </View>
-                </PressableWithoutFeedback>
+                </Pressables.PressableWithoutFeedback>
                 {!_.isEmpty(inputHelpText) && (
                     <FormHelpMessage
                         isError={!_.isEmpty(props.errorText)}
