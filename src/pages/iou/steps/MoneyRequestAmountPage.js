@@ -66,10 +66,10 @@ class MoneyRequestAmountPage extends React.Component {
             amount: selectedAmountAsString,
             selectedCurrencyCode: _.isUndefined(props.iou.selectedCurrencyCode) ? CONST.CURRENCY.USD : props.iou.selectedCurrencyCode,
             shouldUpdateSelection: true,
-            selection: {
-                start: selectedAmountAsString.length,
-                end: selectedAmountAsString.length,
-            },
+        };
+        this.selection = {
+            start: selectedAmountAsString.length,
+            end: selectedAmountAsString.length,
         };
     }
 
@@ -144,12 +144,10 @@ class MoneyRequestAmountPage extends React.Component {
         // More info: https://github.com/Expensify/App/issues/16974
         const newAmountWithoutSpaces = this.stripSpacesFromAmount(newAmount);
         if (!this.validateAmount(newAmountWithoutSpaces)) {
-            // Use a shallow copy of selection to trigger setSelection
-            // More info: https://github.com/Expensify/App/issues/16385
-            return {amount: prevState.amount, selection: {...prevState.selection}};
+            return prevState;
         }
-        const selection = this.getNewSelection(prevState.selection, prevState.amount.length, newAmountWithoutSpaces.length);
-        return {amount: this.stripCommaFromAmount(newAmountWithoutSpaces), selection};
+        this.selection = this.getNewSelection(this.selection, prevState.amount.length, newAmountWithoutSpaces.length);
+        return {amount: this.stripCommaFromAmount(newAmountWithoutSpaces)};
     }
 
     /**
@@ -246,8 +244,8 @@ class MoneyRequestAmountPage extends React.Component {
         if (key === '<' || key === 'Backspace') {
             if (this.state.amount.length > 0) {
                 this.setState((prevState) => {
-                    const selectionStart = prevState.selection.start === prevState.selection.end ? prevState.selection.start - 1 : prevState.selection.start;
-                    const amount = `${prevState.amount.substring(0, selectionStart)}${prevState.amount.substring(prevState.selection.end)}`;
+                    const selectionStart = this.selection.start === this.selection.end ? this.selection.start - 1 : this.selection.start;
+                    const amount = `${prevState.amount.substring(0, selectionStart)}${prevState.amount.substring(this.selection.end)}`;
                     return this.getNewState(prevState, amount);
                 });
             }
@@ -255,7 +253,7 @@ class MoneyRequestAmountPage extends React.Component {
         }
 
         this.setState((prevState) => {
-            const amount = this.addLeadingZero(`${prevState.amount.substring(0, prevState.selection.start)}${key}${prevState.amount.substring(prevState.selection.end)}`);
+            const amount = this.addLeadingZero(`${prevState.amount.substring(0, this.selection.start)}${key}${prevState.amount.substring(this.selection.end)}`);
             return this.getNewState(prevState, amount);
         });
     }
@@ -335,12 +333,11 @@ class MoneyRequestAmountPage extends React.Component {
                         placeholder={this.props.numberFormat(0)}
                         ref={(el) => (this.textInput = el)}
                         selectedCurrencyCode={this.state.selectedCurrencyCode}
-                        selection={this.state.selection}
                         onSelectionChange={(e) => {
                             if (!this.state.shouldUpdateSelection) {
                                 return;
                             }
-                            this.setState({selection: e.nativeEvent.selection});
+                            this.selection = e.nativeEvent.selection;
                         }}
                     />
                 </View>
