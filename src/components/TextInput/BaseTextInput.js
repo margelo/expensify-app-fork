@@ -18,43 +18,40 @@ import getSecureEntryKeyboardType from '../../libs/getSecureEntryKeyboardType';
 import CONST from '../../CONST';
 import FormHelpMessage from '../FormHelpMessage';
 import isInputAutoFilled from '../../libs/isInputAutoFilled';
-import * as Pressables from '../Pressable';
 import AutoGrowView from './AutoGrowView';
+import PressableWithoutFeedback from '../Pressable/PressableWithoutFeedback';
 
 function BaseTextInput(props) {
-    const inputValue = props.value || '';
+    const inputValue = props.value || props.defaultValue || '';
     const initialActiveLabel = props.forceActiveLabel || inputValue.length > 0 || Boolean(props.prefixCharacter);
 
     const [isFocused, setIsFocused] = useState(false);
-    const [labelTranslateY] = useState(() => new Animated.Value(initialActiveLabel ? styleConst.ACTIVE_LABEL_TRANSLATE_Y : styleConst.INACTIVE_LABEL_TRANSLATE_Y));
-    const [labelScale] = useState(() => new Animated.Value(initialActiveLabel ? styleConst.ACTIVE_LABEL_SCALE : styleConst.INACTIVE_LABEL_SCALE));
     const [passwordHidden, setPasswordHidden] = useState(props.secureTextEntry);
     const [textInputWidth, setTextInputWidth] = useState(0);
     const [textInputHeight, setTextInputHeight] = useState();
     const [prefixWidth, setPrefixWidth] = useState(0);
     const [height, setHeight] = useState(variables.componentSizeLarge);
     const [width, setWidth] = useState();
+    const labelScale = useRef(new Animated.Value(initialActiveLabel ? styleConst.ACTIVE_LABEL_SCALE : styleConst.INACTIVE_LABEL_SCALE)).current;
+    const labelTranslateY = useRef(new Animated.Value(initialActiveLabel ? styleConst.ACTIVE_LABEL_TRANSLATE_Y : styleConst.INACTIVE_LABEL_TRANSLATE_Y)).current;
 
     const input = useRef(null);
     const isLabelActive = useRef(initialActiveLabel);
 
     useEffect(() => {
-        let appStateSubscription;
-        if (props.disableKeyboard) {
-            appStateSubscription = AppState.addEventListener('change', (nextAppState) => {
-                if (!nextAppState.match(/inactive|background/)) {
-                    return;
-                }
-
-                Keyboard.dismiss();
-            });
+        if (!props.disableKeyboard) {
+            return;
         }
 
-        return () => {
-            if (!props.disableKeyboard || !appStateSubscription) {
+        const appStateSubscription = AppState.addEventListener('change', (nextAppState) => {
+            if (!nextAppState.match(/inactive|background/)) {
                 return;
             }
 
+            Keyboard.dismiss();
+        });
+
+        return () => {
             appStateSubscription.remove();
         };
     }, [props.disableKeyboard]);
@@ -102,22 +99,26 @@ function BaseTextInput(props) {
     );
 
     const activateLabel = useCallback(() => {
-        if (inputValue.length < 0 || isLabelActive.current) {
+        const value = props.value || '';
+
+        if (value.length < 0 || isLabelActive.current) {
             return;
         }
 
         animateLabel(styleConst.ACTIVE_LABEL_TRANSLATE_Y, styleConst.ACTIVE_LABEL_SCALE);
         isLabelActive.current = true;
-    }, [animateLabel, inputValue]);
+    }, [animateLabel, props.value]);
 
     const deactivateLabel = useCallback(() => {
-        if (props.forceActiveLabel || inputValue.length !== 0 || props.prefixCharacter) {
+        const value = props.value || '';
+
+        if (props.forceActiveLabel || value.length !== 0 || props.prefixCharacter) {
             return;
         }
 
         animateLabel(styleConst.INACTIVE_LABEL_TRANSLATE_Y, styleConst.INACTIVE_LABEL_SCALE);
         isLabelActive.current = false;
-    }, [animateLabel, props.forceActiveLabel, props.prefixCharacter, inputValue]);
+    }, [animateLabel, props.forceActiveLabel, props.prefixCharacter, props.value]);
 
     const onFocus = (event) => {
         if (props.onFocus) {
@@ -167,17 +168,26 @@ function BaseTextInput(props) {
         [props.autoGrowHeight, props.multiline],
     );
 
+    const hasValueRef = useRef(inputValue.length > 0);
     useEffect(() => {
-        // Activate or deactivate the label when value is changed programmatically from outside
+        // Handle side effects when the value gets changed programatically from the outside
 
         // In some cases, When the value prop is empty, it is not properly updated on the TextInput due to its uncontrolled nature, thus manually clearing the TextInput.
         if (inputValue === '') {
             input.current.clear();
         }
 
-        if (inputValue || isFocused) {
+        if (inputValue) {
+            activateLabel()
+        }
+    }, [activateLabel, inputValue])
+
+    useEffect(() => {
+        // Activate or deactivate the label when the focus changes
+
+        if (hasValueRef.current || isFocused) {
             activateLabel();
-        } else if (!isFocused) {
+        } else if (!hasValueRef.current && !isFocused) {
             deactivateLabel();
         }
     }, [activateLabel, deactivateLabel, inputValue, isFocused]);
@@ -194,7 +204,12 @@ function BaseTextInput(props) {
         }
 
         Str.result(props.onChangeText, value);
-        activateLabel();
+        if (value && value.length > 0) {
+            hasValueRef.current = true
+            activateLabel();
+        } else {
+            hasValueRef.current = false
+        }
     };
 
     const togglePasswordVisibility = useCallback(() => {
@@ -225,7 +240,7 @@ function BaseTextInput(props) {
     return (
         <>
             <View>
-                <Pressables.PressableWithoutFeedback
+                <PressableWithoutFeedback
                     onPress={onPress}
                     focusable={false}
                     accessibilityLabel={props.label}
@@ -320,6 +335,7 @@ function BaseTextInput(props) {
                                 value={props.value}
                                 selection={props.selection}
                                 editable={isEditable}
+                                defaultValue={props.defaultValue}
                                 // FormSubmit Enter key handler does not have access to direct props.
                                 // `dataset.submitOnEnter` is used to indicate that pressing Enter on this input should call the submit callback.
                                 dataSet={{submitOnEnter: isMultiline && props.submitOnEnter}}
@@ -346,7 +362,7 @@ function BaseTextInput(props) {
                             )}
                         </View>
                     </View>
-                </Pressables.PressableWithoutFeedback>
+                </PressableWithoutFeedback>
                 {!_.isEmpty(inputHelpText) && (
                     <FormHelpMessage
                         isError={!_.isEmpty(props.errorText)}
