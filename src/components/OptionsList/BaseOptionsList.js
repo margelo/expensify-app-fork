@@ -2,10 +2,11 @@ import _ from 'underscore';
 import React, {forwardRef, Component} from 'react';
 import {View} from 'react-native';
 import PropTypes from 'prop-types';
+import {FlashList} from '@shopify/flash-list';
 import styles from '../../styles/styles';
 import variables from '../../styles/variables';
 import OptionRow from '../OptionRow';
-import SectionList from '../SectionList';
+// import SectionList from '../SectionList';
 import Text from '../Text';
 import {propTypes as optionsListPropTypes, defaultProps as optionsListDefaultProps} from './optionsListPropTypes';
 import OptionsListSkeletonView from '../OptionsListSkeletonView';
@@ -107,36 +108,39 @@ class BaseOptionsList extends Component {
      * @returns {Array<Object>}
      */
     buildFlatSectionArray() {
-        let offset = 0;
+        const offset = 0;
 
         // Start with just an empty list header
-        const flatArray = [{length: 0, offset}];
+        let flatArray = [];
 
         // Build the flat array
         for (let sectionIndex = 0; sectionIndex < this.props.sections.length; sectionIndex++) {
-            const section = this.props.sections[sectionIndex];
-
-            // Add the section header
-            const sectionHeaderHeight = section.title && !this.props.hideSectionHeaders ? variables.optionsListSectionHeaderHeight : 0;
-            flatArray.push({length: sectionHeaderHeight, offset});
-            offset += sectionHeaderHeight;
-
-            // Add section items
-            for (let i = 0; i < section.data.length; i++) {
-                let fullOptionHeight = variables.optionRowHeight;
-                if (i > 0 && this.props.shouldHaveOptionSeparator) {
-                    fullOptionHeight += variables.borderTopWidth;
-                }
-                flatArray.push({length: fullOptionHeight, offset});
-                offset += fullOptionHeight;
-            }
-
-            // Add the section footer
-            flatArray.push({length: 0, offset});
+            const {data} = this.props.sections[sectionIndex];
+            // this.props.sections[0].data
+            flatArray = [...flatArray, ...data];
         }
 
+        //     // Add the section header
+        //     const sectionHeaderHeight = section.title && !this.props.hideSectionHeaders ? variables.optionsListSectionHeaderHeight : 0;
+        //     flatArray.push({length: sectionHeaderHeight, offset});
+        //     offset += sectionHeaderHeight;
+
+        //     // Add section items
+        //     for (let i = 0; i < section.data.length; i++) {
+        //         let fullOptionHeight = variables.optionRowHeight;
+        //         if (i > 0 && this.props.shouldHaveOptionSeparator) {
+        //             fullOptionHeight += variables.borderTopWidth;
+        //         }
+        //         flatArray.push({length: fullOptionHeight, offset});
+        //         offset += fullOptionHeight;
+        //     }
+
+        //     // Add the section footer
+        //     flatArray.push({length: 0, offset});
+        // }
+
         // Then add the list footer
-        flatArray.push({length: 0, offset});
+        // flatArray.push({length: 0, offset});
         return flatArray;
     }
 
@@ -160,13 +164,13 @@ class BaseOptionsList extends Component {
      * @return {Component}
      */
     renderItem({item, index, section}) {
-        const isDisabled = this.props.isDisabled || section.isDisabled;
+        const isDisabled = this.props.isDisabled; // || section.isDisabled;
         return (
             <OptionRow
                 option={item}
                 showTitleTooltip={this.props.showTitleTooltip}
                 hoverStyle={this.props.optionHoveredStyle}
-                optionIsFocused={!this.props.disableFocusOptions && !isDisabled && this.props.focusedIndex === index + section.indexOffset}
+                // optionIsFocused={!this.props.disableFocusOptions && !isDisabled && this.props.focusedIndex === index + section.indexOffset}
                 onSelectRow={this.props.onSelectRow}
                 isSelected={Boolean(_.find(this.props.selectedOptions, (option) => option.accountID === item.accountID))}
                 showSelectedState={this.props.canSelectMultipleOptions}
@@ -216,27 +220,29 @@ class BaseOptionsList extends Component {
                                 <Text style={[styles.textLabel, styles.colorMuted]}>{this.props.headerMessage}</Text>
                             </View>
                         ) : null}
-                        <SectionList
-                            ref={this.props.innerRef}
-                            indicatorStyle="white"
-                            keyboardShouldPersistTaps="always"
-                            keyboardDismissMode={this.props.keyboardDismissMode}
-                            onScrollBeginDrag={this.props.onScrollBeginDrag}
-                            onScroll={this.props.onScroll}
-                            contentContainerStyle={this.props.contentContainerStyles}
-                            showsVerticalScrollIndicator={false}
-                            sections={this.props.sections}
-                            keyExtractor={this.extractKey}
-                            stickySectionHeadersEnabled={false}
+                        <FlashList
+                            data={this.flattenedData}
                             renderItem={this.renderItem}
-                            getItemLayout={this.getItemLayout}
-                            renderSectionHeader={this.renderSectionHeader}
-                            extraData={this.props.focusedIndex}
-                            initialNumToRender={12}
-                            maxToRenderPerBatch={5}
-                            windowSize={5}
-                            viewabilityConfig={{viewAreaCoveragePercentThreshold: 95}}
-                            onViewableItemsChanged={this.onViewableItemsChanged}
+                            estimatedItemSize={variables.optionRowHeight}
+                            // ref={this.props.innerRef}
+                            // indicatorStyle="white"
+                            // keyboardShouldPersistTaps="always"
+                            keyboardDismissMode="on-drag"
+                            // onScrollBeginDrag={this.props.onScrollBeginDrag}
+                            // onScroll={this.props.onScroll}
+                            // contentContainerStyle={this.props.contentContainerStyles}
+                            // showsVerticalScrollIndicator={false}
+                            // sections={this.props.sections}
+                            // keyExtractor={this.extractKey}
+                            // stickySectionHeadersEnabled={false}
+                            // getItemLayout={this.getItemLayout}
+                            // renderSectionHeader={this.renderSectionHeader}
+                            // extraData={this.props.focusedIndex}
+                            // initialNumToRender={12}
+                            // maxToRenderPerBatch={5}
+                            // windowSize={5}
+                            // viewabilityConfig={{viewAreaCoveragePercentThreshold: 95}}
+                            // onViewableItemsChanged={this.onViewableItemsChanged}
                         />
                     </>
                 )}
