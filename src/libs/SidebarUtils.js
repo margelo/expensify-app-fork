@@ -120,12 +120,12 @@ function setIsSidebarLoadedReady() {
  * @param {String} currentReportId
  * @returns {String[]} An array of reportIDs sorted in the proper order
  */
-function getOrderedReportIDs(currentReportId) {
+function getOrderedReportIDs() {
     const isInGSDMode = priorityMode === CONST.PRIORITY_MODE.GSD;
     const isInDefaultMode = !isInGSDMode;
 
     // Filter out all the reports that shouldn't be displayed
-    const reportsToDisplay = _.filter(allReports, (report) => ReportUtils.shouldReportBeInOptionList(report, currentReportId, isInGSDMode, allReports, betas, policies));
+    const reportsToDisplay = _.filter(allReports, (report) => ReportUtils.shouldReportBeInOptionList(report, isInGSDMode, allReports, betas, policies));
     if (_.isEmpty(reportsToDisplay)) {
         // Display Concierge chat report when there is no report to be displayed
         const conciergeChatReport = _.find(allReports, ReportUtils.isConciergeChatReport);
@@ -216,9 +216,7 @@ function getOrderedReportIDs(currentReportId) {
  * @param {String} reportID
  * @returns {Object}
  */
-function getOptionData(reportID) {
-    const reportKey = `${ONYXKEYS.COLLECTION.REPORT}${reportID}`;
-    const report = allReports[reportKey];
+function getOptionData(report) {
 
     // When a user signs out, Onyx is cleared. Due to the lazy rendering with a virtual list, it's possible for
     // this method to be called after the Onyx data has been cleared out. In that case, it's fine to do

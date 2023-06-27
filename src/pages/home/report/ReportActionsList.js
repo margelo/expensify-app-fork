@@ -9,7 +9,7 @@ import styles from '../../../styles/styles';
 import * as ReportUtils from '../../../libs/ReportUtils';
 import withWindowDimensions, {windowDimensionsPropTypes} from '../../../components/withWindowDimensions';
 import withCurrentUserPersonalDetails, {withCurrentUserPersonalDetailsPropTypes, withCurrentUserPersonalDetailsDefaultProps} from '../../../components/withCurrentUserPersonalDetails';
-import {withNetwork, withPersonalDetails} from '../../../components/OnyxProvider';
+import {withNetwork, withPersonalDetails, withSession} from '../../../components/OnyxProvider';
 import ReportActionItem from './ReportActionItem';
 import ReportActionItemParentAction from './ReportActionItemParentAction';
 import ReportActionsSkeletonView from '../../../components/ReportActionsSkeletonView';
@@ -21,6 +21,8 @@ import CONST from '../../../CONST';
 import reportPropTypes from '../../reportPropTypes';
 import networkPropTypes from '../../../components/networkPropTypes';
 import withLocalize from '../../../components/withLocalize';
+
+export const start = performance.now()
 
 const propTypes = {
     /** Position of the "New" line marker */
@@ -78,15 +80,6 @@ function keyExtractor(item) {
 }
 
 function ReportActionsList(props) {
-    const opacity = useSharedValue(0);
-    const animatedStyles = useAnimatedStyle(() => ({
-        opacity: opacity.value,
-    }));
-    useEffect(() => {
-        opacity.value = withTiming(1, {duration: 100});
-    }, [opacity]);
-    const [skeletonViewHeight, setSkeletonViewHeight] = useState(0);
-
     const windowHeight = props.windowHeight;
 
     /**
@@ -113,6 +106,8 @@ function ReportActionsList(props) {
      */
     const renderItem = useCallback(
         ({item: reportAction, index}) => {
+
+            console.log('render item time:', performance.now() - start)
             // When the new indicator should not be displayed we explicitly set it to null
             const shouldDisplayNewMarker = reportAction.reportActionID === newMarkerReportActionID;
             const shouldDisplayParentAction = reportAction.actionName === CONST.REPORT.ACTIONS.TYPE.CREATED && ReportUtils.isThread(report);
@@ -147,9 +142,14 @@ function ReportActionsList(props) {
     // Native mobile does not render updates flatlist the changes even though component did update called.
     // To notify there something changes we can use extraData prop to flatlist
     const extraData = [props.isSmallScreenWidth ? props.newMarkerReportActionID : undefined, ReportUtils.isArchivedRoom(props.report)];
-    const shouldShowReportRecipientLocalTime = ReportUtils.canShowReportRecipientLocalTime(props.personalDetailsList, props.report, props.currentUserPersonalDetails.accountID);
+    const accountID = props.session.accountID;
+    //const currentUserPersonalDetails = useMemo(() => ({...props.personalDetails[accountID], accountID}), [props.personalDetails, accountID]);
+    const shouldShowReportRecipientLocalTime = ReportUtils.canShowReportRecipientLocalTime(props.personalDetailsList, props.report, accountID);
+    
+    console.log('data aaaaa', props.sortedReportActions.length, 'time:', performance.now() - start)
     return (
-        <Animated.View style={[animatedStyles, styles.flex1]}>
+        <Animated.View style={[styles.flex1]}>
+           
             <InvertedFlatList
                 accessibilityLabel={props.translate('sidebarScreen.listOfChatMessages')}
                 ref={ReportScrollManager.flatListRef}
@@ -162,6 +162,7 @@ function ReportActionsList(props) {
                 onEndReached={props.loadMoreChats}
                 onEndReachedThreshold={0.75}
                 ListFooterComponent={() => {
+                    return null
                     if (props.report.isLoadingMoreReportActions) {
                         return <ReportActionsSkeletonView containerHeight={CONST.CHAT_SKELETON_VIEW.AVERAGE_ROW_HEIGHT * 3} />;
                     }
@@ -183,7 +184,7 @@ function ReportActionsList(props) {
                 }}
                 keyboardShouldPersistTaps="handled"
                 onLayout={(event) => {
-                    setSkeletonViewHeight(event.nativeEvent.layout.height);
+                    //setSkeletonViewHeight(event.nativeEvent.layout.height);
                     props.onLayout(event);
                 }}
                 onScroll={props.onScroll}
@@ -197,4 +198,4 @@ ReportActionsList.propTypes = propTypes;
 ReportActionsList.defaultProps = defaultProps;
 ReportActionsList.displayName = 'ReportActionsList';
 
-export default compose(withWindowDimensions, withLocalize, withPersonalDetails(), withNetwork(), withCurrentUserPersonalDetails)(ReportActionsList);
+export default compose(withWindowDimensions, withLocalize, withPersonalDetails(), withNetwork(), withSession())(ReportActionsList);

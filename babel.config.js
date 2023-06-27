@@ -49,7 +49,7 @@ const metro = {
  * By default <React.Profiler> is disabled in production as it adds small overhead
  * When CAPTURE_METRICS is set we're explicitly saying that we want to capture metrics
  * To enable the <Profiler> for release builds we add these aliases */
-if (process.env.CAPTURE_METRICS === 'true') {
+if (false) {
     const path = require('path');
     const profilingRenderer = path.resolve(__dirname, './node_modules/react-native/Libraries/Renderer/implementations/ReactNativeRenderer-profiling');
 
@@ -58,7 +58,7 @@ if (process.env.CAPTURE_METRICS === 'true') {
         {
             root: ['./'],
             alias: {
-                'ReactNativeRenderer-prod': profilingRenderer,
+                //'ReactNativeRenderer-prod': profilingRenderer,
                 'scheduler/tracing': 'scheduler/tracing-profiling',
             },
         },

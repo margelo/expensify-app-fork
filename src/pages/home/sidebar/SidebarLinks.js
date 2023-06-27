@@ -40,6 +40,7 @@ import * as Session from '../../../libs/actions/Session';
 import Button from '../../../components/Button';
 import * as UserUtils from '../../../libs/UserUtils';
 import KeyboardShortcut from '../../../libs/KeyboardShortcut';
+import onyxSubscribe from '../../../libs/onyxSubscribe';
 
 const propTypes = {
     /** Toggles the navigation menu open and closed */
@@ -88,7 +89,6 @@ const propTypes = {
     }),
 
     ...withLocalizePropTypes,
-    ...withCurrentReportIdPropTypes,
     ...withNavigationPropTypes,
 };
 
@@ -121,11 +121,19 @@ class SidebarLinks extends React.Component {
         SidebarUtils.setIsSidebarLoadedReady();
         this.isSidebarLoaded = true;
 
+        let modal = {};
+         this.unsubscribeOnyxModal = onyxSubscribe({
+             key: ONYXKEYS.MODAL,
+             callback: (modalArg) => {
+                 modal = modalArg;
+             },
+         });
+
         const shortcutConfig = CONST.KEYBOARD_SHORTCUTS.ESCAPE;
         this.unsubscribeEscapeKey = KeyboardShortcut.subscribe(
             shortcutConfig.shortcutKey,
             () => {
-                if (this.props.modal.willAlertModalBecomeVisible) {
+                if (modal.willAlertModalBecomeVisible) {
                     return;
                 }
 
@@ -142,6 +150,9 @@ class SidebarLinks extends React.Component {
         SidebarUtils.resetIsSidebarLoadedReadyPromise();
         if (this.unsubscribeEscapeKey) {
             this.unsubscribeEscapeKey();
+        }
+        if (this.unsubscribeOnyxModal) {
+            this.unsubscribeOnyxModal();
         }
     }
 
@@ -180,7 +191,7 @@ class SidebarLinks extends React.Component {
 
     render() {
         const isLoading = _.isEmpty(this.props.personalDetails) || _.isEmpty(this.props.chatReports);
-        const optionListItems = SidebarUtils.getOrderedReportIDs(this.props.currentReportId);
+        const optionListItems = SidebarUtils.getOrderedReportIDs();
 
         const skeletonPlaceholder = <OptionsListSkeletonView shouldAnimate />;
 
@@ -274,8 +285,6 @@ const chatReportSelector = (report) =>
         errorFields: {
             addWorkspaceRoom: report.errorFields && report.errorFields.addWorkspaceRoom,
         },
-        lastReadTime: report.lastReadTime,
-        lastMentionedTime: report.lastMentionedTime,
         lastMessageText: report.lastMessageText,
         lastVisibleActionCreated: report.lastVisibleActionCreated,
         iouReportID: report.iouReportID,
@@ -335,7 +344,6 @@ export default compose(
     withCurrentUserPersonalDetails,
     withNavigationFocus,
     withWindowDimensions,
-    withCurrentReportId,
     withNavigation,
     withOnyx({
         // Note: It is very important that the keys subscribed to here are the same
@@ -367,9 +375,6 @@ export default compose(
         },
         preferredLocale: {
             key: ONYXKEYS.NVP_PREFERRED_LOCALE,
-        },
-        modal: {
-            key: ONYXKEYS.MODAL,
         },
     }),
 )(SidebarLinks);

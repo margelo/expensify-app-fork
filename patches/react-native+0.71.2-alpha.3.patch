@@ -1,0 +1,55 @@
+diff --git a/node_modules/react-native/Libraries/Core/InitializeCore.js b/node_modules/react-native/Libraries/Core/InitializeCore.js
+index 1379ffd..b229b56 100644
+--- a/node_modules/react-native/Libraries/Core/InitializeCore.js
++++ b/node_modules/react-native/Libraries/Core/InitializeCore.js
+@@ -39,9 +39,10 @@ require('./setUpBatchedBridge');
+ require('./setUpSegmentFetcher');
+ if (__DEV__) {
+   require('./checkNativeVersion');
+-  require('./setUpDeveloperTools');
++  
+   require('../LogBox/LogBox').install();
+ }
++require('./setUpDeveloperTools');
+ 
+ require('../ReactNative/AppRegistry');
+ 
+diff --git a/node_modules/react-native/Libraries/Core/setUpDeveloperTools.js b/node_modules/react-native/Libraries/Core/setUpDeveloperTools.js
+index 06f2079..f1aa4c5 100644
+--- a/node_modules/react-native/Libraries/Core/setUpDeveloperTools.js
++++ b/node_modules/react-native/Libraries/Core/setUpDeveloperTools.js
+@@ -16,7 +16,7 @@ declare var console: typeof console & {_isPolyfilled: boolean, ...};
+  * Sets up developer tools for React Native.
+  * You can use this module directly, or just require InitializeCore.
+  */
+-if (__DEV__) {
++if (true) {
+   require('./setUpReactDevTools');
+ 
+   // Set up inspector
+diff --git a/node_modules/react-native/Libraries/Core/setUpReactDevTools.js b/node_modules/react-native/Libraries/Core/setUpReactDevTools.js
+index be647e3..fa13a2c 100644
+--- a/node_modules/react-native/Libraries/Core/setUpReactDevTools.js
++++ b/node_modules/react-native/Libraries/Core/setUpReactDevTools.js
+@@ -10,7 +10,7 @@
+ 
+ 'use strict';
+ 
+-if (__DEV__) {
++if (true) {
+   let isWebSocketOpen = false;
+   let ws = null;
+ 
+diff --git a/node_modules/react-native/Libraries/Renderer/shims/ReactNative.js b/node_modules/react-native/Libraries/Renderer/shims/ReactNative.js
+index e2cff02..5f28f2f 100644
+--- a/node_modules/react-native/Libraries/Renderer/shims/ReactNative.js
++++ b/node_modules/react-native/Libraries/Renderer/shims/ReactNative.js
+@@ -20,7 +20,7 @@ let ReactNative;
+ if (__DEV__) {
+   ReactNative = require('../implementations/ReactNativeRenderer-dev');
+ } else {
+-  ReactNative = require('../implementations/ReactNativeRenderer-prod');
++  ReactNative = require('../implementations/ReactNativeRenderer-profiling');
+ }
+ 
+ module.exports = (ReactNative: ReactNativeType);

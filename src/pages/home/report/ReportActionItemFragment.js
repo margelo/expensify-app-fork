@@ -19,6 +19,7 @@ import CONST from '../../../CONST';
 import applyStrikethrough from '../../../components/HTMLEngineProvider/applyStrikethrough';
 import editedLabelStyles from '../../../styles/editedLabelStyles';
 import UserDetailsTooltip from '../../../components/UserDetailsTooltip';
+import { start } from '../../../pages/home/report/ReportActionsList';
 
 const propTypes = {
     /** Users accountID */
@@ -78,6 +79,7 @@ const defaultProps = {
 };
 
 function ReportActionItemFragment(props) {
+    console.log('render fragment time:', performance.now() - start)
     switch (props.fragment.type) {
         case 'COMMENT': {
             // If this is an attachment placeholder, return the placeholder component

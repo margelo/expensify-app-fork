@@ -12,6 +12,7 @@ import reportPropTypes from '../../../pages/reportPropTypes';
 import FullScreenLoadingIndicator from '../../../components/FullscreenLoadingIndicator';
 import {withNavigationPropTypes} from '../../../components/withNavigation';
 import * as App from '../../actions/App';
+import {start} from '../../../pages/home/report/ReportActionsList'
 
 const propTypes = {
     /** Available reports that would be displayed in this navigator */
@@ -89,8 +90,10 @@ class ReportScreenWrapper extends Component {
             // It's possible that props.reports aren't fully loaded yet
             // in that case the reportID is undefined
             if (reportID) {
+                console.log('setParams time:', performance.now() - start)
                 this.props.navigation.setParams({reportID: String(reportID)});
             } else {
+                console.log('confirmReadyToOpenApp time:', performance.now() - start)
                 App.confirmReadyToOpenApp();
             }
         }
@@ -113,6 +116,7 @@ class ReportScreenWrapper extends Component {
         );
 
         if (reportID) {
+            console.log('setParams 2 time:', performance.now() - start)
             this.props.navigation.setParams({reportID: String(reportID)});
             return true;
         }
@@ -122,7 +126,7 @@ class ReportScreenWrapper extends Component {
     render() {
         // Wait until there is reportID in the route params
         if (lodashGet(this.props.route, 'params.reportID', null)) {
-            return <ReportScreen route={this.props.route} />;
+            return <ReportScreen route={this.props.route}  policies={this.props.policies} reports={this.props.reports} />;
         }
 
         return <FullScreenLoadingIndicator initialParams={this.props.route.params} />;

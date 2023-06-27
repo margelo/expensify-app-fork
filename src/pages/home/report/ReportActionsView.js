@@ -15,7 +15,7 @@ import Performance from '../../../libs/Performance';
 import {withNetwork} from '../../../components/OnyxProvider';
 import FloatingMessageCounter from './FloatingMessageCounter';
 import networkPropTypes from '../../../components/networkPropTypes';
-import ReportActionsList from './ReportActionsList';
+import ReportActionsList, {start} from './ReportActionsList';
 import CopySelectionHelper from '../../../components/CopySelectionHelper';
 import * as ReportActionsUtils from '../../../libs/ReportActionsUtils';
 import * as ReportUtils from '../../../libs/ReportUtils';
@@ -334,8 +334,10 @@ class ReportActionsView extends React.Component {
     }
 
     render() {
+        console.log('items', this.props.reportActions.length, 'time:', performance.now() - start)
         // Comments have not loaded at all yet do nothing
         if (!_.size(this.props.reportActions)) {
+            console.log('no items')
             return null;
         }
         return (
@@ -356,10 +358,7 @@ class ReportActionsView extends React.Component {
                         newMarkerReportActionID={this.state.newMarkerReportActionID}
                     />
                 </ReactionListRefContext.Provider>
-                <PopoverReactionList
-                    ref={this.reactionListRef}
-                    report={this.props.report}
-                />
+               
                 <CopySelectionHelper />
             </>
         );

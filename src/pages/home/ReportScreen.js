@@ -17,7 +17,7 @@ import ReportActionsView from './report/ReportActionsView';
 import CONST from '../../CONST';
 import ReportActionsSkeletonView from '../../components/ReportActionsSkeletonView';
 import reportActionPropTypes from './report/reportActionPropTypes';
-import {withNetwork} from '../../components/OnyxProvider';
+import {withNetwork, withBetas} from '../../components/OnyxProvider';
 import compose from '../../libs/compose';
 import Visibility from '../../libs/Visibility';
 import networkPropTypes from '../../components/networkPropTypes';
@@ -39,6 +39,7 @@ import TaskHeader from '../../components/TaskHeader';
 import MoneyRequestHeader from '../../components/MoneyRequestHeader';
 import withNavigation, {withNavigationPropTypes} from '../../components/withNavigation';
 import * as ComposerActions from '../../libs/actions/Composer';
+import { start } from '../../pages/home/report/ReportActionsList';
 
 const propTypes = {
     /** Navigation route context info provided by react navigation */
@@ -134,6 +135,8 @@ class ReportScreen extends React.Component {
             isBannerVisible: true,
         };
         this.firstRenderRef = React.createRef();
+        this.firstRenderRef.current = true;
+        this.start = start
     }
 
     componentDidMount() {
@@ -240,12 +243,18 @@ class ReportScreen extends React.Component {
         const shouldHideReport = ReportUtils.isDefaultRoom(this.props.report) && !ReportUtils.canSeeDefaultRoom(this.props.report, this.props.policies, this.props.betas);
 
         const isLoading = !reportID || !this.props.isSidebarLoaded || _.isEmpty(this.props.personalDetails) || !this.firstRenderRef.current;
+        
+        console.log(`it's loading ${isLoading} time:${performance.now()}`)
+        console.log(`${!reportID} || ${!this.props.isSidebarLoaded} || ${_.isEmpty(this.props.personalDetails)} || ${!this.firstRenderRef.current} time:${performance.now()}`)
         this.firstRenderRef.current = true;
 
         const parentReportAction = ReportActionsUtils.getParentReportAction(this.props.report);
         const isSingleTransactionView = ReportActionsUtils.isTransactionThread(parentReportAction);
 
         const policy = this.props.policies[`${ONYXKEYS.COLLECTION.POLICY}${this.props.report.policyID}`];
+
+        console.log(this.isReportReadyForDisplay() , !isLoadingInitialReportActions ,  !isLoading, 'time:', performance.now() - this.start)
+        console.log(this.props.reportActions.length, 'time:', performance.now() - this.start)
 
         return (
             <ScreenWrapper style={screenWrapperStyle}>
@@ -307,17 +316,18 @@ class ReportScreen extends React.Component {
                                 return;
                             }
                             reportActionsListViewHeight = skeletonViewContainerHeight;
-                            this.setState({skeletonViewContainerHeight});
+                            //this.setState({skeletonViewContainerHeight});
                         }}
                     >
                         {this.isReportReadyForDisplay() && !isLoadingInitialReportActions && !isLoading && (
-                            <ReportActionsView
+                            <ReportActionssss/>
+                            /*<ReportActionsView
                                 reportActions={this.props.reportActions}
                                 report={this.props.report}
                                 isComposerFullSize={this.props.isComposerFullSize}
                                 parentViewHeight={this.state.skeletonViewContainerHeight}
                                 policy={policy}
-                            />
+                            />*/
                         )}
 
                         {/* Note: The report should be allowed to mount even if the initial report actions are not loaded. If we prevent rendering the report while they are loading then
@@ -360,13 +370,14 @@ class ReportScreen extends React.Component {
 ReportScreen.propTypes = propTypes;
 ReportScreen.defaultProps = defaultProps;
 
-export default compose(
+export const sdfsdf = compose(
     withViewportOffsetTop,
     withLocalize,
     withWindowDimensions,
     withNavigationFocus,
     withNavigation,
     withNetwork(),
+    withBetas(),
     withOnyx({
         isSidebarLoaded: {
             key: ONYXKEYS.IS_SIDEBAR_LOADED,
@@ -396,3 +407,8 @@ export default compose(
         },
     }),
 )(ReportScreen);
+
+
+export default function ReportActionssss ()  {
+    return <View style={{backgroundColor: 'red', width: 300, height: 300}}/>
+}

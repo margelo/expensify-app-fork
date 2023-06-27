@@ -1,0 +1,61 @@
+diff --git a/node_modules/react-native-onyx/lib/Onyx.js b/node_modules/react-native-onyx/lib/Onyx.js
+index 7b45997..6fdf8b6 100644
+--- a/node_modules/react-native-onyx/lib/Onyx.js
++++ b/node_modules/react-native-onyx/lib/Onyx.js
+@@ -73,6 +73,8 @@ const reduceCollectionWithSelector = (collection, selector, withOnyxInstanceStat
+     return finalCollection;
+ }, {});
+ 
++
++
+ /**
+  * Get some data from the store
+  *
+@@ -364,7 +366,7 @@ function keysChanged(collectionKey, partialCollection) {
+                 // returned by the selector.
+                 if (subscriber.selector) {
+                     subscriber.withOnyxInstance.setState((prevState) => {
+-                        const previousData = reduceCollectionWithSelector(prevState[subscriber.statePropertyName], subscriber.selector, subscriber.withOnyxInstance.state);
++                        const previousData = prevState[subscriber.statePropertyName];
+                         const newData = reduceCollectionWithSelector(cachedCollection, subscriber.selector, subscriber.withOnyxInstance.state);
+ 
+                         if (!deepEqual(previousData, newData)) {
+diff --git a/node_modules/react-native-onyx/lib/withOnyx.js b/node_modules/react-native-onyx/lib/withOnyx.js
+index f8154d7..806250d 100644
+--- a/node_modules/react-native-onyx/lib/withOnyx.js
++++ b/node_modules/react-native-onyx/lib/withOnyx.js
+@@ -8,6 +8,7 @@ import _ from 'underscore';
+ import PropTypes from 'prop-types';
+ import Str from 'expensify-common/lib/str';
+ import Onyx from './Onyx';
++import { start } from '../../../src/pages/home/report/ReportActionsList'
+ 
+ /**
+  * Returns the display name of a component
+@@ -95,6 +96,8 @@ export default function (mapOnyxToState) {
+ 
+                 this.tempState[statePropertyName] = val;
+ 
++                console.log(`added ${statePropertyName} to ${displayName} time:${performance.now() - start}`)
++
+                 // All state keys should exist and at least have a value of null
+                 if (_.some(requiredKeysForInit, key => _.isUndefined(this.tempState[key]))) {
+                     return;
+@@ -158,9 +161,16 @@ export default function (mapOnyxToState) {
+ 
+             render() {
+                 if (this.state.loading) {
+-                    return null;
++                    console.log(`blocking ${displayName} time:${performance.now() - start}`)
++                    const Comp = () => {
++                        return null;
++                    }
++                    Comp.displayName = `blocking ${displayName}`
++                    return <Comp/>;
+                 }
+ 
++
++                console.log(`unblocking ${displayName} time:${performance.now() - start}`)
+                 // Remove any internal state properties used by withOnyx
+                 // that should not be passed to a wrapped component
+                 let stateToPass = _.omit(this.state, 'loading');

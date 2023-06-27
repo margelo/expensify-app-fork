@@ -65,6 +65,7 @@ const getActiveRouteIndex = function (route, index) {
  * @param {String} type - Type of action to perform. Currently UP is supported.
  */
 function navigate(route = ROUTES.HOME, type) {
+    console.log('time: navigate', route)
     if (!canNavigate('navigate', {route})) {
         // Store intended route if the navigator is not yet available,
         // we will try again after the NavigationContainer is ready
@@ -110,6 +111,7 @@ function goBack(fallbackRoute = ROUTES.HOME, shouldEnforceFallback = false) {
  * @param {String} routeKey
  */
 function setParams(params, routeKey) {
+    console.log('time: setParams')
     navigationRef.current.dispatch({
         ...CommonActions.setParams(params),
         source: routeKey,
@@ -194,6 +196,7 @@ function isActiveRoute(routePath) {
  * but the NavigationContainer was not ready when navigate() was called
  */
 function goToPendingRoute() {
+    console.log('go to pending route time:')
     if (pendingRoute === null) {
         return;
     }

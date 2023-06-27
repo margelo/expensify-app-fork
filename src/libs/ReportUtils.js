@@ -1898,7 +1898,7 @@ function canSeeDefaultRoom(report, policies, betas) {
  * @param {Object} policies
  * @returns {boolean}
  */
-function shouldReportBeInOptionList(report, currentReportId, isInGSDMode, iouReports, betas, policies) {
+function shouldReportBeInOptionList(report, isInGSDMode, iouReports, betas, policies) {
     const isInDefaultMode = !isInGSDMode;
 
     // Exclude reports that have no data because there wouldn't be anything to show in the option item.
@@ -1914,13 +1914,6 @@ function shouldReportBeInOptionList(report, currentReportId, isInGSDMode, iouRep
 
     if (isDefaultRoom(report) && !canSeeDefaultRoom(report, policies, betas)) {
         return false;
-    }
-
-    // Include the currently viewed report. If we excluded the currently viewed report, then there
-    // would be no way to highlight it in the options list and it would be confusing to users because they lose
-    // a sense of context.
-    if (report.reportID === currentReportId) {
-        return true;
     }
 
     // Include reports if they have a draft, are pinned, or have an outstanding IOU
