@@ -320,14 +320,14 @@ class ReportScreen extends React.Component {
                         }}
                     >
                         {this.isReportReadyForDisplay() && !isLoadingInitialReportActions && !isLoading && (
-                            <ReportActionssss/>
-                            /*<ReportActionsView
+                        
+                            <ReportActionsView
                                 reportActions={this.props.reportActions}
                                 report={this.props.report}
                                 isComposerFullSize={this.props.isComposerFullSize}
                                 parentViewHeight={this.state.skeletonViewContainerHeight}
                                 policy={policy}
-                            />*/
+                            />
                         )}
 
                         {/* Note: The report should be allowed to mount even if the initial report actions are not loaded. If we prevent rendering the report while they are loading then
@@ -370,7 +370,7 @@ class ReportScreen extends React.Component {
 ReportScreen.propTypes = propTypes;
 ReportScreen.defaultProps = defaultProps;
 
-export const sdfsdf = compose(
+export default compose(
     withViewportOffsetTop,
     withLocalize,
     withWindowDimensions,
@@ -407,8 +407,3 @@ export const sdfsdf = compose(
         },
     }),
 )(ReportScreen);
-
-
-export default function ReportActionssss ()  {
-    return <View style={{backgroundColor: 'red', width: 300, height: 300}}/>
-}
