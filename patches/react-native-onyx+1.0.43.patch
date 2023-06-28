@@ -1,5 +1,5 @@
 diff --git a/node_modules/react-native-onyx/lib/Onyx.js b/node_modules/react-native-onyx/lib/Onyx.js
-index 7b45997..6fdf8b6 100644
+index 7b45997..c1eedf1 100644
 --- a/node_modules/react-native-onyx/lib/Onyx.js
 +++ b/node_modules/react-native-onyx/lib/Onyx.js
 @@ -73,6 +73,8 @@ const reduceCollectionWithSelector = (collection, selector, withOnyxInstanceStat
@@ -11,7 +11,34 @@ index 7b45997..6fdf8b6 100644
  /**
   * Get some data from the store
   *
-@@ -364,7 +366,7 @@ function keysChanged(collectionKey, partialCollection) {
+@@ -133,6 +135,26 @@ function getAllKeys() {
+     return cache.captureTask(taskName, promise);
+ }
+ 
++function tryGetCachedValue(key, mapping) {
++    if (!cache.hasCacheForKey(key)) {
++        return undefined
++    }
++
++    const val = cache.getValue(key);
++
++    // If the mapping has a selector, then the component's state must only be updated with the data
++    // returned by the selector.
++    if (mapping.selector) {
++        if (isCollectionKey(key)) {
++            return reduceCollectionWithSelector(val, mapping.selector, mapping.withOnyxInstance?.state);
++        } else {
++            return getSubsetOfData(val, mapping.selector, mapping.withOnyxInstance?.state);
++        }
++    }
++
++    return val;
++}
++
+ /**
+  * Checks to see if the a subscriber's supplied key
+  * is associated with a collection of keys.
+@@ -364,7 +386,7 @@ function keysChanged(collectionKey, partialCollection) {
                  // returned by the selector.
                  if (subscriber.selector) {
                      subscriber.withOnyxInstance.setState((prevState) => {
@@ -20,8 +47,52 @@ index 7b45997..6fdf8b6 100644
                          const newData = reduceCollectionWithSelector(cachedCollection, subscriber.selector, subscriber.withOnyxInstance.state);
  
                          if (!deepEqual(previousData, newData)) {
+@@ -556,6 +578,8 @@ function keyChanged(key, data, canUpdateSubscriber) {
+     }
+ }
+ 
++let countMap = {}
++
+ /**
+  * Sends the data obtained from the keys to the connection. It either:
+  *     - sets state on the withOnyxInstances
+@@ -590,9 +614,23 @@ function sendDataToConnection(mapping, val, matchedKey) {
+             }
+         }
+ 
+-        PerformanceUtils.logSetStateCall(mapping, null, newData, 'sendDataToConnection');
+-        mapping.withOnyxInstance.setWithOnyxState(mapping.statePropertyName, newData);
+-        return;
++        if (!deepEqual(mapping.withOnyxInstance.state[mapping.statePropertyName], newData)) {
++        // if (mapping.withOnyxInstance.state[mapping.statePropertyName] !== newData) {
++            countMap[matchedKey] = (countMap[matchedKey] || 0) + 1
++
++            // console.log(JSON.stringify(countMap, null, 2))
++
++            // if (matchedKey?.includes("report_")) {
++            //     console.log('--------prev')
++            //     console.log(mapping.withOnyxInstance.state[mapping.statePropertyName])
++            //     console.log('--------new')
++            //     console.log(newData)
++            // }
++
++            PerformanceUtils.logSetStateCall(mapping, null, newData, 'sendDataToConnection');
++            mapping.withOnyxInstance.setWithOnyxState(mapping.statePropertyName, newData);
++            return;
++        }
+     }
+ 
+     if (_.isFunction(mapping.callback)) {
+@@ -1304,6 +1342,7 @@ const Onyx = {
+     removeFromEvictionBlockList,
+     isSafeEvictionKey,
+     METHOD,
++    tryGetCachedValue,
+ };
+ 
+ /**
 diff --git a/node_modules/react-native-onyx/lib/withOnyx.js b/node_modules/react-native-onyx/lib/withOnyx.js
-index f8154d7..806250d 100644
+index f8154d7..5cb9ad6 100644
 --- a/node_modules/react-native-onyx/lib/withOnyx.js
 +++ b/node_modules/react-native-onyx/lib/withOnyx.js
 @@ -8,6 +8,7 @@ import _ from 'underscore';
@@ -32,7 +103,39 @@ index f8154d7..806250d 100644
  
  /**
   * Returns the display name of a component
-@@ -95,6 +96,8 @@ export default function (mapOnyxToState) {
+@@ -37,12 +38,28 @@ export default function (mapOnyxToState) {
+                 // disconnected. It is a key value store with the format {[mapping.key]: connectionID}.
+                 this.activeConnectionIDs = {};
+ 
++                let cachedAssigments = 0;
++                const cachedState = {};
++
++                // Check if we can get all the data synchronously from cache
++                _.each(mapOnyxToState, (mapping, propertyName) => {
++                    const key = Str.result(mapping.key, props);
++                    const value = Onyx.tryGetCachedValue(key, mapping);
++                    if (value !== undefined) {
++                        cachedState[propertyName] = value;
++                        cachedAssigments++;
++                    }
++                });
++
++                // If there are no required keys for init then we can render the wrapped component immediately
++                const loading = cachedAssigments < requiredKeysForInit.length;
++
+                 // Object holding the temporary initial state for the component while we load the various Onyx keys
+-                this.tempState = {};
++                this.tempState = cachedState;
+ 
+                 this.state = {
+-                    // If there are no required keys for init then we can render the wrapped component immediately
+-                    loading: requiredKeysForInit.length > 0,
++                    loading: loading,
++                    ...(loading ? {} : cachedState),
+                 };
+             }
+ 
+@@ -95,6 +112,8 @@ export default function (mapOnyxToState) {
  
                  this.tempState[statePropertyName] = val;
  
@@ -41,7 +144,7 @@ index f8154d7..806250d 100644
                  // All state keys should exist and at least have a value of null
                  if (_.some(requiredKeysForInit, key => _.isUndefined(this.tempState[key]))) {
                      return;
-@@ -158,9 +161,16 @@ export default function (mapOnyxToState) {
+@@ -158,9 +177,16 @@ export default function (mapOnyxToState) {
  
              render() {
                  if (this.state.loading) {
