@@ -415,5 +415,3 @@ export default compose(
     withAccountManagerReportId(),
     withIsSidebarLoaded(),
 )(ReportScreen);
-
-

@@ -21,18 +21,27 @@ index 7b45997..6fdf8b6 100644
  
                          if (!deepEqual(previousData, newData)) {
 diff --git a/node_modules/react-native-onyx/lib/withOnyx.js b/node_modules/react-native-onyx/lib/withOnyx.js
-index f8154d7..806250d 100644
+index f8154d7..7f03ae9 100644
 --- a/node_modules/react-native-onyx/lib/withOnyx.js
 +++ b/node_modules/react-native-onyx/lib/withOnyx.js
-@@ -8,6 +8,7 @@ import _ from 'underscore';
+@@ -8,6 +8,8 @@ import _ from 'underscore';
  import PropTypes from 'prop-types';
  import Str from 'expensify-common/lib/str';
  import Onyx from './Onyx';
 +import { start } from '../../../src/pages/home/report/ReportActionsList'
++import Performance from 'react-native-performance'
  
  /**
   * Returns the display name of a component
-@@ -95,6 +96,8 @@ export default function (mapOnyxToState) {
+@@ -44,6 +46,7 @@ export default function (mapOnyxToState) {
+                     // If there are no required keys for init then we can render the wrapped component immediately
+                     loading: requiredKeysForInit.length > 0,
+                 };
++                this.rnd = Math.floor(Math.random() * 100000000)
+             }
+ 
+             componentDidMount() {
+@@ -95,11 +98,16 @@ export default function (mapOnyxToState) {
  
                  this.tempState[statePropertyName] = val;
  
@@ -41,12 +50,21 @@ index f8154d7..806250d 100644
                  // All state keys should exist and at least have a value of null
                  if (_.some(requiredKeysForInit, key => _.isUndefined(this.tempState[key]))) {
                      return;
-@@ -158,9 +161,16 @@ export default function (mapOnyxToState) {
+                 }
+ 
++                Performance.mark(`unblocking_${displayName}_${this.rnd}`)
++                Performance.measure(`blocked_time_${displayName}_${this.rnd}`, `blocking_${displayName}_${this.rnd}`, `unblocking_${displayName}_${this.rnd}`)
++
+                 this.setState({...this.tempState, loading: false});
+                 delete this.tempState;
+             }
+@@ -158,9 +166,17 @@ export default function (mapOnyxToState) {
  
              render() {
                  if (this.state.loading) {
 -                    return null;
 +                    console.log(`blocking ${displayName} time:${performance.now() - start}`)
++                    Performance.mark(`blocking_${displayName}_${this.rnd}`)
 +                    const Comp = () => {
 +                        return null;
 +                    }

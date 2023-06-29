@@ -1,3 +1,49 @@
+diff --git a/node_modules/react-native/Libraries/BatchedBridge/MessageQueue.js b/node_modules/react-native/Libraries/BatchedBridge/MessageQueue.js
+index a9810bc..39d8a23 100644
+--- a/node_modules/react-native/Libraries/BatchedBridge/MessageQueue.js
++++ b/node_modules/react-native/Libraries/BatchedBridge/MessageQueue.js
+@@ -16,6 +16,7 @@ const stringifySafe = require('../Utilities/stringifySafe').default;
+ const warnOnce = require('../Utilities/warnOnce');
+ const ErrorUtils = require('../vendor/core/ErrorUtils');
+ const invariant = require('invariant');
++const Performance = require('react-native-performance').default
+ 
+ export type SpyData = {
+   type: number,
+@@ -38,6 +39,8 @@ const TRACE_TAG_REACT_APPS = 1 << 17;
+ 
+ const DEBUG_INFO_LIMIT = 32;
+ 
++let id = 0;
++
+ class MessageQueue {
+   _lazyCallableModules: {[key: string]: (void) => {...}, ...};
+   _queue: [number[], number[], mixed[], number];
+@@ -104,16 +107,23 @@ class MessageQueue {
+     }
+   }
+ 
++ 
++
+   callFunctionReturnFlushedQueue(
+     module: string,
+     method: string,
+     args: mixed[],
+   ): null | [Array<number>, Array<number>, Array<mixed>, number] {
++    const idd = id++;
++    Performance.mark(`callFunction_start_${idd}`)
+     this.__guard(() => {
+       this.__callFunction(module, method, args);
+     });
+ 
+-    return this.flushedQueue();
++    const x = this.flushedQueue();
++    Performance.mark(`callFunction_end_${idd}`)
++    Performance.measure(`callFunctionReturnFlushedQueue_${module}_${method}_${idd}`, `callFunction_start_${idd}`,`callFunction_end_${idd}`)
++    return x
+   }
+ 
+   invokeCallbackAndReturnFlushedQueue(
 diff --git a/node_modules/react-native/Libraries/Core/InitializeCore.js b/node_modules/react-native/Libraries/Core/InitializeCore.js
 index 1379ffd..b229b56 100644
 --- a/node_modules/react-native/Libraries/Core/InitializeCore.js
