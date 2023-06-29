@@ -13,6 +13,8 @@ import FullScreenLoadingIndicator from '../../../components/FullscreenLoadingInd
 import {withNavigationPropTypes} from '../../../components/withNavigation';
 import * as App from '../../actions/App';
 import {start} from '../../../pages/home/report/ReportActionsList'
+import compose from '../../../libs/compose'
+import { withBetas, withPolices, withIsFirstTimeNewExpensifyUser, withReports, withReportActions } from '../../../components/OnyxProvider'
 
 const propTypes = {
     /** Available reports that would be displayed in this navigator */
@@ -126,7 +128,7 @@ class ReportScreenWrapper extends Component {
     render() {
         // Wait until there is reportID in the route params
         if (lodashGet(this.props.route, 'params.reportID', null)) {
-            return <ReportScreen route={this.props.route}  policies={this.props.policies} reports={this.props.reports} />;
+            return <ReportScreen route={this.props.route} reports={this.props.reports} reportActions={this.props.reportActions} />;
         }
 
         return <FullScreenLoadingIndicator initialParams={this.props.route.params} />;
@@ -137,7 +139,7 @@ ReportScreenWrapper.propTypes = propTypes;
 ReportScreenWrapper.defaultProps = defaultProps;
 ReportScreenWrapper.displayName = 'ReportScreenWrapper';
 
-export default withOnyx({
+ /*export default withOnyx({
     reports: {
         key: ONYXKEYS.COLLECTION.REPORT,
     },
@@ -150,4 +152,6 @@ export default withOnyx({
     isFirstTimeNewExpensifyUser: {
         key: ONYXKEYS.NVP_IS_FIRST_TIME_NEW_EXPENSIFY_USER,
     },
-})(ReportScreenWrapper);
+})(ReportScreenWrapper); */
+
+export default compose(withBetas(), withReports({propName: 'reports'}), withPolices({propName: 'policies'}), withIsFirstTimeNewExpensifyUser(), withReportActions({propName: 'reportActions'}))(ReportScreenWrapper);

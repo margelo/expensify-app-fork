@@ -17,7 +17,7 @@ import ReportActionsView from './report/ReportActionsView';
 import CONST from '../../CONST';
 import ReportActionsSkeletonView from '../../components/ReportActionsSkeletonView';
 import reportActionPropTypes from './report/reportActionPropTypes';
-import {withNetwork, withBetas} from '../../components/OnyxProvider';
+import {withNetwork, withBetas, withPersonalDetails, withPolices, withAccountManagerReportId, withIsSidebarLoaded} from '../../components/OnyxProvider';
 import compose from '../../libs/compose';
 import Visibility from '../../libs/Visibility';
 import networkPropTypes from '../../components/networkPropTypes';
@@ -148,15 +148,17 @@ class ReportScreen extends React.Component {
         this.start = start;
     }
 
+    derive 
+
     componentDidMount() {
         this.unsubscribeVisibilityListener = Visibility.onVisibilityChange(() => {
             // If the report is not fully visible (AKA on small screen devices and LHR is open) or the report is optimistic (AKA not yet created)
             // we don't need to call openReport
-            if (!getIsReportFullyVisible(this.props.isFocused) || this.props.report.isOptimisticReport) {
+            if (!getIsReportFullyVisible(this.props.isFocused) || this.report.isOptimisticReport) {
                 return;
             }
 
-            // Report.openReport(this.props.report.reportID);
+            // Report.openReport(this.report.reportID);
         });
 
         //this.fetchReportIfNeeded();
@@ -171,7 +173,7 @@ class ReportScreen extends React.Component {
         // the ReportScreen never actually unmounts and the reportID in the route also doesn't change.
         // Therefore, we need to compare if the existing reportID is the same as the one in the route
         // before deciding that we shouldn't call OpenReport.
-        const onyxReportID = this.props.report.reportID;
+        const onyxReportID = this.report.reportID;
         const routeReportID = getReportID(this.props.route);
         if (onyxReportID === prevProps.report.reportID && (!onyxReportID || onyxReportID === routeReportID)) {
             return;
@@ -210,8 +212,8 @@ class ReportScreen extends React.Component {
         const reportIDFromPath = getReportID(this.props.route);
 
         // This is necessary so that when we are retrieving the next report data from Onyx the ReportActionsView will remount completely
-        const isTransitioning = this.props.report && this.props.report.reportID !== reportIDFromPath;
-        return reportIDFromPath !== '' && this.props.report.reportID && !isTransitioning;
+        const isTransitioning = this.report && this.report.reportID !== reportIDFromPath;
+        return reportIDFromPath !== '' && this.report.reportID && !isTransitioning;
     }
 
     fetchReportIfNeeded() {
@@ -226,7 +228,7 @@ class ReportScreen extends React.Component {
         // It possible that we may not have the report object yet in Onyx yet e.g. we navigated to a URL for an accessible report that
         // is not stored locally yet. If props.report.reportID exists, then the report has been stored locally and nothing more needs to be done.
         // If it doesn't exist, then we fetch the report from the API.
-        if (this.props.report.reportID && this.props.report.reportID === getReportID(this.props.route)) {
+        if (this.report.reportID && this.report.reportID === getReportID(this.props.route)) {
             return;
         }
 
@@ -238,22 +240,33 @@ class ReportScreen extends React.Component {
     }
 
     chatWithAccountManager() {
-        Navigation.navigate(ROUTES.getReportRoute(this.props.accountManagerReportID));
+        //Navigation.navigate(ROUTES.getReportRoute(this.props.accountManagerReportID));
     }
 
     render() {
         // We are either adding a workspace room, or we're creating a chat, it isn't possible for both of these to be pending, or to have errors for the same report at the same time, so
         // simply looking up the first truthy value for each case will get the relevant property if it's set.
+        console.log('reportACtions', this.props.reportActions != null)
+        console.log('report', this.props.reports != null)
+        console.log('reportId', getReportID(this.props.route))
+        
+        this.reportActions = ReportActionsUtils.getSortedReportActionsForDisplay(this.props.reportActions[`${ONYXKEYS.COLLECTION.REPORT_ACTIONS}${getReportID(this.props.route)}`])
+        this.report =  this.props.reports[`${ONYXKEYS.COLLECTION.REPORT}${getReportID(this.props.route)}`]
+
+        console.log('reportACtions', this.reportActions != null)
+        console.log('report', this.report != null)
+        console.log('report 3', this.props.reports[`${ONYXKEYS.COLLECTION.REPORT}${getReportID(this.props.route)}`] != null)
+        
         const reportID = getReportID(this.props.route);
-        const addWorkspaceRoomOrChatPendingAction = lodashGet(this.props.report, 'pendingFields.addWorkspaceRoom') || lodashGet(this.props.report, 'pendingFields.createChat');
-        const addWorkspaceRoomOrChatErrors = lodashGet(this.props.report, 'errorFields.addWorkspaceRoom') || lodashGet(this.props.report, 'errorFields.createChat');
+        const addWorkspaceRoomOrChatPendingAction = lodashGet(this.report, 'pendingFields.addWorkspaceRoom') || lodashGet(this.report, 'pendingFields.createChat');
+        const addWorkspaceRoomOrChatErrors = lodashGet(this.report, 'errorFields.addWorkspaceRoom') || lodashGet(this.report, 'errorFields.createChat');
         const screenWrapperStyle = [styles.appContent, styles.flex1, {marginTop: this.props.viewportOffsetTop}];
 
         // There are no reportActions at all to display and we are still in the process of loading the next set of actions.
-        const isLoadingInitialReportActions = _.isEmpty(this.props.reportActions) && this.props.report.isLoadingReportActions;
+        const isLoadingInitialReportActions = _.isEmpty(this.reportActions) && this.report.isLoadingReportActions;
 
         // We hide default rooms (it's basically just domain rooms now) from people who aren't on the defaultRooms beta.
-        const shouldHideReport = ReportUtils.isDefaultRoom(this.props.report) && !ReportUtils.canSeeDefaultRoom(this.props.report, this.props.policies, this.props.betas);
+        const shouldHideReport = ReportUtils.isDefaultRoom(this.report) && !ReportUtils.canSeeDefaultRoom(this.report, this.props.policies, this.props.betas);
 
         const isLoading = !reportID || !this.props.isSidebarLoaded || _.isEmpty(this.props.personalDetails) || !this.firstRenderRef.current;
 
@@ -261,13 +274,13 @@ class ReportScreen extends React.Component {
         console.log(`${!reportID} || ${!this.props.isSidebarLoaded} || ${_.isEmpty(this.props.personalDetails)} || ${!this.firstRenderRef.current} time:${performance.now()}`);
         this.firstRenderRef.current = true;
 
-        const parentReportAction = ReportActionsUtils.getParentReportAction(this.props.report);
+        const parentReportAction = ReportActionsUtils.getParentReportAction(this.report);
         const isSingleTransactionView = ReportActionsUtils.isTransactionThread(parentReportAction);
 
-        const policy = this.props.policies[`${ONYXKEYS.COLLECTION.POLICY}${this.props.report.policyID}`];
+        const policy = this.props.policies[`${ONYXKEYS.COLLECTION.POLICY}${this.report.policyID}`];
 
         console.log(this.isReportReadyForDisplay(), !isLoadingInitialReportActions, !isLoading, 'time:', performance.now() - this.start);
-        console.log(this.props.reportActions.length, 'time:', performance.now() - this.start);
+        console.log(this.reportActions.length, 'time:', performance.now() - this.start);
        
         return (
             <View style={{flex: 1, borderWidth: 2, borderColor: 'red'}} onLayout={(e) => {
@@ -278,7 +291,7 @@ class ReportScreen extends React.Component {
             }}>
                 <ScreenWrapper style={screenWrapperStyle}>
                     <FullPageNotFoundView
-                        shouldShow={(!this.props.report.reportID && !this.props.report.isLoadingReportActions && !isLoading) || shouldHideReport}
+                        shouldShow={(!this.report.reportID && !this.report.isLoadingReportActions && !isLoading) || shouldHideReport}
                         subtitleKey="notFound.noAccess"
                         shouldShowCloseButton={false}
                         shouldShowBackButton={this.props.isSmallScreenWidth}
@@ -289,9 +302,9 @@ class ReportScreen extends React.Component {
                             errors={addWorkspaceRoomOrChatErrors}
                             shouldShowErrorMessages={false}
                         >
-                            {ReportUtils.isMoneyRequestReport(this.props.report) || isSingleTransactionView ? (
+                            {ReportUtils.isMoneyRequestReport(this.report) || isSingleTransactionView ? (
                                 <MoneyRequestHeader
-                                    report={this.props.report}
+                                    report={this.report}
                                     policies={this.props.policies}
                                     personalDetails={this.props.personalDetails}
                                     isSingleTransactionView={isSingleTransactionView}
@@ -302,18 +315,18 @@ class ReportScreen extends React.Component {
                                     reportID={reportID}
                                     onNavigationMenuButtonClicked={() => Navigation.goBack(ROUTES.HOME)}
                                     personalDetails={this.props.personalDetails}
-                                    report={this.props.report}
+                                    report={this.report}
                                 />
                             )}
 
-                            {ReportUtils.isTaskReport(this.props.report) && (
+                            {ReportUtils.isTaskReport(this.report) && (
                                 <TaskHeader
-                                    report={this.props.report}
+                                    report={this.report}
                                     personalDetails={this.props.personalDetails}
                                 />
                             )}
                         </OfflineWithFeedback> }
-                        {false && Boolean(this.props.accountManagerReportID) && ReportUtils.isConciergeChatReport(this.props.report) && this.state.isBannerVisible && (
+                        {false && Boolean(this.props.accountManagerReportID) && ReportUtils.isConciergeChatReport(this.report) && this.state.isBannerVisible && (
                             <Banner
                                 containerStyles={[styles.mh4, styles.mt4, styles.p4, styles.bgDark]}
                                 textStyles={[styles.colorReversed]}
@@ -340,9 +353,9 @@ class ReportScreen extends React.Component {
                         >
                             {this.isReportReadyForDisplay() && !isLoadingInitialReportActions && !isLoading && (
                                 <ReportActionsView
-                                    reportActions={this.props.reportActions}
-                                    report={this.props.report}
-                                    isComposerFullSize={this.props.isComposerFullSize}
+                                    reportActions={this.reportActions}
+                                    report={this.report}
+                                    isComposerFullSize={false}
                                     parentViewHeight={this.state.skeletonViewContainerHeight}
                                     policy={policy}
                                 />
@@ -360,9 +373,9 @@ class ReportScreen extends React.Component {
                                         errors={addWorkspaceRoomOrChatErrors}
                                         pendingAction={addWorkspaceRoomOrChatPendingAction}
                                         isOffline={this.props.network.isOffline}
-                                        reportActions={this.props.reportActions}
-                                        report={this.props.report}
-                                        isComposerFullSize={this.props.isComposerFullSize}
+                                        reportActions={this.reportActions}
+                                        report={this.report}
+                                        isComposerFullSize={false}
                                         onSubmitComment={this.onSubmitComment}
                                         policies={this.props.policies}
                                     />
@@ -397,34 +410,10 @@ export default compose(
     withNavigation,
     withNetwork(),
     withBetas(),
-    withOnyx({
-        isSidebarLoaded: {
-            key: ONYXKEYS.IS_SIDEBAR_LOADED,
-        },
-        reportActions: {
-            key: ({route}) => `${ONYXKEYS.COLLECTION.REPORT_ACTIONS}${getReportID(route)}`,
-            canEvict: false,
-            selector: ReportActionsUtils.getSortedReportActionsForDisplay,
-        },
-        report: {
-            key: ({route}) => `${ONYXKEYS.COLLECTION.REPORT}${getReportID(route)}`,
-        },
-        isComposerFullSize: {
-            key: ({route}) => `${ONYXKEYS.COLLECTION.REPORT_IS_COMPOSER_FULL_SIZE}${getReportID(route)}`,
-        },
-        betas: {
-            key: ONYXKEYS.BETAS,
-        },
-        policies: {
-            key: ONYXKEYS.COLLECTION.POLICY,
-        },
-        accountManagerReportID: {
-            key: ONYXKEYS.ACCOUNT_MANAGER_REPORT_ID,
-        },
-        personalDetails: {
-            key: ONYXKEYS.PERSONAL_DETAILS_LIST,
-        },
-    }),
+    withPersonalDetails({propName: 'personalDetails'}),
+    withPolices({propName: 'policies'}),
+    withAccountManagerReportId(),
+    withIsSidebarLoaded(),
 )(ReportScreen);
 
 

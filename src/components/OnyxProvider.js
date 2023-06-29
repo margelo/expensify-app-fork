@@ -14,6 +14,12 @@ const [withBlockedFromConcierge, BlockedFromConciergeProvider] = createOnyxConte
 const [withBetas, BetasProvider] = createOnyxContext(ONYXKEYS.BETAS);
 const [withSession, SessionProvider, SessionContext] = createOnyxContext(ONYXKEYS.SESSION, {});
 const [withSkinTone, SkinToneProvider, SkinToneContext] = createOnyxContext(ONYXKEYS.PREFERRED_EMOJI_SKIN_TONE, {})
+const [withReports, ReportsProvider, ReportsContext] = createOnyxContext(ONYXKEYS.COLLECTION.REPORT, {})
+const [withPolices, PoliciesProvider, PolicesContext] = createOnyxContext(ONYXKEYS.COLLECTION.POLICY, {})
+const [withIsFirstTimeNewExpensifyUser, IsFirstTimeNewExpensifyUserProvider, IsFirstTimeNewExpensifyUserContext] = createOnyxContext(ONYXKEYS.NVP_IS_FIRST_TIME_NEW_EXPENSIFY_USER, {})
+const [withAccountManagerReportId, AccountManagerReportIdProvider, AccountManagerReportIdContext] = createOnyxContext(ONYXKEYS.ACCOUNT_MANAGER_REPORT_ID, {})
+const [withIsSidebarLoaded, IsSidebarLoadedProvider, IsSidebarLoadedContext] = createOnyxContext(ONYXKEYS.IS_SIDEBAR_LOADED, {})
+const [withReportActions, ReportActionsProvider] = createOnyxContext(ONYXKEYS.COLLECTION.REPORT_ACTIONS);
 
 const propTypes = {
     /** Rendered child component */
@@ -22,7 +28,7 @@ const propTypes = {
 
 function OnyxProvider(props) {
     return (
-        <ComposeProviders components={[SkinToneProvider, NetworkProvider, PersonalDetailsProvider, ReportActionsDraftsProvider, CurrentDateProvider, BlockedFromConciergeProvider, BetasProvider, SessionProvider]}>
+        <ComposeProviders components={[ReportActionsProvider, AccountManagerReportIdProvider, IsSidebarLoadedProvider, IsFirstTimeNewExpensifyUserProvider, PoliciesProvider, ReportsProvider, SkinToneProvider, NetworkProvider, PersonalDetailsProvider, ReportActionsDraftsProvider, CurrentDateProvider, BlockedFromConciergeProvider, BetasProvider, SessionProvider]}>
             {props.children}
         </ComposeProviders>
     );
@@ -33,4 +39,4 @@ OnyxProvider.propTypes = propTypes;
 
 export default OnyxProvider;
 
-export {withNetwork, withSkinTone, SessionContext, withSession, withPersonalDetails, withReportActionsDrafts, withCurrentDate, withBlockedFromConcierge, withBetas, NetworkContext};
+export {withReportActions, withIsSidebarLoaded, withAccountManagerReportId, withIsFirstTimeNewExpensifyUser, withPolices, withReports, withNetwork, withSkinTone, SessionContext, withSession, withPersonalDetails, withReportActionsDrafts, withCurrentDate, withBlockedFromConcierge, withBetas, NetworkContext};
