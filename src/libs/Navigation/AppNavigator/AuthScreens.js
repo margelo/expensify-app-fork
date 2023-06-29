@@ -185,7 +185,7 @@ class AuthScreens extends React.Component {
         const commonScreenOptions = {
             headerShown: false,
             gestureDirection: 'horizontal',
-            animationEnabled: true,
+            animationEnabled: false,
             cardStyleInterpolator: (props) => modalCardStyleInterpolator(this.props.isSmallScreenWidth, false, props),
             cardOverlayEnabled: true,
             animationTypeForReplace: 'push',
@@ -225,12 +225,13 @@ class AuthScreens extends React.Component {
                 <RootStack.Screen
                     name={NAVIGATORS.CENTRAL_PANE_NAVIGATOR}
                     options={{
-                        ...commonScreenOptions,
+                        //...commonScreenOptions,
                         title: 'New Expensify',
 
                         // Prevent unnecessary scrolling
-                        cardStyle: styles.cardStyleNavigator,
-                        cardStyleInterpolator: (props) => modalCardStyleInterpolator(this.props.isSmallScreenWidth, false, props),
+                        //cardStyle: styles.cardStyleNavigator,
+                        //cardStyleInterpolator: (props) => modalCardStyleInterpolator(this.props.isSmallScreenWidth, false, props),
+                        animationEnabled: false
                     }}
                     component={CentralPaneNavigator}
                 />

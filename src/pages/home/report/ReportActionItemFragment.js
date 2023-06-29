@@ -20,6 +20,8 @@ import applyStrikethrough from '../../../components/HTMLEngineProvider/applyStri
 import editedLabelStyles from '../../../styles/editedLabelStyles';
 import UserDetailsTooltip from '../../../components/UserDetailsTooltip';
 import { start } from '../../../pages/home/report/ReportActionsList';
+import Performance from 'react-native-performance';
+import Performance2 from '../../../libs/Performance';
 
 const propTypes = {
     /** Users accountID */
@@ -79,6 +81,7 @@ const defaultProps = {
 };
 
 function ReportActionItemFragment(props) {
+    Performance.mark('ReportActionItemFragment_render')
     console.log('render fragment time:', performance.now() - start)
     switch (props.fragment.type) {
         case 'COMMENT': {
@@ -179,4 +182,4 @@ ReportActionItemFragment.propTypes = propTypes;
 ReportActionItemFragment.defaultProps = defaultProps;
 ReportActionItemFragment.displayName = 'ReportActionItemFragment';
 
-export default compose(withWindowDimensions, withLocalize, withNetwork())(memo(ReportActionItemFragment));
+export default compose(Performance2.withRenderTrace({id: '<ReportActionsItemFragment> rendering'}), withWindowDimensions, withLocalize, withNetwork())(memo(ReportActionItemFragment));

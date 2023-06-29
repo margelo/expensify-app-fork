@@ -10,6 +10,7 @@ import {propTypes, defaultProps} from './userDetailsTooltipPropTypes';
 import styles from '../../styles/styles';
 import ONYXKEYS from '../../ONYXKEYS';
 import * as UserUtils from '../../libs/UserUtils';
+import { withPersonalDetails } from '../OnyxProvider'
 
 function UserDetailsTooltip(props) {
     const userDetails = lodashGet(props.personalDetailsList, props.accountID, props.fallbackUserDetails);
@@ -46,8 +47,4 @@ UserDetailsTooltip.propTypes = propTypes;
 UserDetailsTooltip.defaultProps = defaultProps;
 UserDetailsTooltip.displayName = 'UserDetailsTooltip';
 
-export default withOnyx({
-    personalDetailsList: {
-        key: ONYXKEYS.PERSONAL_DETAILS_LIST,
-    },
-})(UserDetailsTooltip);
+export default withPersonalDetails()((UserDetailsTooltip));

@@ -416,7 +416,7 @@ function ReportActionItem(props) {
         return <ReportActionItemGrouped wrapperStyles={[styles.chatItem, isWhisper ? styles.pt1 : {}]}>{content}</ReportActionItemGrouped>;
     };
 
-    if (props.action.actionName === CONST.REPORT.ACTIONS.TYPE.CREATED) {
+    if (false && props.action.actionName === CONST.REPORT.ACTIONS.TYPE.CREATED) {
         return (
             <ReportActionItemCreated
                 policyID={props.report.policyID}

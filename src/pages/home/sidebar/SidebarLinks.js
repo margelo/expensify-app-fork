@@ -5,6 +5,7 @@ import {View} from 'react-native';
 import _ from 'underscore';
 import PropTypes from 'prop-types';
 import {withOnyx} from 'react-native-onyx';
+import Performance from 'react-native-performance';
 import styles from '../../../styles/styles';
 import * as StyleUtils from '../../../styles/StyleUtils';
 import ONYXKEYS from '../../../ONYXKEYS';
@@ -185,6 +186,7 @@ class SidebarLinks extends React.Component {
             // Prevent opening Report page when click LHN row quickly after clicking FAB icon
             return;
         }
+        Performance.mark('chose_chat')
         Navigation.navigate(ROUTES.getReportRoute(option.reportID));
         this.props.onLinkClick();
     }

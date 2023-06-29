@@ -128,6 +128,14 @@ class ReportActionsView extends React.Component {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
+        if (this.props.report !== nextProps.report) {
+            console.log('wee have a diff ref time:')
+        }
+
+        if (JSON.stringify(this.props.report) !== JSON.stringify(nextProps.report)) {
+            console.log('wee have a diff time:')
+        }
+       
         if (!_.isEqual(nextProps.reportActions, this.props.reportActions)) {
             this.mostRecentIOUReportActionID = ReportActionsUtils.getMostRecentIOURequestActionID(nextProps.reportActions);
             return true;
@@ -138,18 +146,22 @@ class ReportActionsView extends React.Component {
         }
 
         if (nextProps.report.isLoadingMoreReportActions !== this.props.report.isLoadingMoreReportActions) {
+            console.log('isLoadingMoreReportActions time:')
             return true;
         }
 
         if (nextProps.report.isLoadingReportActions !== this.props.report.isLoadingReportActions) {
+            console.log('isLoadingReportActions time:')
             return true;
         }
 
         if (nextProps.report.lastReadTime !== this.props.report.lastReadTime) {
+            console.log('lastReadTime time:')
             return true;
         }
 
         if (nextState.isFloatingMessageCounterVisible !== this.state.isFloatingMessageCounterVisible) {
+            
             return true;
         }
 
@@ -162,6 +174,7 @@ class ReportActionsView extends React.Component {
         }
 
         if (lodashGet(this.props.report, 'hasOutstandingIOU') !== lodashGet(nextProps.report, 'hasOutstandingIOU')) {
+            console.log('hasOutstandingIOU time:')
             return true;
         }
 
@@ -170,6 +183,7 @@ class ReportActionsView extends React.Component {
         }
 
         if (lodashGet(this.props.report, 'statusNum') !== lodashGet(nextProps.report, 'statusNum') || lodashGet(this.props.report, 'stateNum') !== lodashGet(nextProps.report, 'stateNum')) {
+            console.log('statusNum time:')
             return true;
         }
 
@@ -181,7 +195,11 @@ class ReportActionsView extends React.Component {
             return true;
         }
 
-        return !_.isEqual(lodashGet(this.props.report, 'icons', []), lodashGet(nextProps.report, 'icons', []));
+        if (!_.isEqual(lodashGet(this.props.report, 'icons', []), lodashGet(nextProps.report, 'icons', []))) {
+            console.log('statusNum icons:')
+            return true;
+        }
+        return false;
     }
 
     componentDidUpdate(prevProps) {
@@ -261,7 +279,7 @@ class ReportActionsView extends React.Component {
             return;
         }
 
-        Report.openReport(this.props.report.reportID);
+        //Report.openReport(this.props.report.reportID);
     }
 
     /**

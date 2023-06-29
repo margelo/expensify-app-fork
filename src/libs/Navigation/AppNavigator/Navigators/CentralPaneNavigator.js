@@ -13,7 +13,7 @@ const openOnAdminRoom = url ? new URL(url).searchParams.get('openOnAdminRoom') :
 
 function CentralPaneNavigator() {
     return (
-        <FreezeWrapper>
+        <>
             <Stack.Navigator>
                 <Stack.Screen
                     name={SCREENS.REPORT}
@@ -25,11 +25,12 @@ function CentralPaneNavigator() {
 
                         // Prevent unnecessary scrolling
                         cardStyle: styles.cardStyleNavigator,
+                        animationEnabled: false
                     }}
                     component={ReportScreenWrapper}
                 />
             </Stack.Navigator>
-        </FreezeWrapper>
+        </>
     );
 }
 

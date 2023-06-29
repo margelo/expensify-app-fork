@@ -6,6 +6,7 @@ import CONST from '../../CONST';
 import ONYXKEYS from '../../ONYXKEYS';
 import {defaultProps, imagePropTypes} from './imagePropTypes';
 import RESIZE_MODES from './resizeModes';
+import { withSession } from '../OnyxProvider'
 
 function Image(props) {
     // eslint-disable-next-line react/destructuring-assignment
@@ -36,10 +37,6 @@ function Image(props) {
 Image.propTypes = imagePropTypes;
 Image.defaultProps = defaultProps;
 Image.displayName = 'Image';
-const ImageWithOnyx = withOnyx({
-    session: {
-        key: ONYXKEYS.SESSION,
-    },
-})(Image);
+const ImageWithOnyx = withSession()(Image);
 ImageWithOnyx.resizeMode = RESIZE_MODES;
 export default ImageWithOnyx;

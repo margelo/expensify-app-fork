@@ -39,7 +39,8 @@ import TaskHeader from '../../components/TaskHeader';
 import MoneyRequestHeader from '../../components/MoneyRequestHeader';
 import withNavigation, {withNavigationPropTypes} from '../../components/withNavigation';
 import * as ComposerActions from '../../libs/actions/Composer';
-import { start } from '../../pages/home/report/ReportActionsList';
+import {start} from '../../pages/home/report/ReportActionsList';
+import Performance from 'react-native-performance';
 
 const propTypes = {
     /** Navigation route context info provided by react navigation */
@@ -120,6 +121,14 @@ function getReportID(route) {
 // Keep a reference to the list view height so we can use it when a new ReportScreen component mounts
 let reportActionsListViewHeight = 0;
 
+function onLayoutViewView() {
+    let x = 0;
+    for(let i = 0; i <10000000; ++i) {
+        x += 7*6 * i % 14
+    }
+    console.log(`x ${x}`)
+}
+
 class ReportScreen extends React.Component {
     gestureStartListener = null;
 
@@ -136,7 +145,7 @@ class ReportScreen extends React.Component {
         };
         this.firstRenderRef = React.createRef();
         this.firstRenderRef.current = true;
-        this.start = start
+        this.start = start;
     }
 
     componentDidMount() {
@@ -147,14 +156,17 @@ class ReportScreen extends React.Component {
                 return;
             }
 
-            Report.openReport(this.props.report.reportID);
+            // Report.openReport(this.props.report.reportID);
         });
 
-        this.fetchReportIfNeeded();
+        //this.fetchReportIfNeeded();
         ComposerActions.setShouldShowComposeInput(true);
     }
 
     componentDidUpdate(prevProps) {
+        this.sb = this.props.navigation.addListener('transitionStart', () => {
+            console.log('started transition time:', performance.now() - start);
+        });
         // If you already have a report open and are deeplinking to a new report on native,
         // the ReportScreen never actually unmounts and the reportID in the route also doesn't change.
         // Therefore, we need to compare if the existing reportID is the same as the one in the route
@@ -170,6 +182,7 @@ class ReportScreen extends React.Component {
     }
 
     componentWillUnmount() {
+        this?.sb();
         if (!this.unsubscribeVisibilityListener) {
             return;
         }
@@ -243,9 +256,9 @@ class ReportScreen extends React.Component {
         const shouldHideReport = ReportUtils.isDefaultRoom(this.props.report) && !ReportUtils.canSeeDefaultRoom(this.props.report, this.props.policies, this.props.betas);
 
         const isLoading = !reportID || !this.props.isSidebarLoaded || _.isEmpty(this.props.personalDetails) || !this.firstRenderRef.current;
-        
-        console.log(`it's loading ${isLoading} time:${performance.now()}`)
-        console.log(`${!reportID} || ${!this.props.isSidebarLoaded} || ${_.isEmpty(this.props.personalDetails)} || ${!this.firstRenderRef.current} time:${performance.now()}`)
+
+        console.log(`it's loading ${isLoading} time:${performance.now()}`);
+        console.log(`${!reportID} || ${!this.props.isSidebarLoaded} || ${_.isEmpty(this.props.personalDetails)} || ${!this.firstRenderRef.current} time:${performance.now()}`);
         this.firstRenderRef.current = true;
 
         const parentReportAction = ReportActionsUtils.getParentReportAction(this.props.report);
@@ -253,116 +266,122 @@ class ReportScreen extends React.Component {
 
         const policy = this.props.policies[`${ONYXKEYS.COLLECTION.POLICY}${this.props.report.policyID}`];
 
-        console.log(this.isReportReadyForDisplay() , !isLoadingInitialReportActions ,  !isLoading, 'time:', performance.now() - this.start)
-        console.log(this.props.reportActions.length, 'time:', performance.now() - this.start)
-
+        console.log(this.isReportReadyForDisplay(), !isLoadingInitialReportActions, !isLoading, 'time:', performance.now() - this.start);
+        console.log(this.props.reportActions.length, 'time:', performance.now() - this.start);
+       
         return (
-            <ScreenWrapper style={screenWrapperStyle}>
-                <FullPageNotFoundView
-                    shouldShow={(!this.props.report.reportID && !this.props.report.isLoadingReportActions && !isLoading) || shouldHideReport}
-                    subtitleKey="notFound.noAccess"
-                    shouldShowCloseButton={false}
-                    shouldShowBackButton={this.props.isSmallScreenWidth}
-                    onBackButtonPress={Navigation.goBack}
-                >
-                    <OfflineWithFeedback
-                        pendingAction={addWorkspaceRoomOrChatPendingAction}
-                        errors={addWorkspaceRoomOrChatErrors}
-                        shouldShowErrorMessages={false}
+            <View style={{flex: 1, borderWidth: 2, borderColor: 'red'}} onLayout={(e) => {
+                Performance.mark('ReportScreen_onLayout')
+                Performance.measure('time_from_click_to_Layout', 'chose_chat', 'ReportScreen_onLayout')
+                console.log('view onlayout time:', performance.now() - start, e)
+                onLayoutViewView()
+            }}>
+                <ScreenWrapper style={screenWrapperStyle}>
+                    <FullPageNotFoundView
+                        shouldShow={(!this.props.report.reportID && !this.props.report.isLoadingReportActions && !isLoading) || shouldHideReport}
+                        subtitleKey="notFound.noAccess"
+                        shouldShowCloseButton={false}
+                        shouldShowBackButton={this.props.isSmallScreenWidth}
+                        onBackButtonPress={Navigation.goBack}
                     >
-                        {ReportUtils.isMoneyRequestReport(this.props.report) || isSingleTransactionView ? (
-                            <MoneyRequestHeader
-                                report={this.props.report}
-                                policies={this.props.policies}
-                                personalDetails={this.props.personalDetails}
-                                isSingleTransactionView={isSingleTransactionView}
-                                parentReportAction={parentReportAction}
-                            />
-                        ) : (
-                            <HeaderView
-                                reportID={reportID}
-                                onNavigationMenuButtonClicked={() => Navigation.goBack(ROUTES.HOME)}
-                                personalDetails={this.props.personalDetails}
-                                report={this.props.report}
-                            />
-                        )}
+                        {false && <OfflineWithFeedback
+                            pendingAction={addWorkspaceRoomOrChatPendingAction}
+                            errors={addWorkspaceRoomOrChatErrors}
+                            shouldShowErrorMessages={false}
+                        >
+                            {ReportUtils.isMoneyRequestReport(this.props.report) || isSingleTransactionView ? (
+                                <MoneyRequestHeader
+                                    report={this.props.report}
+                                    policies={this.props.policies}
+                                    personalDetails={this.props.personalDetails}
+                                    isSingleTransactionView={isSingleTransactionView}
+                                    parentReportAction={parentReportAction}
+                                />
+                            ) : (
+                                <HeaderView
+                                    reportID={reportID}
+                                    onNavigationMenuButtonClicked={() => Navigation.goBack(ROUTES.HOME)}
+                                    personalDetails={this.props.personalDetails}
+                                    report={this.props.report}
+                                />
+                            )}
 
-                        {ReportUtils.isTaskReport(this.props.report) && (
-                            <TaskHeader
-                                report={this.props.report}
-                                personalDetails={this.props.personalDetails}
-                            />
-                        )}
-                    </OfflineWithFeedback>
-                    {Boolean(this.props.accountManagerReportID) && ReportUtils.isConciergeChatReport(this.props.report) && this.state.isBannerVisible && (
-                        <Banner
-                            containerStyles={[styles.mh4, styles.mt4, styles.p4, styles.bgDark]}
-                            textStyles={[styles.colorReversed]}
-                            text={this.props.translate('reportActionsView.chatWithAccountManager')}
-                            onClose={this.dismissBanner}
-                            onPress={this.chatWithAccountManager}
-                            shouldShowCloseButton
-                        />
-                    )}
-                    <View
-                        nativeID={CONST.REPORT.DROP_NATIVE_ID + this.getNavigationKey()}
-                        style={[styles.flex1, styles.justifyContentEnd, styles.overflowHidden]}
-                        onLayout={(event) => {
-                            const skeletonViewContainerHeight = event.nativeEvent.layout.height;
-
-                            // The height can be 0 if the component unmounts - we are not interested in this value and want to know how much space it
-                            // takes up so we can set the skeleton view container height.
-                            if (skeletonViewContainerHeight === 0) {
-                                return;
-                            }
-                            reportActionsListViewHeight = skeletonViewContainerHeight;
-                            //this.setState({skeletonViewContainerHeight});
-                        }}
-                    >
-                        {this.isReportReadyForDisplay() && !isLoadingInitialReportActions && !isLoading && (
-                        
-                            <ReportActionsView
-                                reportActions={this.props.reportActions}
-                                report={this.props.report}
-                                isComposerFullSize={this.props.isComposerFullSize}
-                                parentViewHeight={this.state.skeletonViewContainerHeight}
-                                policy={policy}
+                            {ReportUtils.isTaskReport(this.props.report) && (
+                                <TaskHeader
+                                    report={this.props.report}
+                                    personalDetails={this.props.personalDetails}
+                                />
+                            )}
+                        </OfflineWithFeedback> }
+                        {false && Boolean(this.props.accountManagerReportID) && ReportUtils.isConciergeChatReport(this.props.report) && this.state.isBannerVisible && (
+                            <Banner
+                                containerStyles={[styles.mh4, styles.mt4, styles.p4, styles.bgDark]}
+                                textStyles={[styles.colorReversed]}
+                                text={this.props.translate('reportActionsView.chatWithAccountManager')}
+                                onClose={this.dismissBanner}
+                                onPress={this.chatWithAccountManager}
+                                shouldShowCloseButton
                             />
                         )}
+                        <View
+                            nativeID={CONST.REPORT.DROP_NATIVE_ID + this.getNavigationKey()}
+                            style={[styles.flex1, styles.justifyContentEnd, styles.overflowHidden]}
+                            onLayout={(event) => {
+                                const skeletonViewContainerHeight = event.nativeEvent.layout.height;
 
-                        {/* Note: The report should be allowed to mount even if the initial report actions are not loaded. If we prevent rendering the report while they are loading then
-                        we'll unnecessarily unmount the ReportActionsView which will clear the new marker lines initial state. */}
-                        {(!this.isReportReadyForDisplay() || isLoadingInitialReportActions || isLoading) && (
-                            <ReportActionsSkeletonView containerHeight={this.state.skeletonViewContainerHeight} />
-                        )}
-
-                        {this.isReportReadyForDisplay() && (
-                            <>
-                                <ReportFooter
-                                    errors={addWorkspaceRoomOrChatErrors}
-                                    pendingAction={addWorkspaceRoomOrChatPendingAction}
-                                    isOffline={this.props.network.isOffline}
+                                // The height can be 0 if the component unmounts - we are not interested in this value and want to know how much space it
+                                // takes up so we can set the skeleton view container height.
+                                if (skeletonViewContainerHeight === 0) {
+                                    return;
+                                }
+                                reportActionsListViewHeight = skeletonViewContainerHeight;
+                                //this.setState({skeletonViewContainerHeight});
+                            }}
+                        >
+                            {this.isReportReadyForDisplay() && !isLoadingInitialReportActions && !isLoading && (
+                                <ReportActionsView
                                     reportActions={this.props.reportActions}
                                     report={this.props.report}
                                     isComposerFullSize={this.props.isComposerFullSize}
-                                    onSubmitComment={this.onSubmitComment}
-                                    policies={this.props.policies}
+                                    parentViewHeight={this.state.skeletonViewContainerHeight}
+                                    policy={policy}
                                 />
-                            </>
-                        )}
+                            )}
 
-                        {!this.isReportReadyForDisplay() && (
-                            <ReportFooter
-                                shouldDisableCompose
-                                isOffline={this.props.network.isOffline}
-                            />
-                        )}
+                            {/* Note: The report should be allowed to mount even if the initial report actions are not loaded. If we prevent rendering the report while they are loading then
+                            we'll unnecessarily unmount the ReportActionsView which will clear the new marker lines initial state. */}
+                            {false && (!this.isReportReadyForDisplay() || isLoadingInitialReportActions || isLoading) && (
+                                <ReportActionsSkeletonView containerHeight={this.state.skeletonViewContainerHeight} />
+                            )}
 
-                        <EmojiPicker ref={EmojiPickerAction.emojiPickerRef} />
-                        <PortalHost name={CONST.REPORT.DROP_HOST_NAME} />
-                    </View>
-                </FullPageNotFoundView>
-            </ScreenWrapper>
+                            {false && this.isReportReadyForDisplay() && (
+                                <>
+                                    <ReportFooter
+                                        errors={addWorkspaceRoomOrChatErrors}
+                                        pendingAction={addWorkspaceRoomOrChatPendingAction}
+                                        isOffline={this.props.network.isOffline}
+                                        reportActions={this.props.reportActions}
+                                        report={this.props.report}
+                                        isComposerFullSize={this.props.isComposerFullSize}
+                                        onSubmitComment={this.onSubmitComment}
+                                        policies={this.props.policies}
+                                    />
+                                </>
+                            )}
+
+                            {false && !this.isReportReadyForDisplay() && (
+                                <ReportFooter
+                                    shouldDisableCompose
+                                    isOffline={this.props.network.isOffline}
+                                />
+                            )}
+
+                            {false && <EmojiPicker ref={EmojiPickerAction.emojiPickerRef} />}
+                            {false && <PortalHost name={CONST.REPORT.DROP_HOST_NAME} />}
+                        </View>
+                    </FullPageNotFoundView>
+                </ScreenWrapper>
+            </View>
         );
     }
 }
@@ -407,3 +426,5 @@ export default compose(
         },
     }),
 )(ReportScreen);
+
+

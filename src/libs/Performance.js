@@ -8,6 +8,12 @@ import getComponentDisplayName from './getComponentDisplayName';
 import CONST from '../CONST';
 import isE2ETestSession from './E2E/isE2ETestSession';
 
+const perfModule = require('react-native-performance');
+    perfModule.setResourceLoggingEnabled(true);
+    const performanceReported = require('react-native-performance-flipper-reporter');
+    performanceReported.setupDefaultFlipperReporter();
+    console.log('reporter time:')
+
 /** @type {import('react-native-performance').Performance} */
 let rnPerformance;
 
@@ -48,9 +54,7 @@ const Performance = {
     subscribeToMeasurements: () => {},
 };
 
-if (Metrics.canCapturePerformanceMetrics()) {
-    const perfModule = require('react-native-performance');
-    perfModule.setResourceLoggingEnabled(true);
+if (true || Metrics.canCapturePerformanceMetrics()) {
     rnPerformance = perfModule.default;
 
     Performance.measureFailSafe = (measureName, startOrMeasureOptions, endMark) => {
@@ -84,8 +88,7 @@ if (Metrics.canCapturePerformanceMetrics()) {
      * Sets up an observer to capture events recorded in the native layer before the app fully initializes.
      */
     Performance.setupPerformanceObserver = () => {
-        const performanceReported = require('react-native-performance-flipper-reporter');
-        performanceReported.setupDefaultFlipperReporter();
+
 
         // Monitor some native marks that we want to put on the timeline
         new perfModule.PerformanceObserver((list, observer) => {

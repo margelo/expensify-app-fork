@@ -109,8 +109,6 @@ class ScreenWrapper extends React.Component {
                                     enabled={this.props.shouldEnablePickerAvoiding}
                                 >
                                     <HeaderGap />
-                                    {this.props.environment === CONST.ENVIRONMENT.DEV && <TestToolsModal />}
-                                    {this.props.environment === CONST.ENVIRONMENT.DEV && <CustomDevMenu />}
                                     {
                                         // If props.children is a function, call it to provide the insets to the children.
                                         _.isFunction(this.props.children)
