@@ -90,6 +90,11 @@ function MoneyRequestHeader(props) {
     const shouldShowSettlementButton = !isSettled && !props.isSingleTransactionView && isPayer;
     const bankAccountRoute = ReportUtils.getBankAccountRoute(props.chatReport);
     const shouldShowPaypal = Boolean(lodashGet(props.personalDetails, [moneyRequestReport.managerID, 'payPalMeAddress']));
+    const report = props.report;
+    if (props.isSingleTransactionView) {
+        report.ownerAccountID = lodashGet(props, ['parentReport', 'ownerAccountID'], null);
+        report.ownerEmail = lodashGet(props, ['parentReport', 'ownerEmail'], '');
+    }
     return (
         <View style={[{backgroundColor: themeColors.highlightBG}, styles.pl0]}>
             <HeaderWithBackButton
@@ -104,8 +109,7 @@ function MoneyRequestHeader(props) {
                     },
                 ]}
                 threeDotsAnchorPosition={styles.threeDotsPopoverOffsetNoCloseButton(props.windowWidth)}
-                report={props.report}
-                parentReport={moneyRequestReport}
+                report={report}
                 policies={props.policies}
                 personalDetails={props.personalDetails}
                 shouldShowBackButton={props.isSmallScreenWidth}
@@ -187,14 +191,23 @@ function MoneyRequestHeader(props) {
                         titleIcon={Expensicons.Checkmark}
                         description={`${props.translate('iou.amount')} • ${props.translate('iou.cash')}${isSettled ? ` • ${props.translate('iou.settledExpensify')}` : ''}`}
                         titleStyle={styles.newKansasLarge}
+                        disabled={isSettled}
+                        // Note: These options are temporarily disabled while we figure out the required API changes
+                        // shouldShowRightIcon={!isSettled}
+                        // onPress={() => Navigation.navigate(ROUTES.getEditRequestRoute(props.report.reportID, CONST.EDIT_REQUEST_FIELD.AMOUNT))}
                     />
                     <MenuItemWithTopDescription
                         description={props.translate('common.description')}
                         title={transactionDescription}
+                        disabled={isSettled}
+                        // shouldShowRightIcon={!isSettled}
+                        // onPress={() => Navigation.navigate(ROUTES.getEditRequestRoute(props.report.reportID, CONST.EDIT_REQUEST_FIELD.DESCRIPTION))}
                     />
                     <MenuItemWithTopDescription
                         description={props.translate('common.date')}
                         title={formattedTransactionDate}
+                        // shouldShowRightIcon={!isSettled}
+                        // onPress={() => Navigation.navigate(ROUTES.getEditRequestRoute(props.report.reportID, CONST.EDIT_REQUEST_FIELD.DATE))}
                     />
                 </>
             )}
