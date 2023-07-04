@@ -13,6 +13,9 @@ const [withReportActionsDrafts, ReportActionsDraftsProvider] = createOnyxContext
 const [withBlockedFromConcierge, BlockedFromConciergeProvider] = createOnyxContext(ONYXKEYS.NVP_BLOCKED_FROM_CONCIERGE);
 const [withBetas, BetasProvider] = createOnyxContext(ONYXKEYS.BETAS);
 const [withReportCommentDrafts, ReportCommentDraftsProvider] = createOnyxContext(ONYXKEYS.COLLECTION.REPORT_DRAFT_COMMENT);
+const [withAccountManagerReportID, AccountManagerReportIDProvider] = createOnyxContext(ONYXKEYS.ACCOUNT_MANAGER_REPORT_ID);
+const [withSession, SessionProvider, SessionContext] = createOnyxContext(ONYXKEYS.SESSION, {});
+const [withSkinTone, SkinToneProvider, SkinToneContext] = createOnyxContext(ONYXKEYS.PREFERRED_EMOJI_SKIN_TONE, {});
 
 const propTypes = {
     /** Rendered child component */
@@ -30,6 +33,9 @@ function OnyxProvider(props) {
                 BlockedFromConciergeProvider,
                 BetasProvider,
                 ReportCommentDraftsProvider,
+                AccountManagerReportIDProvider,
+                SessionProvider,
+                SkinToneProvider,
             ]}
         >
             {props.children}
@@ -42,4 +48,16 @@ OnyxProvider.propTypes = propTypes;
 
 export default OnyxProvider;
 
-export {withNetwork, withPersonalDetails, withReportActionsDrafts, withCurrentDate, withBlockedFromConcierge, withBetas, NetworkContext, withReportCommentDrafts};
+export {
+    withSession,
+    withSkinTone,
+    withAccountManagerReportID,
+    withNetwork,
+    withPersonalDetails,
+    withReportActionsDrafts,
+    withCurrentDate,
+    withBlockedFromConcierge,
+    withBetas,
+    NetworkContext,
+    withReportCommentDrafts,
+};

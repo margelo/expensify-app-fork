@@ -28,7 +28,6 @@ import * as ContextMenuActions from '../../pages/home/report/ContextMenu/Context
 import * as OptionsListUtils from '../../libs/OptionsListUtils';
 import compose from '../../libs/compose';
 import ONYXKEYS from '../../ONYXKEYS';
-import withCurrentReportId from '../withCurrentReportId';
 import * as Report from '../../libs/actions/Report';
 
 const propTypes = {
@@ -311,7 +310,6 @@ OptionRowLHN.displayName = 'OptionRowIsFocusedSupport';
 
 export default compose(
     withLocalize,
-    withCurrentReportId,
     withReportCommentDrafts({
         propName: 'comment',
         transformValue: (drafts, props) => {

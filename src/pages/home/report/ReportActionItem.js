@@ -28,7 +28,7 @@ import MiniReportActionContextMenu from './ContextMenu/MiniReportActionContextMe
 import * as ReportActionContextMenu from './ContextMenu/ReportActionContextMenu';
 import * as ContextMenuActions from './ContextMenu/ContextMenuActions';
 import * as EmojiPickerAction from '../../../libs/actions/EmojiPickerAction';
-import {withBlockedFromConcierge, withNetwork, withPersonalDetails, withReportActionsDrafts} from '../../../components/OnyxProvider';
+import {withBlockedFromConcierge, withNetwork, withPersonalDetails, withReportActionsDrafts, withSkinTone} from '../../../components/OnyxProvider';
 import RenameAction from '../../../components/ReportActionItem/RenameAction';
 import InlineSystemMessage from '../../../components/InlineSystemMessage';
 import styles from '../../../styles/styles';
@@ -408,14 +408,14 @@ function ReportActionItem(props) {
         return <ReportActionItemGrouped wrapperStyles={[styles.chatItem, isWhisper ? styles.pt1 : {}]}>{content}</ReportActionItemGrouped>;
     };
 
-    if (props.action.actionName === CONST.REPORT.ACTIONS.TYPE.CREATED) {
-        return (
-            <ReportActionItemCreated
-                policyID={props.report.policyID}
-                reportID={props.report.reportID}
-            />
-        );
-    }
+    // if (props.action.actionName === CONST.REPORT.ACTIONS.TYPE.CREATED) {
+    //     return (
+    //         <ReportActionItemCreated
+    //             policyID={props.report.policyID}
+    //             reportID={props.report.reportID}
+    //         />
+    //     );
+    // }
     if (props.action.actionName === CONST.REPORT.ACTIONS.TYPE.RENAMED) {
         return <RenameAction action={props.action} />;
     }
@@ -516,6 +516,7 @@ export default compose(
     withLocalize,
     withNetwork(),
     withPersonalDetails(),
+    withSkinTone({propName: 'preferredSkinTone'}),
     withBlockedFromConcierge({propName: 'blockedFromConcierge'}),
     withReportActionsDrafts({
         propName: 'draftMessage',
@@ -524,11 +525,11 @@ export default compose(
             return lodashGet(drafts, draftKey, '');
         },
     }),
-    withOnyx({
-        preferredSkinTone: {
-            key: ONYXKEYS.PREFERRED_EMOJI_SKIN_TONE,
-        },
-    }),
+    // withOnyx({
+    //     preferredSkinTone: {
+    //         key: ONYXKEYS.PREFERRED_EMOJI_SKIN_TONE,
+    //     },
+    // }),
 )(
     memo(
         ReportActionItem,

@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import _ from 'underscore';
 import lodashGet from 'lodash/get';
 import lodashCloneDeep from 'lodash/cloneDeep';
+import {View} from 'react-native';
+import RNPerformance from 'react-native-performance';
 import * as Report from '../../../libs/actions/Report';
 import reportActionPropTypes from './reportActionPropTypes';
 import Visibility from '../../../libs/Visibility';
@@ -129,60 +131,7 @@ class ReportActionsView extends React.Component {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        if (!_.isEqual(nextProps.reportActions, this.props.reportActions)) {
-            this.mostRecentIOUReportActionID = ReportActionsUtils.getMostRecentIOURequestActionID(nextProps.reportActions);
-            return true;
-        }
-
-        if (lodashGet(nextProps.network, 'isOffline') !== lodashGet(this.props.network, 'isOffline')) {
-            return true;
-        }
-
-        if (nextProps.report.isLoadingMoreReportActions !== this.props.report.isLoadingMoreReportActions) {
-            return true;
-        }
-
-        if (nextProps.report.isLoadingReportActions !== this.props.report.isLoadingReportActions) {
-            return true;
-        }
-
-        if (nextProps.report.lastReadTime !== this.props.report.lastReadTime) {
-            return true;
-        }
-
-        if (nextState.isFloatingMessageCounterVisible !== this.state.isFloatingMessageCounterVisible) {
-            return true;
-        }
-
-        if (nextState.newMarkerReportActionID !== this.state.newMarkerReportActionID) {
-            return true;
-        }
-
-        if (this.props.isSmallScreenWidth !== nextProps.isSmallScreenWidth) {
-            return true;
-        }
-
-        if (lodashGet(this.props.report, 'hasOutstandingIOU') !== lodashGet(nextProps.report, 'hasOutstandingIOU')) {
-            return true;
-        }
-
-        if (this.props.isComposerFullSize !== nextProps.isComposerFullSize) {
-            return true;
-        }
-
-        if (lodashGet(this.props.report, 'statusNum') !== lodashGet(nextProps.report, 'statusNum') || lodashGet(this.props.report, 'stateNum') !== lodashGet(nextProps.report, 'stateNum')) {
-            return true;
-        }
-
-        if (lodashGet(this.props, 'policy.avatar') !== lodashGet(nextProps, 'policy.avatar')) {
-            return true;
-        }
-
-        if (lodashGet(this.props, 'policy.name') !== lodashGet(nextProps, 'policy.name')) {
-            return true;
-        }
-
-        return !_.isEqual(lodashGet(this.props.report, 'icons', []), lodashGet(nextProps.report, 'icons', []));
+        return false;
     }
 
     componentDidUpdate(prevProps) {
@@ -274,10 +223,9 @@ class ReportActionsView extends React.Component {
     // If the report is optimistic (AKA not yet created) we don't need to call openReport again
     openReportIfNecessary() {
         if (this.props.report.isOptimisticReport) {
-            return;
         }
 
-        Report.openReport(this.props.report.reportID);
+        // Report.openReport(this.props.report.reportID);
     }
 
     /**
@@ -355,7 +303,15 @@ class ReportActionsView extends React.Component {
             return null;
         }
         return (
-            <>
+            <View
+                style={{
+                    flex: 1,
+                }}
+                onLayout={() => {
+                    RNPerformance.mark('showReportEnd');
+                    RNPerformance.measure('showReport', 'showReportStart', 'showReportEnd');
+                }}
+            >
                 <FloatingMessageCounter
                     isActive={this.state.isFloatingMessageCounterVisible && !_.isEmpty(this.state.newMarkerReportActionID)}
                     onClick={this.scrollToBottomAndMarkReportAsRead}
@@ -370,12 +326,12 @@ class ReportActionsView extends React.Component {
                     loadMoreChats={this.loadMoreChats}
                     newMarkerReportActionID={this.state.newMarkerReportActionID}
                 />
-                <PopoverReactionList
+                {/* <PopoverReactionList
                     ref={this.context.reactionListRef}
                     report={this.props.report}
-                />
+                /> */}
                 <CopySelectionHelper />
-            </>
+            </View>
         );
     }
 }

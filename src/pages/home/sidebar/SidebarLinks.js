@@ -5,6 +5,7 @@ import {View} from 'react-native';
 import _ from 'underscore';
 import PropTypes from 'prop-types';
 import {withOnyx} from 'react-native-onyx';
+import Performance from 'react-native-performance';
 import styles from '../../../styles/styles';
 import * as StyleUtils from '../../../styles/StyleUtils';
 import ONYXKEYS from '../../../ONYXKEYS';
@@ -39,6 +40,7 @@ import Button from '../../../components/Button';
 import * as UserUtils from '../../../libs/UserUtils';
 import KeyboardShortcut from '../../../libs/KeyboardShortcut';
 import onyxSubscribe from '../../../libs/onyxSubscribe';
+// import Performance from '../../../libs/Performance';
 
 const propTypes = {
     /** Toggles the navigation menu open and closed */
@@ -101,7 +103,6 @@ const propTypes = {
         willAlertModalBecomeVisible: PropTypes.bool,
     }),
 
-    ...withCurrentReportIDPropTypes,
     ...withLocalizePropTypes,
     ...withNavigationPropTypes,
 };
@@ -115,7 +116,6 @@ const defaultProps = {
     },
     priorityMode: CONST.PRIORITY_MODE.DEFAULT,
     modal: {},
-    ...withCurrentReportIDDefaultProps,
 };
 
 class SidebarLinks extends React.Component {
@@ -202,6 +202,7 @@ class SidebarLinks extends React.Component {
         }
         Navigation.navigate(ROUTES.getReportRoute(option.reportID));
         this.props.onLinkClick();
+        Performance.mark('showReportStart');
     }
 
     render() {
@@ -362,7 +363,7 @@ const policySelector = (policy) =>
 export default compose(
     withLocalize,
     withCurrentUserPersonalDetails,
-    withNavigationFocus,
+    // withNavigationFocus,
     withWindowDimensions,
     withNavigation,
     withOnyx({

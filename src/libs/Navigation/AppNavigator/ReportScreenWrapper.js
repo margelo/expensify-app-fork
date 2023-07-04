@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import lodashGet from 'lodash/get';
-import {withOnyx} from 'react-native-onyx';
+import Onyx, {withOnyx} from 'react-native-onyx';
 
 import ONYXKEYS from '../../../ONYXKEYS';
 import Permissions from '../../Permissions';
@@ -76,13 +76,20 @@ class ReportScreenWrapper extends Component {
     constructor(props) {
         super(props);
 
+        this.state = {
+            reports: Onyx.tryGetCachedValue(ONYXKEYS.COLLECTION.REPORT),
+            betas: Onyx.tryGetCachedValue(ONYXKEYS.BETAS),
+            policies: Onyx.tryGetCachedValue(ONYXKEYS.COLLECTION.POLICY),
+            isFirstTimeNewExpensifyUser: Onyx.tryGetCachedValue(ONYXKEYS.NVP_IS_FIRST_TIME_NEW_EXPENSIFY_USER),
+        };
+
         // If there is no reportID in route, try to find last accessed and use it for setParams
         if (!lodashGet(this.props.route, 'params.reportID', null)) {
             const reportID = getLastAccessedReportID(
-                this.props.reports,
-                !Permissions.canUseDefaultRooms(this.props.betas),
-                this.props.policies,
-                this.props.isFirstTimeNewExpensifyUser,
+                this.state.reports,
+                !Permissions.canUseDefaultRooms(this.state.betas),
+                this.state.policies,
+                this.state.isFirstTimeNewExpensifyUser,
                 this.props.route.params.openOnAdminRoom,
             );
 
@@ -133,17 +140,18 @@ ReportScreenWrapper.propTypes = propTypes;
 ReportScreenWrapper.defaultProps = defaultProps;
 ReportScreenWrapper.displayName = 'ReportScreenWrapper';
 
-export default withOnyx({
-    reports: {
-        key: ONYXKEYS.COLLECTION.REPORT,
-    },
-    betas: {
-        key: ONYXKEYS.BETAS,
-    },
-    policies: {
-        key: ONYXKEYS.COLLECTION.POLICY,
-    },
-    isFirstTimeNewExpensifyUser: {
-        key: ONYXKEYS.NVP_IS_FIRST_TIME_NEW_EXPENSIFY_USER,
-    },
-})(ReportScreenWrapper);
+export default ReportScreenWrapper;
+// export default withOnyx({
+//     reports: {
+//         key: ONYXKEYS.COLLECTION.REPORT,
+//     },
+//     betas: {
+//         key: ONYXKEYS.BETAS,
+//     },
+//     policies: {
+//         key: ONYXKEYS.COLLECTION.POLICY,
+//     },
+//     isFirstTimeNewExpensifyUser: {
+//         key: ONYXKEYS.NVP_IS_FIRST_TIME_NEW_EXPENSIFY_USER,
+//     },
+// })(ReportScreenWrapper);

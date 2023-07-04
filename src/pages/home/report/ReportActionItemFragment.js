@@ -19,6 +19,7 @@ import CONST from '../../../CONST';
 import applyStrikethrough from '../../../components/HTMLEngineProvider/applyStrikethrough';
 import editedLabelStyles from '../../../styles/editedLabelStyles';
 import UserDetailsTooltip from '../../../components/UserDetailsTooltip';
+import Performance from '../../../libs/Performance';
 
 const propTypes = {
     /** Users accountID */
@@ -184,4 +185,4 @@ ReportActionItemFragment.propTypes = propTypes;
 ReportActionItemFragment.defaultProps = defaultProps;
 ReportActionItemFragment.displayName = 'ReportActionItemFragment';
 
-export default compose(withWindowDimensions, withLocalize, withNetwork())(memo(ReportActionItemFragment));
+export default compose(Performance.withRenderTrace({id: '<ReportActionItemFragment> rendering'}), withWindowDimensions, withLocalize, withNetwork())(memo(ReportActionItemFragment));

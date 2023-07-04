@@ -40,7 +40,7 @@ class ScreenWrapper extends React.Component {
             if (lodashGet(event, 'data.closing')) {
                 return;
             }
-            this.setState({didScreenTransitionEnd: true});
+            // this.setState({didScreenTransitionEnd: true});
             this.props.onEntryTransitionEnd();
         });
 
@@ -110,8 +110,8 @@ class ScreenWrapper extends React.Component {
                                     enabled={this.props.shouldEnablePickerAvoiding}
                                 >
                                     <HeaderGap />
-                                    {this.props.environment === CONST.ENVIRONMENT.DEV && <TestToolsModal />}
-                                    {this.props.environment === CONST.ENVIRONMENT.DEV && <CustomDevMenu />}
+                                    {/* {this.props.environment === CONST.ENVIRONMENT.DEV && <TestToolsModal />}
+                                    {this.props.environment === CONST.ENVIRONMENT.DEV && <CustomDevMenu />} */}
                                     {
                                         // If props.children is a function, call it to provide the insets to the children.
                                         _.isFunction(this.props.children)
@@ -136,4 +136,4 @@ class ScreenWrapper extends React.Component {
 ScreenWrapper.propTypes = propTypes;
 ScreenWrapper.defaultProps = defaultProps;
 
-export default compose(withNavigation, withEnvironment, withWindowDimensions, withKeyboardState, withNetwork())(ScreenWrapper);
+export default compose(withNavigation, withWindowDimensions, withKeyboardState, withNetwork())(ScreenWrapper);
