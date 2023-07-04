@@ -2,6 +2,7 @@ import _ from 'underscore';
 import React, {useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
 import {View, StyleSheet} from 'react-native';
+import {withOnyx} from 'react-native-onyx';
 import lodashGet from 'lodash/get';
 import * as optionRowStyles from '../../styles/optionRowStyles';
 import styles from '../../styles/styles';
@@ -27,6 +28,7 @@ import * as ContextMenuActions from '../../pages/home/report/ContextMenu/Context
 import * as OptionsListUtils from '../../libs/OptionsListUtils';
 import compose from '../../libs/compose';
 import ONYXKEYS from '../../ONYXKEYS';
+import withCurrentReportId from '../withCurrentReportId';
 import * as Report from '../../libs/actions/Report';
 
 const propTypes = {
@@ -51,6 +53,8 @@ const propTypes = {
 
     style: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.object), PropTypes.object]),
 
+    optionItem: PropTypes.shape({}),
+
     ...withLocalizePropTypes,
 };
 
@@ -60,11 +64,12 @@ const defaultProps = {
     onSelectRow: () => {},
     isFocused: false,
     style: null,
+    optionItem: null,
     comment: '',
 };
 
-function OptionRowLHN(props) {
-    const optionItem = SidebarUtils.getOptionData(props.reportID);
+function BaseOptionRowLHN(props) {
+    const optionItem = props.optionItem;
     const [isContextMenuActive, setIsContextMenuActive] = useState(false);
 
     useEffect(() => {
@@ -269,12 +274,44 @@ function OptionRowLHN(props) {
     );
 }
 
+BaseOptionRowLHN.propTypes = propTypes;
+BaseOptionRowLHN.defaultProps = defaultProps;
+BaseOptionRowLHN.displayName = 'BaseOptionRowLHN';
+
+const MemoedOptionRowLHN = React.memo(
+    compose(
+        withLocalize,
+        withOnyx({
+            optionItem: {
+                key: (props) => ONYXKEYS.COLLECTION.REPORT + props.reportID,
+                selector: SidebarUtils.getOptionData,
+            },
+        }),
+    )(BaseOptionRowLHN),
+);
+
+// We only want to pass a boolean to the memoized
+// component, thats why we have this intermediate component.
+// (We don't want to fully re-render all items, just because the active report changed).
+function OptionRowLHN(props) {
+    const isFocused = props.currentReportId === props.reportID;
+
+    return (
+        <MemoedOptionRowLHN
+            // eslint-disable-next-line react/jsx-props-no-spreading
+            {..._.omit(props, 'currentReportId')}
+            isFocused={isFocused}
+        />
+    );
+}
+
 OptionRowLHN.propTypes = propTypes;
 OptionRowLHN.defaultProps = defaultProps;
-OptionRowLHN.displayName = 'OptionRowLHN';
+OptionRowLHN.displayName = 'OptionRowIsFocusedSupport';
 
 export default compose(
     withLocalize,
+    withCurrentReportId,
     withReportCommentDrafts({
         propName: 'comment',
         transformValue: (drafts, props) => {

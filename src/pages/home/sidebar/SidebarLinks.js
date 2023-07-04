@@ -27,7 +27,6 @@ import SidebarUtils from '../../../libs/SidebarUtils';
 import reportPropTypes from '../../reportPropTypes';
 import OfflineWithFeedback from '../../../components/OfflineWithFeedback';
 import withNavigationFocus from '../../../components/withNavigationFocus';
-import withCurrentReportID, {withCurrentReportIDPropTypes, withCurrentReportIDDefaultProps} from '../../../components/withCurrentReportID';
 import withNavigation, {withNavigationPropTypes} from '../../../components/withNavigation';
 import Header from '../../../components/Header';
 import defaultTheme from '../../../styles/themes/default';
@@ -39,6 +38,7 @@ import * as Session from '../../../libs/actions/Session';
 import Button from '../../../components/Button';
 import * as UserUtils from '../../../libs/UserUtils';
 import KeyboardShortcut from '../../../libs/KeyboardShortcut';
+import onyxSubscribe from '../../../libs/onyxSubscribe';
 
 const propTypes = {
     /** Toggles the navigation menu open and closed */
@@ -136,11 +136,19 @@ class SidebarLinks extends React.Component {
         SidebarUtils.setIsSidebarLoadedReady();
         this.isSidebarLoaded = true;
 
+        let modal = {};
+        this.unsubscribeOnyxModal = onyxSubscribe({
+            key: ONYXKEYS.MODAL,
+            callback: (modalArg) => {
+                modal = modalArg;
+            },
+        });
+
         const shortcutConfig = CONST.KEYBOARD_SHORTCUTS.ESCAPE;
         this.unsubscribeEscapeKey = KeyboardShortcut.subscribe(
             shortcutConfig.shortcutKey,
             () => {
-                if (this.props.modal.willAlertModalBecomeVisible) {
+                if (modal.willAlertModalBecomeVisible) {
                     return;
                 }
 
@@ -157,6 +165,9 @@ class SidebarLinks extends React.Component {
         SidebarUtils.resetIsSidebarLoadedReadyPromise();
         if (this.unsubscribeEscapeKey) {
             this.unsubscribeEscapeKey();
+        }
+        if (this.unsubscribeOnyxModal) {
+            this.unsubscribeOnyxModal();
         }
     }
 
@@ -195,7 +206,8 @@ class SidebarLinks extends React.Component {
 
     render() {
         const isLoading = _.isEmpty(this.props.personalDetails) || _.isEmpty(this.props.chatReports);
-        const optionListItems = SidebarUtils.getOrderedReportIDs(this.props.currentReportID);
+        const optionListItems = SidebarUtils.getOrderedReportIDs();
+
         const skeletonPlaceholder = <OptionsListSkeletonView shouldAnimate />;
 
         return (
@@ -288,8 +300,6 @@ const chatReportSelector = (report) =>
         errorFields: {
             addWorkspaceRoom: report.errorFields && report.errorFields.addWorkspaceRoom,
         },
-        lastReadTime: report.lastReadTime,
-        lastMentionedTime: report.lastMentionedTime,
         lastMessageText: report.lastMessageText,
         lastVisibleActionCreated: report.lastVisibleActionCreated,
         iouReportID: report.iouReportID,
@@ -354,7 +364,6 @@ export default compose(
     withCurrentUserPersonalDetails,
     withNavigationFocus,
     withWindowDimensions,
-    withCurrentReportID,
     withNavigation,
     withOnyx({
         // Note: It is very important that the keys subscribed to here are the same
@@ -386,9 +395,6 @@ export default compose(
         },
         preferredLocale: {
             key: ONYXKEYS.NVP_PREFERRED_LOCALE,
-        },
-        modal: {
-            key: ONYXKEYS.MODAL,
         },
     }),
 )(SidebarLinks);
