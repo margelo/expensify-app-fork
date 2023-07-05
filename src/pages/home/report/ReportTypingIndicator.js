@@ -71,9 +71,9 @@ ReportTypingIndicator.displayName = 'ReportTypingIndicator';
 export default compose(
     withLocalize,
     withNetwork(),
-    withOnyx({
-        userTypingStatuses: {
-            key: ({reportID}) => `${ONYXKEYS.COLLECTION.REPORT_USER_IS_TYPING}${reportID}`,
-        },
-    }),
+    // withOnyx({
+    //     userTypingStatuses: {
+    //         key: ({reportID}) => `${ONYXKEYS.COLLECTION.REPORT_USER_IS_TYPING}${reportID}`,
+    //     },
+    // }),
 )(ReportTypingIndicator);

@@ -16,6 +16,8 @@ import reportActionPropTypes from './reportActionPropTypes';
 import reportPropTypes from '../../reportPropTypes';
 import * as ReportUtils from '../../../libs/ReportUtils';
 import * as Session from '../../../libs/actions/Session';
+import Performance from '../../../libs/Performance';
+import ReportActionComposePlaceholder from './ReportActionComposePlacerholder';
 
 const propTypes = {
     /** Report object for the current report */
@@ -71,21 +73,22 @@ function ReportFooter(props) {
                     )}
                 </View>
             )}
-            {!hideComposer && (props.shouldShowComposeInput || !props.isSmallScreenWidth) && (
+            {!hideComposer && (
                 <View style={[chatFooterStyles, props.isComposerFullSize && styles.chatFooterFullCompose]}>
                     <SwipeableView onSwipeDown={Keyboard.dismiss}>
                         {Session.isAnonymousUser() ? (
                             <AnonymousReportFooter report={props.report} />
                         ) : (
-                            <ReportActionCompose
-                                onSubmit={props.onSubmitComment}
-                                reportID={props.report.reportID.toString()}
-                                reportActions={props.reportActions}
-                                report={props.report}
-                                pendingAction={props.pendingAction}
-                                isComposerFullSize={props.isComposerFullSize}
-                                disabled={props.shouldDisableCompose}
-                            />
+                            <ReportActionComposePlaceholder />
+                            // <ReportActionCompose
+                            //     onSubmit={props.onSubmitComment}
+                            //     reportID={props.report.reportID.toString()}
+                            //     reportActions={props.reportActions}
+                            //     report={props.report}
+                            //     pendingAction={props.pendingAction}
+                            //     isComposerFullSize={props.isComposerFullSize}
+                            //     disabled={props.shouldDisableCompose}
+                            // />
                         )}
                     </SwipeableView>
                 </View>
@@ -98,8 +101,9 @@ ReportFooter.displayName = 'ReportFooter';
 ReportFooter.propTypes = propTypes;
 ReportFooter.defaultProps = defaultProps;
 export default compose(
+    Performance.withRenderTrace({id: '<ReportFooter> rendering'}),
     withWindowDimensions,
-    withOnyx({
-        shouldShowComposeInput: {key: ONYXKEYS.SHOULD_SHOW_COMPOSE_INPUT},
-    }),
+    // withOnyx({
+    //     shouldShowComposeInput: {key: ONYXKEYS.SHOULD_SHOW_COMPOSE_INPUT},
+    // }),
 )(ReportFooter);

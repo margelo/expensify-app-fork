@@ -308,11 +308,11 @@ class ReportScreen extends React.Component {
                                 <ReportActionsSkeletonView containerHeight={this.state.skeletonViewContainerHeight} />
                             )}
 
-                            {/* {this.isReportReadyForDisplay() && (
+                            {this.isReportReadyForDisplay() && (
                                 <>
                                     <ReportFooter
-                                        errors={addWorkspaceRoomOrChatErrors}
-                                        pendingAction={addWorkspaceRoomOrChatPendingAction}
+                                        // errors={addWorkspaceRoomOrChatErrors}
+                                        // pendingAction={addWorkspaceRoomOrChatPendingAction}
                                         isOffline={this.props.network.isOffline}
                                         reportActions={this.props.reportActions}
                                         report={this.props.report}
@@ -321,14 +321,14 @@ class ReportScreen extends React.Component {
                                         policies={this.props.policies}
                                     />
                                 </>
-                            )} */}
+                            )}
 
-                            {/* {!this.isReportReadyForDisplay() && (
+                            {!this.isReportReadyForDisplay() && (
                                 <ReportFooter
                                     shouldDisableCompose
                                     isOffline={this.props.network.isOffline}
                                 />
-                            )} */}
+                            )}
 
                             <EmojiPicker ref={EmojiPickerAction.emojiPickerRef} />
                             <PortalHost name={CONST.REPORT.DROP_HOST_NAME} />
@@ -373,6 +373,7 @@ export default compose(
                 participantAccountIDs: report.participantAccountIDs,
                 hasOutstandingIOU: report.hasOutstandingIOU,
                 statusNumber: report.statusNumber,
+                statusNum: report.statusNum,
                 chatType: report.chatType,
                 type: report.type,
                 reportName: report.reportName,

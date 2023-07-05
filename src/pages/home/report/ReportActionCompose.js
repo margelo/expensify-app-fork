@@ -52,6 +52,7 @@ import * as TaskUtils from '../../../libs/actions/Task';
 import * as Browser from '../../../libs/Browser';
 import * as IOU from '../../../libs/actions/IOU';
 import PressableWithFeedback from '../../../components/Pressable/PressableWithFeedback';
+import Performance from '../../../libs/Performance';
 
 const propTypes = {
     /** Beta features list */
@@ -1223,6 +1224,7 @@ ReportActionCompose.propTypes = propTypes;
 ReportActionCompose.defaultProps = defaultProps;
 
 export default compose(
+    Performance.withRenderTrace({id: '<ReportActionCompose> rendering'}),
     withWindowDimensions,
     withNavigation,
     withNavigationFocus,
@@ -1237,9 +1239,9 @@ export default compose(
         comment: {
             key: ({reportID}) => `${ONYXKEYS.COLLECTION.REPORT_DRAFT_COMMENT}${reportID}`,
         },
-        numberOfLines: {
-            key: ({reportID}) => `${ONYXKEYS.COLLECTION.REPORT_DRAFT_COMMENT_NUMBER_OF_LINES}${reportID}`,
-        },
+        // numberOfLines: {
+        //     key: ({reportID}) => `${ONYXKEYS.COLLECTION.REPORT_DRAFT_COMMENT_NUMBER_OF_LINES}${reportID}`,
+        // },
         modal: {
             key: ONYXKEYS.MODAL,
         },
@@ -1256,9 +1258,9 @@ export default compose(
         shouldShowComposeInput: {
             key: ONYXKEYS.SHOULD_SHOW_COMPOSE_INPUT,
         },
-        parentReportActions: {
-            key: ({report}) => `${ONYXKEYS.COLLECTION.REPORT_ACTIONS}${report.parentReportID}`,
-            canEvict: false,
-        },
+        // parentReportActions: {
+        //     key: ({report}) => `${ONYXKEYS.COLLECTION.REPORT_ACTIONS}${report.parentReportID}`,
+        //     canEvict: false,
+        // },
     }),
 )(ReportActionCompose);
