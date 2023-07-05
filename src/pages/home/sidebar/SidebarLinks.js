@@ -39,6 +39,7 @@ import * as Session from '../../../libs/actions/Session';
 import Button from '../../../components/Button';
 import * as UserUtils from '../../../libs/UserUtils';
 import KeyboardShortcut from '../../../libs/KeyboardShortcut';
+import ThemeContext from '../../../styles/themes/ThemeContext';
 
 const propTypes = {
     /** Toggles the navigation menu open and closed */
@@ -208,17 +209,21 @@ class SidebarLinks extends React.Component {
                     style={[styles.flexRow, styles.ph5, styles.pv3, styles.justifyContentBetween, styles.alignItemsCenter]}
                     nativeID="drag-area"
                 >
-                    <Header
-                        title={
-                            <LogoComponent
-                                fill={defaultTheme.textLight}
-                                width={variables.lhnLogoWidth}
-                                height={variables.lhnLogoHeight}
+                    <ThemeContext.Consumer>
+                        {(theme) => (
+                            <Header
+                                title={
+                                    <LogoComponent
+                                        fill={theme.text}
+                                        width={variables.lhnLogoWidth}
+                                        height={variables.lhnLogoHeight}
+                                    />
+                                }
+                                accessibilityRole={CONST.ACCESSIBILITY_ROLE.TEXT}
+                                shouldShowEnvironmentBadge
                             />
-                        }
-                        accessibilityRole={CONST.ACCESSIBILITY_ROLE.TEXT}
-                        shouldShowEnvironmentBadge
-                    />
+                        )}
+                    </ThemeContext.Consumer>
                     <Tooltip text={this.props.translate('common.search')}>
                         <PressableWithoutFeedback
                             accessibilityLabel={this.props.translate('sidebarScreen.buttonSearch')}
