@@ -134,14 +134,6 @@ class ReportScreen extends React.Component {
         this.state = {
             skeletonViewContainerHeight: reportActionsListViewHeight,
             isBannerVisible: true,
-            report: Onyx.tryGetCachedValue(ONYXKEYS.COLLECTION.REPORT + getReportID(props.route)),
-            reportActions: Onyx.tryGetCachedValue(ONYXKEYS.COLLECTION.REPORT_ACTIONS + getReportID(props.route), {
-                selector: ReportActionsUtils.getSortedReportActionsForDisplay,
-            }),
-            betas: Onyx.tryGetCachedValue(ONYXKEYS.BETAS),
-            policies: Onyx.tryGetCachedValue(ONYXKEYS.COLLECTION.POLICY),
-            personalDetails: Onyx.tryGetCachedValue(ONYXKEYS.PERSONAL_DETAILS_LIST),
-            isSidebarLoaded: Onyx.tryGetCachedValue(ONYXKEYS.IS_SIDEBAR_LOADED),
         };
         // console.log({route: this.state.report});
         this.firstRenderRef = React.createRef();
@@ -171,8 +163,8 @@ class ReportScreen extends React.Component {
         const reportIDFromPath = getReportID(this.props.route);
 
         // This is necessary so that when we are retrieving the next report data from Onyx the ReportActionsView will remount completely
-        const isTransitioning = this.state.report && this.state.report.reportID !== reportIDFromPath;
-        return reportIDFromPath !== '' && this.state.report.reportID && !isTransitioning;
+        const isTransitioning = this.props.report && this.props.report.reportID !== reportIDFromPath;
+        return reportIDFromPath !== '' && this.props.report.reportID && !isTransitioning;
     }
 
     fetchReportIfNeeded() {
@@ -187,7 +179,7 @@ class ReportScreen extends React.Component {
         // It possible that we may not have the report object yet in Onyx yet e.g. we navigated to a URL for an accessible report that
         // is not stored locally yet. If props.report.reportID exists, then the report has been stored locally and nothing more needs to be done.
         // If it doesn't exist, then we fetch the report from the API.
-        if (this.state.report.reportID && this.state.report.reportID === getReportID(this.props.route)) {
+        if (this.props.report.reportID && this.props.report.reportID === getReportID(this.props.route)) {
             return;
         }
 
@@ -206,23 +198,22 @@ class ReportScreen extends React.Component {
         // We are either adding a workspace room, or we're creating a chat, it isn't possible for both of these to be pending, or to have errors for the same report at the same time, so
         // simply looking up the first truthy value for each case will get the relevant property if it's set.
         const reportID = getReportID(this.props.route);
-        // const addWorkspaceRoomOrChatPendingAction = lodashGet(this.state.report, 'pendingFields.addWorkspaceRoom') || lodashGet(this.state.report, 'pendingFields.createChat');
-        // const addWorkspaceRoomOrChatErrors = lodashGet(this.state.report, 'errorFields.addWorkspaceRoom') || lodashGet(this.state.report, 'errorFields.createChat');
+        // const addWorkspaceRoomOrChatPendingAction = lodashGet(this.props.report, 'pendingFields.addWorkspaceRoom') || lodashGet(this.props.report, 'pendingFields.createChat');
+        // const addWorkspaceRoomOrChatErrors = lodashGet(this.props.report, 'errorFields.addWorkspaceRoom') || lodashGet(this.props.report, 'errorFields.createChat');
         const screenWrapperStyle = [styles.appContent, styles.flex1, {marginTop: this.props.viewportOffsetTop}];
 
         // There are no reportActions at all to display and we are still in the process of loading the next set of actions.
-        const isLoadingInitialReportActions = _.isEmpty(this.state.reportActions) && this.state.report.isLoadingReportActions;
+        const isLoadingInitialReportActions = _.isEmpty(this.props.reportActions) && this.props.report.isLoadingReportActions;
 
-        const shouldHideReport = false; //! ReportUtils.canAccessReport(this.state.report, this.state.policies, this.state.betas);
+        const shouldHideReport = false; //! ReportUtils.canAccessReport(this.props.report, this.props.policies, this.props.betas);
 
-        const isLoading = !reportID || !this.state.isSidebarLoaded || _.isEmpty(this.state.personalDetails) || !this.firstRenderRef.current;
+        const isLoading = !reportID || !this.props.isSidebarLoaded || _.isEmpty(this.props.personalDetails) || !this.firstRenderRef.current;
         this.firstRenderRef.current = true;
 
-        const parentReportAction = ReportActionsUtils.getParentReportAction(this.state.report);
+        const parentReportAction = ReportActionsUtils.getParentReportAction(this.props.report);
         const isSingleTransactionView = ReportActionsUtils.isTransactionThread(parentReportAction);
 
-        console.log({policies: this.state.policies, report: this.state.report});
-        const policy = this.state.policies[`${ONYXKEYS.COLLECTION.POLICY}${this.state.report.policyID}`];
+        const policy = this.props.policies[`${ONYXKEYS.COLLECTION.POLICY}${this.props.report.policyID}`];
 
         return (
             <ReportScreenContext.Provider
@@ -236,7 +227,7 @@ class ReportScreen extends React.Component {
                     shouldEnableKeyboardAvoidingView={this.props.isFocused}
                 >
                     <FullPageNotFoundView
-                        shouldShow={(!this.state.report.reportID && !this.state.report.isLoadingReportActions && !isLoading) || shouldHideReport}
+                        shouldShow={(!this.props.report.reportID && !this.props.report.isLoadingReportActions && !isLoading) || shouldHideReport}
                         subtitleKey="notFound.noAccess"
                         shouldShowCloseButton={false}
                         shouldShowBackButton={this.props.isSmallScreenWidth}
@@ -247,11 +238,11 @@ class ReportScreen extends React.Component {
                             errors={addWorkspaceRoomOrChatErrors}
                             shouldShowErrorMessages={false}
                         >
-                            {ReportUtils.isMoneyRequestReport(this.state.report) || isSingleTransactionView ? (
+                            {ReportUtils.isMoneyRequestReport(this.props.report) || isSingleTransactionView ? (
                                 <MoneyRequestHeader
-                                    report={this.state.report}
-                                    policies={this.state.policies}
-                                    personalDetails={this.state.personalDetails}
+                                    report={this.props.report}
+                                    policies={this.props.policies}
+                                    personalDetails={this.props.personalDetails}
                                     isSingleTransactionView={isSingleTransactionView}
                                     parentReportAction={parentReportAction}
                                 />
@@ -259,19 +250,19 @@ class ReportScreen extends React.Component {
                                 <HeaderView
                                     reportID={reportID}
                                     onNavigationMenuButtonClicked={() => Navigation.goBack(ROUTES.HOME)}
-                                    personalDetails={this.state.personalDetails}
-                                    report={this.state.report}
+                                    personalDetails={this.props.personalDetails}
+                                    report={this.props.report}
                                 />
                             )}
 
-                            {ReportUtils.isTaskReport(this.state.report) && (
+                            {ReportUtils.isTaskReport(this.props.report) && (
                                 <TaskHeader
-                                    report={this.state.report}
-                                    personalDetails={this.state.personalDetails}
+                                    report={this.props.report}
+                                    personalDetails={this.props.personalDetails}
                                 />
                             )}
                         </OfflineWithFeedback> */}
-                        {Boolean(this.props.accountManagerReportID) && ReportUtils.isConciergeChatReport(this.state.report) && this.state.isBannerVisible && (
+                        {Boolean(this.props.accountManagerReportID) && ReportUtils.isConciergeChatReport(this.props.report) && this.props.isBannerVisible && (
                             <Banner
                                 containerStyles={[styles.mh4, styles.mt4, styles.p4, styles.bgDark]}
                                 textStyles={[styles.colorReversed]}
@@ -302,8 +293,8 @@ class ReportScreen extends React.Component {
                         >
                             {this.isReportReadyForDisplay() && !isLoadingInitialReportActions && !isLoading && (
                                 <ReportActionsView
-                                    reportActions={this.state.reportActions}
-                                    report={this.state.report}
+                                    reportActions={this.props.reportActions}
+                                    report={this.props.report}
                                     isComposerFullSize={this.props.isComposerFullSize}
                                     // parentViewHeight={this.state.skeletonViewContainerHeight}
                                     policy={policy}
@@ -322,11 +313,11 @@ class ReportScreen extends React.Component {
                                         errors={addWorkspaceRoomOrChatErrors}
                                         pendingAction={addWorkspaceRoomOrChatPendingAction}
                                         isOffline={this.props.network.isOffline}
-                                        reportActions={this.state.reportActions}
-                                        report={this.state.report}
+                                        reportActions={this.props.reportActions}
+                                        report={this.props.report}
                                         isComposerFullSize={this.props.isComposerFullSize}
                                         onSubmitComment={this.onSubmitComment}
-                                        policies={this.state.policies}
+                                        policies={this.props.policies}
                                     />
                                 </>
                             )} */}
@@ -359,41 +350,48 @@ export default compose(
     withNavigation,
     withNetwork(),
     withAccountManagerReportID(),
-    // withOnyx({
-    // isSidebarLoaded: {
-    //     key: ONYXKEYS.IS_SIDEBAR_LOADED,
-    // },
-    // reportActions: {
-    //     key: ({route}) => `${ONYXKEYS.COLLECTION.REPORT_ACTIONS}${getReportID(route)}`,
-    //     canEvict: false,
-    //     selector: ReportActionsUtils.getSortedReportActionsForDisplay,
-    // },
-    // report: {
-    //     key: ({route}) => `${ONYXKEYS.COLLECTION.REPORT}${getReportID(route)}`,
-    //     selector: (report) => ({
-    //         reportID: report.reportID,
-    //         policyID: report.policyID,
-    //         isLoadingReportActions: false,
-    //         participantAccountIDs: report.participantAccountIDs,
-    //         hasOutstandingIOU: report.hasOutstandingIOU,
-    //         statusNumber: report.statusNumber,
-    //         chatType: report.chatType,
-    //     }),
-    // },
-    // isComposerFullSize: {
-    //     key: ({route}) => `${ONYXKEYS.COLLECTION.REPORT_IS_COMPOSER_FULL_SIZE}${getReportID(route)}`,
-    // },
-    // betas: {
-    //     key: ONYXKEYS.BETAS,
-    // },
-    // policies: {
-    //     key: ONYXKEYS.COLLECTION.POLICY,
-    // },
-    // accountManagerReportID: {
-    //     key: ONYXKEYS.ACCOUNT_MANAGER_REPORT_ID,
-    // },
-    // personalDetails: {
-    //     key: ONYXKEYS.PERSONAL_DETAILS_LIST,
-    // },
-    // }),
+    withOnyx({
+        isSidebarLoaded: {
+            logging: true,
+            key: ONYXKEYS.IS_SIDEBAR_LOADED,
+        },
+        reportActions: {
+            logging: true,
+            key: ({route}) => `${ONYXKEYS.COLLECTION.REPORT_ACTIONS}${getReportID(route)}`,
+            canEvict: false,
+            selector: ReportActionsUtils.getSortedReportActionsForDisplay,
+        },
+        report: {
+            logging: true,
+            key: ({route}) => `${ONYXKEYS.COLLECTION.REPORT}${getReportID(route)}`,
+            selector: (report) => ({
+                reportID: report.reportID,
+                policyID: report.policyID,
+                isLoadingReportActions: false,
+                participantAccountIDs: report.participantAccountIDs,
+                hasOutstandingIOU: report.hasOutstandingIOU,
+                statusNumber: report.statusNumber,
+                chatType: report.chatType,
+            }),
+        },
+        // isComposerFullSize: {
+        //     logging: true,
+        //     key: ({route}) => `${ONYXKEYS.COLLECTION.REPORT_IS_COMPOSER_FULL_SIZE}${getReportID(route)}`,
+        // },
+        betas: {
+            logging: true,
+            key: ONYXKEYS.BETAS,
+        },
+        policies: {
+            logging: true,
+            key: ONYXKEYS.COLLECTION.POLICY,
+        },
+        // accountManagerReportID: {
+        //     key: ONYXKEYS.ACCOUNT_MANAGER_REPORT_ID,
+        // },
+        personalDetails: {
+            logging: true,
+            key: ONYXKEYS.PERSONAL_DETAILS_LIST,
+        },
+    }),
 )(ReportScreen);

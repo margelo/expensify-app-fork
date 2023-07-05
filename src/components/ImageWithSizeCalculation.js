@@ -60,13 +60,13 @@ function ImageWithSizeCalculation(props) {
                 source={{uri: props.url}}
                 isAuthTokenRequired={props.isAuthTokenRequired}
                 resizeMode={Image.resizeMode.cover}
-                onLoadStart={() => {
-                    if (isLoadedRef.current || isLoading) {
-                        return;
-                    }
-                    setIsLoading(true);
-                }}
-                onLoadEnd={() => setIsLoading(false)}
+                // onLoadStart={() => {
+                //     if (isLoadedRef.current || isLoading) {
+                //         return;
+                //     }
+                //     setIsLoading(true);
+                // }}
+                // onLoadEnd={() => setIsLoading(false)}
                 onError={onError}
                 onLoad={imageLoadedSuccessfully}
             />

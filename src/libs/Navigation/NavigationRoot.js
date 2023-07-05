@@ -95,7 +95,7 @@ function NavigationRoot(props) {
             return;
         }
         navigationStateRef.current = state;
-        updateCurrentReportID(state);
+        // updateCurrentReportID(state);
         parseAndLogRoute(state);
         animateStatusBarBackgroundColor();
     };
