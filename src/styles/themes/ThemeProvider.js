@@ -20,7 +20,7 @@ function ThemeProvider(props) {
                 ? /* TODO: replace with light theme */ {
                       ...darkTheme,
                       sidebar: '#F8F4F0',
-                      text: '#002E22 ',
+                      text: '#002E22',
                       textSupporting: '#76847E',
                       activeComponentBG: '#EBE6DF',
                       success: '#EBE6DF',
