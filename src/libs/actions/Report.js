@@ -363,7 +363,7 @@ function openReport(reportID, participantLoginList = [], newReportObject = {}, p
         onyxMethod: Onyx.METHOD.MERGE,
         key: `${ONYXKEYS.COLLECTION.REPORT}${reportID}`,
         value: {
-            isLoadingReportActions: false,
+            isLoadingReportActions: true,
             isLoadingMoreReportActions: false,
             lastReadTime: DateUtils.getDBTime(),
         },

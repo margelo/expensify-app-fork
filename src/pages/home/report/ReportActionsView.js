@@ -131,7 +131,60 @@ class ReportActionsView extends React.Component {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        return false;
+        if (!_.isEqual(nextProps.reportActions, this.props.reportActions)) {
+            this.mostRecentIOUReportActionID = ReportActionsUtils.getMostRecentIOURequestActionID(nextProps.reportActions);
+            return true;
+        }
+
+        if (lodashGet(nextProps.network, 'isOffline') !== lodashGet(this.props.network, 'isOffline')) {
+            return true;
+        }
+
+        if (nextProps.report.isLoadingMoreReportActions !== this.props.report.isLoadingMoreReportActions) {
+            return true;
+        }
+
+        if (nextProps.report.isLoadingReportActions !== this.props.report.isLoadingReportActions) {
+            return true;
+        }
+
+        if (nextProps.report.lastReadTime !== this.props.report.lastReadTime) {
+            return true;
+        }
+
+        if (nextState.isFloatingMessageCounterVisible !== this.state.isFloatingMessageCounterVisible) {
+            return true;
+        }
+
+        if (nextState.newMarkerReportActionID !== this.state.newMarkerReportActionID) {
+            return true;
+        }
+
+        if (this.props.isSmallScreenWidth !== nextProps.isSmallScreenWidth) {
+            return true;
+        }
+
+        if (lodashGet(this.props.report, 'hasOutstandingIOU') !== lodashGet(nextProps.report, 'hasOutstandingIOU')) {
+            return true;
+        }
+
+        if (this.props.isComposerFullSize !== nextProps.isComposerFullSize) {
+            return true;
+        }
+
+        if (lodashGet(this.props.report, 'statusNum') !== lodashGet(nextProps.report, 'statusNum') || lodashGet(this.props.report, 'stateNum') !== lodashGet(nextProps.report, 'stateNum')) {
+            return true;
+        }
+
+        if (lodashGet(this.props, 'policy.avatar') !== lodashGet(nextProps, 'policy.avatar')) {
+            return true;
+        }
+
+        if (lodashGet(this.props, 'policy.name') !== lodashGet(nextProps, 'policy.name')) {
+            return true;
+        }
+
+        return !_.isEqual(lodashGet(this.props.report, 'icons', []), lodashGet(nextProps.report, 'icons', []));
     }
 
     componentDidUpdate(prevProps) {
@@ -223,9 +276,10 @@ class ReportActionsView extends React.Component {
     // If the report is optimistic (AKA not yet created) we don't need to call openReport again
     openReportIfNecessary() {
         if (this.props.report.isOptimisticReport) {
+            return;
         }
 
-        // Report.openReport(this.props.report.reportID);
+        Report.openReport(this.props.report.reportID);
     }
 
     /**

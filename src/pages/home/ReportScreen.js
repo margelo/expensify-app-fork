@@ -369,7 +369,7 @@ export default compose(
             selector: (report) => ({
                 reportID: report.reportID,
                 policyID: report.policyID,
-                isLoadingReportActions: false,
+                isLoadingReportActions: report.isLoadingReportActions,
                 participantAccountIDs: report.participantAccountIDs,
                 hasOutstandingIOU: report.hasOutstandingIOU,
                 statusNumber: report.statusNumber,
