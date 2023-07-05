@@ -28,6 +28,22 @@ function ThemeStylesProvider(props) {
         [theme.sidebar],
     );
 
+    const sidebarLinkHover = useMemo(
+        () => ({
+            ...defaultStyles.sidebarLinkHover,
+            backgroundColor: theme.sidebarHover,
+        }),
+        [theme.sidebarHover],
+    );
+
+    const sidebarLinkActive = useMemo(
+        () => ({
+            ...defaultStyles.sidebarLinkActive,
+            backgroundColor: theme.border,
+        }),
+        [theme.border],
+    );
+
     const sidebarLinkActiveText = useMemo(
         () => ({
             ...defaultStyles.sidebarLinkActiveText,
@@ -48,10 +64,12 @@ function ThemeStylesProvider(props) {
         () => ({
             appContent,
             sidebar,
+            sidebarLinkHover,
+            sidebarLinkActive,
             sidebarLinkActiveText,
             sidebarLinkText,
         }),
-        [appContent, sidebar, sidebarLinkActiveText, sidebarLinkText],
+        [appContent, sidebar, sidebarLinkActive, sidebarLinkActiveText, sidebarLinkHover, sidebarLinkText],
     );
 
     return <StylesContext.Provider value={styles}>{props.children}</StylesContext.Provider>;

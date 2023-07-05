@@ -57,7 +57,7 @@ const propTypes = {
 };
 
 const defaultProps = {
-    hoverStyle: styles.sidebarLinkHover,
+    hoverStyle: undefined,
     viewMode: 'default',
     onSelectRow: () => {},
     isFocused: false,
@@ -67,6 +67,7 @@ const defaultProps = {
 
 function OptionRowLHN(props) {
     const themeStyles = useThemeStyles();
+    const hoverStyle = props.hoverStyle || themeStyles.sidebarLinkHover;
     const theme = useTheme();
 
     const optionItem = SidebarUtils.getOptionData(props.reportID);
@@ -163,8 +164,8 @@ function OptionRowLHN(props) {
                             styles.sidebarLink,
                             styles.sidebarLinkInner,
                             StyleUtils.getBackgroundColorStyle(theme.sidebar),
-                            props.isFocused ? styles.sidebarLinkActive : null,
-                            (hovered || isContextMenuActive) && !props.isFocused ? props.hoverStyle : null,
+                            props.isFocused ? themeStyles.sidebarLinkActive : null,
+                            (hovered || isContextMenuActive) && !props.isFocused ? hoverStyle : null,
                         ]}
                         accessibilityRole={CONST.ACCESSIBILITY_ROLE.BUTTON}
                         accessibilityLabel={props.translate('accessibilityHints.navigatesToChat')}
