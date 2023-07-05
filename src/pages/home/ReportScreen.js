@@ -41,6 +41,7 @@ import MoneyRequestHeader from '../../components/MoneyRequestHeader';
 import withNavigation, {withNavigationPropTypes} from '../../components/withNavigation';
 import * as ComposerActions from '../../libs/actions/Composer';
 import ReportScreenContext from './ReportScreenContext';
+import Performance from '../../libs/Performance';
 
 const propTypes = {
     /** Navigation route context info provided by react navigation */
@@ -233,9 +234,9 @@ class ReportScreen extends React.Component {
                         shouldShowBackButton={this.props.isSmallScreenWidth}
                         onBackButtonPress={Navigation.goBack}
                     >
-                        {/* <OfflineWithFeedback
-                            pendingAction={addWorkspaceRoomOrChatPendingAction}
-                            errors={addWorkspaceRoomOrChatErrors}
+                        <OfflineWithFeedback
+                            // pendingAction={addWorkspaceRoomOrChatPendingAction}
+                            // errors={addWorkspaceRoomOrChatErrors}
                             shouldShowErrorMessages={false}
                         >
                             {ReportUtils.isMoneyRequestReport(this.props.report) || isSingleTransactionView ? (
@@ -261,7 +262,7 @@ class ReportScreen extends React.Component {
                                     personalDetails={this.props.personalDetails}
                                 />
                             )}
-                        </OfflineWithFeedback> */}
+                        </OfflineWithFeedback>
                         {Boolean(this.props.accountManagerReportID) && ReportUtils.isConciergeChatReport(this.props.report) && this.props.isBannerVisible && (
                             <Banner
                                 containerStyles={[styles.mh4, styles.mt4, styles.p4, styles.bgDark]}
@@ -343,6 +344,7 @@ ReportScreen.propTypes = propTypes;
 ReportScreen.defaultProps = defaultProps;
 
 export default compose(
+    Performance.withRenderTrace({id: '<ReportScreen> rendering'}),
     withViewportOffsetTop,
     withLocalize,
     withWindowDimensions,
@@ -372,6 +374,8 @@ export default compose(
                 hasOutstandingIOU: report.hasOutstandingIOU,
                 statusNumber: report.statusNumber,
                 chatType: report.chatType,
+                type: report.type,
+                reportName: report.reportName,
             }),
         },
         // isComposerFullSize: {

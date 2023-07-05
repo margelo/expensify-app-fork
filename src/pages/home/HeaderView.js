@@ -31,6 +31,7 @@ import PressableWithoutFeedback from '../../components/Pressable/PressableWithou
 import PinButton from '../../components/PinButton';
 import Navigation from '../../libs/Navigation/Navigation';
 import ROUTES from '../../ROUTES';
+import Performance from '../../libs/Performance';
 
 const propTypes = {
     /** Toggles the navigationMenu open and closed */
@@ -59,7 +60,7 @@ const propTypes = {
     /** The report actions from the parent report */
     // TO DO: Replace with HOC https://github.com/Expensify/App/issues/18769.
     // eslint-disable-next-line react/no-unused-prop-types
-    parentReportActions: PropTypes.objectOf(PropTypes.shape(reportActionPropTypes)),
+    // parentReportActions: PropTypes.objectOf(PropTypes.shape(reportActionPropTypes)),
 
     ...windowDimensionsPropTypes,
     ...withLocalizePropTypes,
@@ -67,7 +68,7 @@ const propTypes = {
 
 const defaultProps = {
     personalDetails: {},
-    parentReportActions: {},
+    // parentReportActions: {},
     report: null,
     account: {
         guideCalendarLink: null,
@@ -250,6 +251,7 @@ HeaderView.displayName = 'HeaderView';
 HeaderView.defaultProps = defaultProps;
 
 export default compose(
+    Performance.withRenderTrace({id: '<HeaderView> rendering'}),
     withWindowDimensions,
     withLocalize,
     withOnyx({
@@ -261,10 +263,10 @@ export default compose(
                     primaryLogin: account.primaryLogin,
                 },
         },
-        parentReportActions: {
-            key: ({report}) => `${ONYXKEYS.COLLECTION.REPORT_ACTIONS}${report.parentReportID}`,
-            canEvict: false,
-        },
+        // parentReportActions: {
+        //     key: ({report}) => `${ONYXKEYS.COLLECTION.REPORT_ACTIONS}${report.parentReportID}`,
+        //     canEvict: false,
+        // },
         parentReport: {
             key: ({report}) => `${ONYXKEYS.COLLECTION.REPORT}${report.parentReportID || report.reportID}`,
         },
