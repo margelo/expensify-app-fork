@@ -40,7 +40,11 @@ class ScreenWrapper extends React.Component {
             if (lodashGet(event, 'data.closing')) {
                 return;
             }
-            // this.setState({didScreenTransitionEnd: true});
+            // We only need to update the state, if the children
+            // need this information (aka. they are a function).
+            if (_.isFunction(this.props.children)) {
+                this.setState({didScreenTransitionEnd: true});
+            }
             this.props.onEntryTransitionEnd();
         });
 
