@@ -1,5 +1,5 @@
 diff --git a/node_modules/react-native-onyx/lib/Onyx.js b/node_modules/react-native-onyx/lib/Onyx.js
-index 7b45997..f4abf69 100644
+index 7b45997..9fd2622 100644
 --- a/node_modules/react-native-onyx/lib/Onyx.js
 +++ b/node_modules/react-native-onyx/lib/Onyx.js
 @@ -73,6 +73,8 @@ const reduceCollectionWithSelector = (collection, selector, withOnyxInstanceStat
@@ -43,7 +43,7 @@ index 7b45997..f4abf69 100644
 +    }
 +
 +    if (!cache.hasCacheForKey(key)) {
-+        return undefined
++        return defaultKeyStates[key]; // We might have the value in the default key state
 +    }
 +
 +    const val = cache.getValue(key);
@@ -64,7 +64,7 @@ index 7b45997..f4abf69 100644
  /**
   * Checks to see if the a subscriber's supplied key
   * is associated with a collection of keys.
-@@ -364,7 +405,7 @@ function keysChanged(collectionKey, partialCollection) {
+@@ -364,28 +405,34 @@ function keysChanged(collectionKey, partialCollection) {
                  // returned by the selector.
                  if (subscriber.selector) {
                      subscriber.withOnyxInstance.setState((prevState) => {
@@ -72,132 +72,196 @@ index 7b45997..f4abf69 100644
 +                        const previousData = prevState[subscriber.statePropertyName];
                          const newData = reduceCollectionWithSelector(cachedCollection, subscriber.selector, subscriber.withOnyxInstance.state);
  
-                         if (!deepEqual(previousData, newData)) {
-@@ -494,7 +535,7 @@ function keyChanged(key, data, canUpdateSubscriber) {
-                         };
-                         const prevDataWithNewData = {
-                             ...prevData,
--                            [key]: getSubsetOfData(data, subscriber.selector, subscriber.withOnyxInstance.state),
-+                            ...newData,
-                         };
-                         if (!deepEqual(prevData, prevDataWithNewData)) {
-                             PerformanceUtils.logSetStateCall(subscriber, prevData, newData, 'keyChanged', key);
-@@ -507,17 +548,28 @@ function keyChanged(key, data, canUpdateSubscriber) {
+-                        if (!deepEqual(previousData, newData)) {
+-                            return {
+-                                [subscriber.statePropertyName]: newData,
+-                            };
++                        if (deepEqual(previousData, newData)) {
++                            return null;
+                         }
+-                        return null;
++
++                        return {
++                            [subscriber.statePropertyName]: newData,
++                        };
+                     });
                      continue;
                  }
  
--                subscriber.withOnyxInstance.setState((prevState) => {
+                 subscriber.withOnyxInstance.setState((prevState) => {
+-                    const finalCollection = _.clone(prevState[subscriber.statePropertyName] || {});
++                    const prevCollection = prevState[subscriber.statePropertyName]
++                    const finalCollection = _.clone(prevCollection || {});
+                     const dataKeys = _.keys(partialCollection);
+                     for (let j = 0; j < dataKeys.length; j++) {
+                         const dataKey = dataKeys[j];
+                         finalCollection[dataKey] = cachedCollection[dataKey];
+                     }
+ 
+-                    PerformanceUtils.logSetStateCall(subscriber, prevState[subscriber.statePropertyName], finalCollection, 'keysChanged', collectionKey);
++                    if (deepEqual(prevCollection, finalCollection)) {
++                        return null;
++                    }
++
++                    PerformanceUtils.logSetStateCall(subscriber, prevCollection, finalCollection, 'keysChanged', collectionKey);
+                     return {
+                         [subscriber.statePropertyName]: finalCollection,
+                     };
+@@ -405,34 +452,20 @@ function keysChanged(collectionKey, partialCollection) {
+                 // If the subscriber has a selector, then the component's state must only be updated with the data
+                 // returned by the selector and the state should only change when the subset of data changes from what
+                 // it was previously.
+-                if (subscriber.selector) {
+-                    subscriber.withOnyxInstance.setState((prevState) => {
+-                        const prevData = prevState[subscriber.statePropertyName];
+-                        const newData = getSubsetOfData(cachedCollection[subscriber.key], subscriber.selector, subscriber.withOnyxInstance.state);
+-                        if (!deepEqual(prevData, newData)) {
+-                            PerformanceUtils.logSetStateCall(subscriber, prevData, newData, 'keysChanged', collectionKey);
+-                            return {
+-                                [subscriber.statePropertyName]: newData,
+-                            };
+-                        }
+-
+-                        return null;
+-                    });
+-                    continue;
+-                }
+-
+                 subscriber.withOnyxInstance.setState((prevState) => {
++                    const prevData = prevState[subscriber.statePropertyName];
+                     const data = cachedCollection[subscriber.key];
+-                    const previousData = prevState[subscriber.statePropertyName];
+-                    if (data === previousData) {
++                    const newData = subscriber.selector ? getSubsetOfData(data, subscriber.selector, subscriber.withOnyxInstance.state) : data;
++                    if (deepEqual(prevData, newData)) {
+                         return null;
+                     }
+                     
+-                    PerformanceUtils.logSetStateCall(subscriber, previousData, data, 'keysChanged', collectionKey);
++                    PerformanceUtils.logSetStateCall(subscriber, prevData, newData, 'keysChanged', collectionKey);
+                     return {
+-                        [subscriber.statePropertyName]: data,
++                        [subscriber.statePropertyName]: newData,
+                     };
+                 });
++                continue;
+             }
+         }
+     }
+@@ -486,34 +519,20 @@ function keyChanged(key, data, canUpdateSubscriber) {
+             if (isCollectionKey(subscriber.key)) {
+                 // If the subscriber has a selector, then the consumer of this data must only be given the data
+                 // returned by the selector and only when the selected data has changed.
+-                if (subscriber.selector) {
+-                    subscriber.withOnyxInstance.setState((prevState) => {
+-                        const prevData = prevState[subscriber.statePropertyName];
+-                        const newData = {
+-                            [key]: getSubsetOfData(data, subscriber.selector, subscriber.withOnyxInstance.state),
+-                        };
+-                        const prevDataWithNewData = {
+-                            ...prevData,
+-                            [key]: getSubsetOfData(data, subscriber.selector, subscriber.withOnyxInstance.state),
+-                        };
+-                        if (!deepEqual(prevData, prevDataWithNewData)) {
+-                            PerformanceUtils.logSetStateCall(subscriber, prevData, newData, 'keyChanged', key);
+-                            return {
+-                                [subscriber.statePropertyName]: prevDataWithNewData,
+-                            };
+-                        }
+-                        return null;
+-                    });
+-                    continue;
+-                }
+-
+                 subscriber.withOnyxInstance.setState((prevState) => {
 -                    const collection = prevState[subscriber.statePropertyName] || {};
--                    const newCollection = {
++                    const prevData = prevState[subscriber.statePropertyName] || {};
++                    const newData = {
++                        [key]: subscriber.selector ? getSubsetOfData(data, subscriber.selector, subscriber.withOnyxInstance.state) : data,
++                    };
+                     const newCollection = {
 -                        ...collection,
 -                        [key]: data,
--                    };
++                        ...prevData,
++                        ...newData,
+                     };
 -                    PerformanceUtils.logSetStateCall(subscriber, collection, newCollection, 'keyChanged', key);
--                    return {
--                        [subscriber.statePropertyName]: newCollection,
--                    };
--                });
-+                const collection = subscriber.withOnyxInstance.state[subscriber.statePropertyName] || {};
-+                const newCollection = {
-+                    ...collection,
-+                    [key]: data,
-+                };
-+                sendDataToConnection(
-+                    subscriber,
-+                    newCollection,
-+                    subscriber.key,
-+                )
++                    if (deepEqual(prevData, newCollection)) {
++                        return null;
++                    }
 +
-+                // subscriber.withOnyxInstance.setState((prevState) => {
-+                //     const collection = prevState[subscriber.statePropertyName] || {};
-+                //     const newCollection = {
-+                //         ...collection,
-+                //         [key]: data,
-+                //     };
-+                //     PerformanceUtils.logSetStateCall(subscriber, collection, newCollection, 'keyChanged', key);
-+                //     return {
-+                //         [subscriber.statePropertyName]: newCollection,
-+                //     };
-+                // });
-                 continue;
-             }
++                    PerformanceUtils.logSetStateCall(subscriber, prevData, newCollection, 'keyChanged', key);
+                     return {
+                         [subscriber.statePropertyName]: newCollection,
+                     };
+@@ -523,30 +542,16 @@ function keyChanged(key, data, canUpdateSubscriber) {
  
-@@ -525,7 +577,7 @@ function keyChanged(key, data, canUpdateSubscriber) {
+             // If the subscriber has a selector, then the component's state must only be updated with the data
              // returned by the selector and only if the selected data has changed.
-             if (subscriber.selector) {
-                 subscriber.withOnyxInstance.setState((prevState) => {
+-            if (subscriber.selector) {
+-                subscriber.withOnyxInstance.setState((prevState) => {
 -                    const previousValue = getSubsetOfData(prevState[subscriber.statePropertyName], subscriber.selector, subscriber.withOnyxInstance.state);
-+                    const previousValue = prevState[subscriber.statePropertyName];
-                     const newValue = getSubsetOfData(data, subscriber.selector, subscriber.withOnyxInstance.state);
-                     if (!deepEqual(previousValue, newValue)) {
-                         return {
-@@ -538,17 +590,27 @@ function keyChanged(key, data, canUpdateSubscriber) {
-             }
- 
-             // If we did not match on a collection key then we just set the new data to the state property
--            subscriber.withOnyxInstance.setState((prevState) => {
+-                    const newValue = getSubsetOfData(data, subscriber.selector, subscriber.withOnyxInstance.state);
+-                    if (!deepEqual(previousValue, newValue)) {
+-                        return {
+-                            [subscriber.statePropertyName]: newValue,
+-                        };
+-                    }
+-                    return null;
+-                });
+-                continue;
+-            }
+-
+-            // If we did not match on a collection key then we just set the new data to the state property
+             subscriber.withOnyxInstance.setState((prevState) => {
 -                const previousData = prevState[subscriber.statePropertyName];
 -                if (previousData === data) {
--                    return null;
--                }
-+            if (subscriber.withOnyxInstance.state[subscriber.statePropertyName] === data) {
-+                continue;
-+            }
++                const previousValue = prevState[subscriber.statePropertyName];
++                const newValue = subscriber.selector ? getSubsetOfData(data, subscriber.selector, subscriber.withOnyxInstance.state) : data;
++                if (deepEqual(previousValue, newValue)) {
+                     return null;
+                 }
  
 -                PerformanceUtils.logSetStateCall(subscriber, previousData, data, 'keyChanged', key);
--                return {
++                PerformanceUtils.logSetStateCall(subscriber, previousValue, newValue, 'keyChanged', key);
+                 return {
 -                    [subscriber.statePropertyName]: data,
--                };
--            });
-+            sendDataToConnection(
-+                subscriber,
-+                data,
-+                subscriber.key,
-+            )
-+            // subscriber.withOnyxInstance.setState((prevState) => {
-+            //     const previousData = prevState[subscriber.statePropertyName];
-+            //     if (previousData === data) {
-+            //         return null;
-+            //     }
-+
-+            //     console.log('keyChanged', key, key === "network" ? data : undefined)
-+            //     PerformanceUtils.logSetStateCall(subscriber, previousData, data, 'keyChanged', key);
-+            //     return {
-+            //         [subscriber.statePropertyName]: data,
-+            //     };
-+            // });
++                    [subscriber.statePropertyName]: newValue,
+                 };
+             });
              continue;
-         }
- 
-@@ -556,6 +618,7 @@ function keyChanged(key, data, canUpdateSubscriber) {
-     }
- }
- 
-+const {diff} = require('jest-diff');
- /**
-  * Sends the data obtained from the keys to the connection. It either:
+@@ -561,6 +566,8 @@ function keyChanged(key, data, canUpdateSubscriber) {
   *     - sets state on the withOnyxInstances
-@@ -590,9 +653,16 @@ function sendDataToConnection(mapping, val, matchedKey) {
+  *     - triggers the callback function
+  * 
++ * Note: This is only invoked from Onyx.connect
++ *
+  * @private
+  * @param {Object} mapping
+  * @param {Object} [mapping.withOnyxInstance]
+@@ -590,7 +597,21 @@ function sendDataToConnection(mapping, val, matchedKey) {
              }
          }
  
--        PerformanceUtils.logSetStateCall(mapping, null, newData, 'sendDataToConnection');
--        mapping.withOnyxInstance.setWithOnyxState(mapping.statePropertyName, newData);
--        return;
-+        if (!deepEqual(mapping.withOnyxInstance.state[mapping.statePropertyName], newData)) {
-+            PerformanceUtils.logSetStateCall(mapping, null, newData, 'sendDataToConnection');
-+            if (mapping.logging) {
-+                console.log('------ Diff report', mapping.statePropertyName)
-+                console.log(diff(mapping.withOnyxInstance.state[mapping.statePropertyName], newData))
-+            }
-+
-+            mapping.withOnyxInstance.setWithOnyxState(mapping.statePropertyName, newData);
++        // sendDataToConnection only get's called in the connect code.
++        // withOnyx is already setting data from cache initially. If we now
++        // want to call sendDataToConnection, we want to make sure, we
++        // are not sending again the same data from cache, if the component
++        // already has the cached data.
++        if (deepEqual(mapping.withOnyxInstance.state[mapping.statePropertyName], newData)) {
 +            return;
 +        }
++
+         PerformanceUtils.logSetStateCall(mapping, null, newData, 'sendDataToConnection');
++        if (mapping.logging) {
++            console.log('------ Diff report', mapping.statePropertyName)
++            console.log(diff(mapping.withOnyxInstance.state[mapping.statePropertyName], newData))
++        }
++
+         mapping.withOnyxInstance.setWithOnyxState(mapping.statePropertyName, newData);
+         return;
      }
- 
-     if (_.isFunction(mapping.callback)) {
-@@ -1303,7 +1373,10 @@ const Onyx = {
+@@ -1303,7 +1324,10 @@ const Onyx = {
      addToEvictionBlockList,
      removeFromEvictionBlockList,
      isSafeEvictionKey,
@@ -209,7 +273,7 @@ index 7b45997..f4abf69 100644
  
  /**
 diff --git a/node_modules/react-native-onyx/lib/withOnyx.js b/node_modules/react-native-onyx/lib/withOnyx.js
-index f8154d7..a9cc625 100644
+index f8154d7..9ced564 100644
 --- a/node_modules/react-native-onyx/lib/withOnyx.js
 +++ b/node_modules/react-native-onyx/lib/withOnyx.js
 @@ -8,6 +8,8 @@ import _ from 'underscore';
@@ -229,7 +293,7 @@ index f8154d7..a9cc625 100644
  
                  this.setWithOnyxState = this.setWithOnyxState.bind(this);
  
-@@ -37,13 +40,42 @@ export default function (mapOnyxToState) {
+@@ -37,13 +40,41 @@ export default function (mapOnyxToState) {
                  // disconnected. It is a key value store with the format {[mapping.key]: connectionID}.
                  this.activeConnectionIDs = {};
  
@@ -246,7 +310,6 @@ index f8154d7..a9cc625 100644
 +                        cachedAssigments++;
 +                    } else {
 +                        console.log(`No cached value for ${key}`)
-+                        // console.log(Onyx.tryGetAllKeysSync())
 +                    }
 +                });
 +
@@ -276,23 +339,7 @@ index f8154d7..a9cc625 100644
              }
  
              componentDidMount() {
-@@ -65,6 +97,7 @@ export default function (mapOnyxToState) {
-                         Onyx.disconnect(this.activeConnectionIDs[previousKey], previousKey);
-                         delete this.activeConnectionIDs[previousKey];
-                         this.connectMappingToOnyx(mapping, propertyName);
-+                        console.log('reconnect:', displayName, this.activeConnectionIDs[newKey])
-                     }
-                 });
-                 this.checkEvictableKeys();
-@@ -76,6 +109,7 @@ export default function (mapOnyxToState) {
-                     const key = Str.result(mapping.key, this.props);
-                     const connectionID = this.activeConnectionIDs[key];
-                     Onyx.disconnect(connectionID, key);
-+                    console.log('disconnect:', displayName, connectionID);
-                 });
-             }
- 
-@@ -88,6 +122,8 @@ export default function (mapOnyxToState) {
+@@ -88,6 +119,8 @@ export default function (mapOnyxToState) {
               * @param {*} val
               */
              setWithOnyxState(statePropertyName, val) {
@@ -301,14 +348,11 @@ index f8154d7..a9cc625 100644
                  if (!this.state.loading) {
                      this.setState({[statePropertyName]: val});
                      return;
-@@ -95,13 +131,22 @@ export default function (mapOnyxToState) {
+@@ -95,13 +128,19 @@ export default function (mapOnyxToState) {
  
                  this.tempState[statePropertyName] = val;
  
 +                console.log(`added ${statePropertyName} to ${displayName}. Cached: ${Object.keys(this.cachedState)}`)
-+                // if (displayName === 'ReportScreenWrapper') {
-+                //     debugger;
-+                // }
 +
                  // All state keys should exist and at least have a value of null
                  if (_.some(requiredKeysForInit, key => _.isUndefined(this.tempState[key]))) {
@@ -324,12 +368,7 @@ index f8154d7..a9cc625 100644
              }
  
              /**
-@@ -154,13 +199,29 @@ export default function (mapOnyxToState) {
-                     withOnyxInstance: this,
-                     displayName,
-                 });
-+                console.log("connect:", displayName, this.activeConnectionIDs[key])
-             }
+@@ -158,9 +197,24 @@ export default function (mapOnyxToState) {
  
              render() {
                  if (this.state.loading) {
