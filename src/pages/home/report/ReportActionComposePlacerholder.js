@@ -11,7 +11,7 @@ import * as Expensicons from '../../../components/Icon/Expensicons';
 function ReportActionComposePlaceholder(props) {
     return (
         <View style={[styles.chatItemComposeBoxColor, styles.flexRow, styles.chatItemComposeBox]}>
-            <View style={[styles.textInputComposeSpacing, styles.textInputComposeBorder]}>
+            <View style={styles.textInputComposeSpacing}>
                 <Composer
                     multiline
                     textAlignVertical="top"
