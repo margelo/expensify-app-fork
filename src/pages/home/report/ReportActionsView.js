@@ -279,7 +279,10 @@ class ReportActionsView extends React.Component {
             return;
         }
 
-        Report.openReport(this.props.report.reportID);
+        // TODO: explain why this is good and necessary
+        setTimeout(() => {
+            Report.openReport(this.props.report.reportID);
+        }, 1);
     }
 
     /**
