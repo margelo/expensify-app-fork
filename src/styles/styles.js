@@ -1171,7 +1171,6 @@ const styles = {
 
     // Sidebar Styles
     sidebar: {
-        backgroundColor: themeColors.sidebar,
         height: '100%',
     },
 
@@ -1344,7 +1343,6 @@ const styles = {
     },
 
     sidebarLinkText: {
-        color: themeColors.textSupporting,
         fontSize: variables.fontSizeNormal,
         textDecorationLine: 'none',
         overflow: 'hidden',
@@ -1365,7 +1363,6 @@ const styles = {
     },
 
     sidebarLinkActiveText: {
-        color: themeColors.textSupporting,
         fontSize: variables.fontSizeNormal,
         textDecorationLine: 'none',
         overflow: 'hidden',

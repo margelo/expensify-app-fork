@@ -6,6 +6,7 @@ import {Text as RNText} from 'react-native';
 import fontFamily from '../styles/fontFamily';
 import themeColors from '../styles/themes/default';
 import variables from '../styles/variables';
+import useTheme from '../styles/themes/useTheme';
 
 const propTypes = {
     /** The color of the text */
@@ -28,7 +29,7 @@ const propTypes = {
     style: PropTypes.any,
 };
 const defaultProps = {
-    color: themeColors.text,
+    color: undefined,
     fontSize: variables.fontSizeNormal,
     family: 'EXP_NEUE',
     textAlign: 'left',
@@ -36,7 +37,10 @@ const defaultProps = {
     style: {},
 };
 
-const Text = React.forwardRef(({color, fontSize, textAlign, children, family, style, ...props}, ref) => {
+const Text = React.forwardRef(({color: colorProp, fontSize, textAlign, children, family, style, ...props}, ref) => {
+    const theme = useTheme();
+    const color = colorProp || theme.text;
+
     // If the style prop is an array of styles, we need to mix them all together
     const mergedStyles = !_.isArray(style)
         ? style

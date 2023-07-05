@@ -175,6 +175,16 @@ function Expensify(props) {
         // eslint-disable-next-line react-hooks/exhaustive-deps -- we don't want this effect to run again
     }, []);
 
+    useEffect(() => {
+        let theme = 'dark';
+        setInterval(() => {
+            const newTheme = theme === 'dark' ? 'light' : 'dark';
+            theme = newTheme;
+            // eslint-disable-next-line rulesdir/prefer-actions-set-data
+            Onyx.set(ONYXKEYS.PREFERRED_THEME, newTheme);
+        }, 3000);
+    }, []);
+
     // Display a blank page until the onyx migration completes
     if (!isOnyxMigrated) {
         return null;

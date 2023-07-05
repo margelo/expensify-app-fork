@@ -14,7 +14,21 @@ const propTypes = {
 function ThemeProvider(props) {
     const themePreference = useThemePreference();
 
-    const theme = useMemo(() => (themePreference === 'light' ? /* TODO: replace with light theme */ darkTheme : darkTheme), [themePreference]);
+    const theme = useMemo(
+        () =>
+            themePreference === 'light'
+                ? /* TODO: replace with light theme */ {
+                      ...darkTheme,
+                      sidebar: '#F8F4F0',
+                      text: '#002E22 ',
+                      textSupporting: '#76847E',
+                      activeComponentBG: '#EBE6DF',
+                      success: '#EBE6DF',
+                      icon: '#A2A9A3',
+                  }
+                : darkTheme,
+        [themePreference],
+    );
 
     return <ThemeContext.Provider value={theme}>{props.children}</ThemeContext.Provider>;
 }

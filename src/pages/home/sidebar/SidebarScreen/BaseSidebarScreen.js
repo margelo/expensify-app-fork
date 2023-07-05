@@ -11,6 +11,7 @@ import Performance from '../../../../libs/Performance';
 import withWindowDimensions, {windowDimensionsPropTypes} from '../../../../components/withWindowDimensions';
 import sidebarPropTypes from './sidebarPropTypes';
 import * as Browser from '../../../../libs/Browser';
+import useThemeStyles from '../../../../styles/useThemeStyles';
 
 const propTypes = {
     ...sidebarPropTypes,
@@ -33,6 +34,8 @@ const startTimer = () => {
 };
 
 function BaseSidebarScreen(props) {
+    const themeStyles = useThemeStyles();
+
     useEffect(() => {
         Performance.markStart(CONST.TIMING.SIDEBAR_LOADED);
         Timing.start(CONST.TIMING.SIDEBAR_LOADED, true);
@@ -42,7 +45,7 @@ function BaseSidebarScreen(props) {
         <ScreenWrapper
             includeSafeAreaPaddingBottom={false}
             shouldEnableKeyboardAvoidingView={false}
-            style={[styles.sidebar, Browser.isMobile() ? styles.userSelectNone : {}]}
+            style={[themeStyles.sidebar, Browser.isMobile() ? styles.userSelectNone : {}]}
         >
             {({insets}) => (
                 <>

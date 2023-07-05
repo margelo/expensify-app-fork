@@ -28,6 +28,8 @@ import * as OptionsListUtils from '../../libs/OptionsListUtils';
 import compose from '../../libs/compose';
 import ONYXKEYS from '../../ONYXKEYS';
 import * as Report from '../../libs/actions/Report';
+import useThemeStyles from '../../styles/useThemeStyles';
+import useTheme from '../../styles/themes/useTheme';
 
 const propTypes = {
     /** Style for hovered state */
@@ -64,6 +66,9 @@ const defaultProps = {
 };
 
 function OptionRowLHN(props) {
+    const themeStyles = useThemeStyles();
+    const theme = useTheme();
+
     const optionItem = SidebarUtils.getOptionData(props.reportID);
     const [isContextMenuActive, setIsContextMenuActive] = useState(false);
 
@@ -80,10 +85,10 @@ function OptionRowLHN(props) {
     }
 
     let popoverAnchor = null;
-    const textStyle = props.isFocused ? styles.sidebarLinkActiveText : styles.sidebarLinkText;
+    const textStyle = props.isFocused ? themeStyles.sidebarLinkActiveText : themeStyles.sidebarLinkText;
     const textUnreadStyle = optionItem.isUnread ? [textStyle, styles.sidebarLinkTextBold] : [textStyle];
     const displayNameStyle = StyleUtils.combineStyles([styles.optionDisplayName, styles.optionDisplayNameCompact, styles.pre, ...textUnreadStyle], props.style);
-    const textPillStyle = props.isFocused ? [styles.ml1, StyleUtils.getBackgroundColorWithOpacityStyle(themeColors.icon, 0.5)] : [styles.ml1];
+    const textPillStyle = props.isFocused ? [styles.ml1, StyleUtils.getBackgroundColorWithOpacityStyle(theme.icon, 0.5)] : [styles.ml1];
     const alternateTextStyle = StyleUtils.combineStyles(
         props.viewMode === CONST.OPTION_MODE.COMPACT
             ? [textStyle, styles.optionAlternateText, styles.pre, styles.textLabelSupporting, styles.optionAlternateTextCompact, styles.ml2]
@@ -97,7 +102,7 @@ function OptionRowLHN(props) {
             ? [styles.chatLinkRowPressable, styles.flexGrow1, styles.optionItemAvatarNameWrapper, styles.optionRowCompact, styles.justifyContentCenter]
             : [styles.chatLinkRowPressable, styles.flexGrow1, styles.optionItemAvatarNameWrapper, styles.optionRow, styles.justifyContentCenter],
     );
-    const hoveredBackgroundColor = props.hoverStyle && props.hoverStyle.backgroundColor ? props.hoverStyle.backgroundColor : themeColors.sidebar;
+    const hoveredBackgroundColor = props.hoverStyle && props.hoverStyle.backgroundColor ? props.hoverStyle.backgroundColor : theme.sidebar;
     const focusedBackgroundColor = styles.sidebarLinkActive.backgroundColor;
 
     const hasBrickError = optionItem.brickRoadIndicator === CONST.BRICK_ROAD_INDICATOR_STATUS.ERROR;
@@ -157,7 +162,7 @@ function OptionRowLHN(props) {
                             styles.justifyContentBetween,
                             styles.sidebarLink,
                             styles.sidebarLinkInner,
-                            StyleUtils.getBackgroundColorStyle(themeColors.sidebar),
+                            StyleUtils.getBackgroundColorStyle(theme.sidebar),
                             props.isFocused ? styles.sidebarLinkActive : null,
                             (hovered || isContextMenuActive) && !props.isFocused ? props.hoverStyle : null,
                         ]}
@@ -169,7 +174,7 @@ function OptionRowLHN(props) {
                                 {!_.isEmpty(optionItem.icons) &&
                                     (optionItem.shouldShowSubscript ? (
                                         <SubscriptAvatar
-                                            backgroundColor={props.isFocused ? themeColors.activeComponentBG : themeColors.sidebar}
+                                            backgroundColor={props.isFocused ? theme.activeComponentBG : theme.sidebar}
                                             mainAvatar={optionItem.icons[0]}
                                             secondaryAvatar={optionItem.icons[1]}
                                             mainTooltip={optionItem.ownerEmail}
@@ -182,7 +187,7 @@ function OptionRowLHN(props) {
                                             isFocusMode={props.viewMode === CONST.OPTION_MODE.COMPACT}
                                             size={props.viewMode === CONST.OPTION_MODE.COMPACT ? CONST.AVATAR_SIZE.SMALL : CONST.AVATAR_SIZE.DEFAULT}
                                             secondAvatarStyle={[
-                                                StyleUtils.getBackgroundAndBorderStyle(themeColors.sidebar),
+                                                StyleUtils.getBackgroundAndBorderStyle(theme.sidebar),
                                                 props.isFocused ? StyleUtils.getBackgroundAndBorderStyle(focusedBackgroundColor) : undefined,
                                                 hovered && !props.isFocused ? StyleUtils.getBackgroundAndBorderStyle(hoveredBackgroundColor) : undefined,
                                             ]}
@@ -242,7 +247,7 @@ function OptionRowLHN(props) {
                             {shouldShowGreenDotIndicator && (
                                 <Icon
                                     src={Expensicons.DotIndicator}
-                                    fill={themeColors.success}
+                                    fill={theme.success}
                                 />
                             )}
                             {optionItem.hasDraftComment && (

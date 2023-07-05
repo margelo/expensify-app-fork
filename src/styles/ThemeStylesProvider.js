@@ -12,20 +12,46 @@ const propTypes = {
 function ThemeStylesProvider(props) {
     const theme = useTheme();
 
-    const appContentStyle = useMemo(
+    const appContent = useMemo(
         () => ({
             ...defaultStyles.appContent,
-            backgroundColor: theme.appBG.value,
+            backgroundColor: theme.appBG,
         }),
-        [theme.appBG.value],
+        [theme.appBG],
+    );
+
+    const sidebar = useMemo(
+        () => ({
+            ...defaultStyles.sidebar,
+            backgroundColor: theme.sidebar,
+        }),
+        [theme.sidebar],
+    );
+
+    const sidebarLinkActiveText = useMemo(
+        () => ({
+            ...defaultStyles.sidebarLinkActiveText,
+            color: theme.textSupporting,
+        }),
+        [theme.textSupporting],
+    );
+
+    const sidebarLinkText = useMemo(
+        () => ({
+            ...defaultStyles.sidebarLinkText,
+            color: theme.textSupporting,
+        }),
+        [theme.textSupporting],
     );
 
     const styles = useMemo(
         () => ({
-            ...defaultStyles,
-            appContent: appContentStyle,
+            appContent,
+            sidebar,
+            sidebarLinkActiveText,
+            sidebarLinkText,
         }),
-        [appContentStyle],
+        [appContent, sidebar, sidebarLinkActiveText, sidebarLinkText],
     );
 
     return <StylesContext.Provider value={styles}>{props.children}</StylesContext.Provider>;
