@@ -22,8 +22,8 @@ import PressableWithoutFeedback from '../Pressable/PressableWithoutFeedback';
 import withLocalize from '../withLocalize';
 
 function BaseTextInput(props) {
-    const inputValue = props.value || props.defaultValue || '';
-    const initialActiveLabel = props.forceActiveLabel || inputValue.length > 0 || Boolean(props.prefixCharacter);
+    const initialValue = props.value || props.defaultValue || '';
+    const initialActiveLabel = props.forceActiveLabel || initialValue.length > 0 || Boolean(props.prefixCharacter);
 
     const [isFocused, setIsFocused] = useState(false);
     const [passwordHidden, setPasswordHidden] = useState(props.secureTextEntry);
@@ -168,34 +168,24 @@ function BaseTextInput(props) {
         [props.autoGrowHeight, props.multiline],
     );
 
-    useEffect(() => {
-        // Handle side effects when the value gets changed programatically from the outside
-
-        // In some cases, When the value prop is empty, it is not properly updated on the TextInput due to its uncontrolled nature, thus manually clearing the TextInput.
-        if (inputValue === '') {
-            input.current.clear();
-        }
-
-        if (inputValue) {
-            activateLabel();
-        }
-    }, [activateLabel, inputValue]);
-
     // We capture whether the input has a value or not in a ref.
-    // It gets updated when the text gets changed.
-    const hasValueRef = useRef(inputValue.length > 0);
+    // We need this information in case the component
+    // is uncontrolled (i.e. no value prop is supplied)
+    const hasValueRef = useRef(initialValue.length > 0);
+
+    const isControlled = props.value !== undefined && props.value !== null;
+    const inputValue = props.value || '';
 
     // Activate or deactivate the label when the focus changes:
     useEffect(() => {
-        // We can't use inputValue here directly, as it might contain
-        // the defaultValue, which doesn't get updated when the text changes.
-        // We can't use props.value either, as it might be undefined.
-        if (hasValueRef.current || isFocused) {
+        const hasValue = isControlled ? inputValue.length > 0 : hasValueRef.current;
+
+        if (hasValue || isFocused) {
             activateLabel();
-        } else if (!hasValueRef.current && !isFocused) {
+        } else if (!hasValue && !isFocused) {
             deactivateLabel();
         }
-    }, [activateLabel, deactivateLabel, inputValue, isFocused]);
+    }, [activateLabel, deactivateLabel, inputValue, isControlled, isFocused]);
 
     /**
      * Set Value & activateLabel
@@ -207,11 +197,16 @@ function BaseTextInput(props) {
         if (props.onInputChange) {
             props.onInputChange(value);
         }
-
         Str.result(props.onChangeText, value);
+
+        // In case the text input is uncontrolled we need to update
+        // the info whether we have a value AND need to eventually
+        // activate the label:
         if (value && value.length > 0) {
             hasValueRef.current = true;
-            activateLabel();
+            if (!isControlled) {
+                activateLabel();
+            }
         } else {
             hasValueRef.current = false;
         }
