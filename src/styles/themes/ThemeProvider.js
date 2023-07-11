@@ -3,6 +3,7 @@ import React, {useMemo} from 'react';
 import PropTypes from 'prop-types';
 import ThemeContext from './ThemeContext';
 import useThemePreference from './useThemePreference';
+import CONST from '../../CONST';
 
 // Going to eventually import the light theme here too
 import darkTheme from './default';
@@ -16,7 +17,7 @@ function ThemeProvider(props) {
 
     const theme = useMemo(
         () =>
-            themePreference === 'light'
+            themePreference === CONST.THEME.LIGHT
                 ? /* TODO: replace with light theme */ {
                       ...darkTheme,
                       sidebar: '#F8F4F0',
