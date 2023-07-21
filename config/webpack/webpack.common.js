@@ -26,6 +26,7 @@ const includeModules = [
 
 const envToLogoSuffixMap = {
     production: '',
+    profile: '-stg',
     staging: '-stg',
     dev: '-dev',
     adhoc: '-adhoc',

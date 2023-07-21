@@ -4,6 +4,9 @@
  * servers by default.
  */
 module.exports = {
+    // eslint-disable-next-line rulesdir/no-api-in-views
+    API: '/api',
+    CHAT_ATTACHMENTS: '/chat-attachments/',
     STAGING: '/staging/',
     STAGING_SECURE: '/staging-secure/',
 };
