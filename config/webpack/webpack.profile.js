@@ -21,17 +21,18 @@ module.exports = (env = {}) => {
         },
         optimization: {
             mangleExports: false,
-            minimize: false,
+            minimize: true,
+            minimizer: [
+                new TerserPlugin({
+                    terserOptions: {
+                        keep_classnames: true, // to prevent mangling of class names
+                        keep_fnames: true, // to prevent mangling of function names
+                        mangle: false,
+                    },
+                }),
+            ],
         },
     });
-    config.optimization.minimizer = [
-        new TerserPlugin({
-            terserOptions: {
-                keep_classnames: true, // to prevent mangling of class names
-                keep_fnames: true, // to prevent mangling of function names
-            },
-        }),
-    ];
 
     return TimeAnalyticsPlugin.wrap(config);
 };
