@@ -271,6 +271,7 @@ function ReportActionCompose({
     }, []);
 
     const onBlur = useCallback((e) => {
+        console.trace('[Khachapuri] onBlur');
         setIsFocused(false);
         suggestionsRef.current.resetSuggestions();
         if (e.relatedTarget && e.relatedTarget === actionButtonRef.current) {
@@ -279,6 +280,7 @@ function ReportActionCompose({
     }, []);
 
     const onFocus = useCallback(() => {
+        console.trace('[Khachapuri] onFocus');
         setIsFocused(true);
     }, []);
 

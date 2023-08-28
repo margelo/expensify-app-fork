@@ -351,6 +351,7 @@ function ComposerWithSuggestions({
      */
     const checkComposerVisibility = useCallback(() => {
         const isComposerCoveredUp = EmojiPickerActions.isEmojiPickerVisible() || isMenuVisible || modal.isVisible;
+        console.log('[Khachapuri] checkComposerVisibility', {emojiPicker: EmojiPickerActions.isEmojiPickerVisible(), isMenuVisible, modal: modal.isVisible});
         return !isComposerCoveredUp;
     }, [isMenuVisible, modal.isVisible]);
 
@@ -381,6 +382,7 @@ function ComposerWithSuggestions({
                 return;
             }
 
+            console.log('[Khachapuri] focusComposerOnKeyPress');
             focus();
             replaceSelectionWithText(e.key, false);
         },
@@ -411,7 +413,10 @@ function ComposerWithSuggestions({
             unsubscribeNavigationBlur();
             unsubscribeNavigationFocus();
         };
-    }, [focusComposerOnKeyPress, navigation, setUpComposeFocusManager]);
+        // Note: we are explicitly omitting the deps to avoid running into this issue: https://expensify.slack.com/archives/C049HHMV9SM/p1692976685634629
+        //       a future fix will be that the modal state doesn't get set to isVisible: false when it shouldn't, see: https://expensify.slack.com/archives/C01GTK53T8Q/p1693211447246919?thread_ts=1693211004.204119&cid=C01GTK53T8Q
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const prevIsModalVisible = usePrevious(modal.isVisible);
     const prevIsFocused = usePrevious(isFocused);
@@ -451,6 +456,7 @@ function ComposerWithSuggestions({
         [blur, focus, prepareCommentAndResetComposer, replaceSelectionWithText],
     );
 
+    console.log('[Khachapuri] Modal state', modal);
     return (
         <>
             <View style={[containerComposeStyles, styles.textInputComposeBorder]}>
