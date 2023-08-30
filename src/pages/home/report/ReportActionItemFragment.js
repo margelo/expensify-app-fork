@@ -19,6 +19,7 @@ import CONST from '../../../CONST';
 import applyStrikethrough from '../../../components/HTMLEngineProvider/applyStrikethrough';
 import editedLabelStyles from '../../../styles/editedLabelStyles';
 import UserDetailsTooltip from '../../../components/UserDetailsTooltip';
+import avatarPropTypes from '../../../components/avatarPropTypes';
 
 const propTypes = {
     /** Users accountID */
@@ -45,6 +46,9 @@ const propTypes = {
         source: PropTypes.string,
     }),
 
+    /** Message(text) of an IOU report action */
+    iouMessage: PropTypes.string,
+
     /** Does this fragment belong to a reportAction that has not yet loaded? */
     loading: PropTypes.bool,
 
@@ -60,6 +64,9 @@ const propTypes = {
     /** The accountID of the copilot who took this action on behalf of the user */
     delegateAccountID: PropTypes.number,
 
+    /** icon */
+    actorIcon: avatarPropTypes,
+
     ...windowDimensionsPropTypes,
 
     /** localization props */
@@ -74,11 +81,13 @@ const defaultProps = {
         type: '',
         source: '',
     },
+    iouMessage: '',
     loading: false,
     isSingleLine: false,
     source: '',
     style: [],
     delegateAccountID: 0,
+    actorIcon: {},
 };
 
 function ReportActionItemFragment(props) {
@@ -128,7 +137,7 @@ function ReportActionItemFragment(props) {
                     selectable={!DeviceCapabilities.canUseTouchScreen() || !props.isSmallScreenWidth}
                     style={[containsOnlyEmojis ? styles.onlyEmojisText : undefined, styles.ltr, ...props.style]}
                 >
-                    {convertToLTR(text)}
+                    {convertToLTR(props.iouMessage || text)}
                     {Boolean(props.fragment.isEdited) && (
                         <Text
                             fontSize={variables.fontSizeSmall}
@@ -152,6 +161,7 @@ function ReportActionItemFragment(props) {
                 <UserDetailsTooltip
                     accountID={props.accountID}
                     delegateAccountID={props.delegateAccountID}
+                    icon={props.actorIcon}
                 >
                     <Text
                         numberOfLines={props.isSingleLine ? 1 : undefined}

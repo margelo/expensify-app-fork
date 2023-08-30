@@ -1,41 +1,39 @@
 import _ from 'underscore';
-import React, {useEffect, useState} from 'react';
+import React, {useState, useRef} from 'react';
 import PropTypes from 'prop-types';
 import {View, StyleSheet} from 'react-native';
 import lodashGet from 'lodash/get';
 import * as optionRowStyles from '../../styles/optionRowStyles';
 import styles from '../../styles/styles';
 import * as StyleUtils from '../../styles/StyleUtils';
+import DateUtils from '../../libs/DateUtils';
 import Icon from '../Icon';
 import * as Expensicons from '../Icon/Expensicons';
 import MultipleAvatars from '../MultipleAvatars';
 import Hoverable from '../Hoverable';
 import DisplayNames from '../DisplayNames';
 import colors from '../../styles/colors';
-import withLocalize, {withLocalizePropTypes} from '../withLocalize';
-import {withReportCommentDrafts} from '../OnyxProvider';
 import Text from '../Text';
 import SubscriptAvatar from '../SubscriptAvatar';
 import CONST from '../../CONST';
-import SidebarUtils from '../../libs/SidebarUtils';
+import themeColors from '../../styles/themes/default';
 import OfflineWithFeedback from '../OfflineWithFeedback';
 import PressableWithSecondaryInteraction from '../PressableWithSecondaryInteraction';
 import * as ReportActionContextMenu from '../../pages/home/report/ContextMenu/ReportActionContextMenu';
 import * as ContextMenuActions from '../../pages/home/report/ContextMenu/ContextMenuActions';
 import * as OptionsListUtils from '../../libs/OptionsListUtils';
-import compose from '../../libs/compose';
-import ONYXKEYS from '../../ONYXKEYS';
-import * as Report from '../../libs/actions/Report';
-import useThemeStyles from '../../styles/useThemeStyles';
-import useTheme from '../../styles/themes/useTheme';
+import * as ReportUtils from '../../libs/ReportUtils';
+import useLocalize from '../../hooks/useLocalize';
+import Permissions from '../../libs/Permissions';
+import Tooltip from '../Tooltip';
 
 const propTypes = {
     /** Style for hovered state */
     // eslint-disable-next-line react/forbid-prop-types
     hoverStyle: PropTypes.object,
 
-    /** The comment left by the user */
-    comment: PropTypes.string,
+    /** List of betas available to current user */
+    betas: PropTypes.arrayOf(PropTypes.string),
 
     /** The ID of the report that the option is for */
     reportID: PropTypes.string.isRequired,
@@ -51,16 +49,19 @@ const propTypes = {
 
     style: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.object), PropTypes.object]),
 
-    ...withLocalizePropTypes,
+    /** The item that should be rendered */
+    // eslint-disable-next-line react/forbid-prop-types
+    optionItem: PropTypes.object,
 };
 
 const defaultProps = {
     hoverStyle: undefined,
     viewMode: 'default',
     onSelectRow: () => {},
-    isFocused: false,
     style: null,
-    comment: '',
+    optionItem: null,
+    isFocused: false,
+    betas: [],
 };
 
 function OptionRowLHN(props) {
@@ -70,27 +71,28 @@ function OptionRowLHN(props) {
 
     const optionItem = SidebarUtils.getOptionData(props.reportID);
     const [isContextMenuActive, setIsContextMenuActive] = useState(false);
+    const popoverAnchor = useRef(null);
 
-    useEffect(() => {
-        if (!optionItem || optionItem.hasDraftComment || !props.comment || props.comment.length <= 0 || props.isFocused) {
-            return;
-        }
-        Report.setReportWithDraft(props.reportID, true);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    const {translate} = useLocalize();
+
+    // const optionItem = props.optionItem;
 
     if (!optionItem) {
         return null;
     }
 
-    let popoverAnchor = null;
-    const textStyle = props.isFocused ? themeStyles.sidebarLinkActiveText : themeStyles.sidebarLinkText;
+    const isHidden = optionItem.notificationPreference === CONST.REPORT.NOTIFICATION_PREFERENCE.HIDDEN;
+    if (isHidden && !props.isFocused && !optionItem.isPinned) {
+        return null;
+    }
+
+    const textStyle = props.isFocused ? styles.sidebarLinkActiveText : styles.sidebarLinkText;
     const textUnreadStyle = optionItem.isUnread ? [textStyle, styles.sidebarLinkTextBold] : [textStyle];
     const displayNameStyle = StyleUtils.combineStyles([styles.optionDisplayName, styles.optionDisplayNameCompact, styles.pre, ...textUnreadStyle], props.style);
     const alternateTextStyle = StyleUtils.combineStyles(
         props.viewMode === CONST.OPTION_MODE.COMPACT
-            ? [textStyle, styles.optionAlternateText, styles.pre, styles.textLabelSupporting, styles.optionAlternateTextCompact, styles.ml2]
-            : [textStyle, styles.optionAlternateText, styles.pre, styles.textLabelSupporting],
+            ? [textStyle, styles.optionAlternateText, styles.noWrap, styles.textLabelSupporting, styles.optionAlternateTextCompact, styles.ml2]
+            : [textStyle, styles.optionAlternateText, styles.noWrap, styles.textLabelSupporting],
         props.style,
     );
     const contentContainerStyles =
@@ -108,7 +110,7 @@ function OptionRowLHN(props) {
     const shouldShowGreenDotIndicator =
         !hasBrickError &&
         (optionItem.isUnreadWithMention ||
-            (optionItem.hasOutstandingIOU && !optionItem.isIOUReportOwner) ||
+            ReportUtils.isWaitingForIOUActionFromCurrentUser(optionItem) ||
             (optionItem.isTaskReport && optionItem.isTaskAssignee && !optionItem.isCompletedTaskReport && !optionItem.isArchivedRoom));
 
     /**
@@ -135,22 +137,38 @@ function OptionRowLHN(props) {
         );
     };
 
+    const emojiCode = lodashGet(optionItem, 'status.emojiCode', '');
+    const statusText = lodashGet(optionItem, 'status.text', '');
+    const statusClearAfterDate = lodashGet(optionItem, 'status.clearAfter', '');
+    const formattedDate = DateUtils.getStatusUntilDate(statusClearAfterDate);
+    const statusContent = formattedDate ? `${statusText} (${formattedDate})` : statusText;
+    const isStatusVisible = Permissions.canUseCustomStatus(props.betas) && !!emojiCode && ReportUtils.isOneOnOneChat(optionItem);
+
     return (
         <OfflineWithFeedback
             pendingAction={optionItem.pendingAction}
             errors={optionItem.allReportErrors}
             shouldShowErrorMessages={false}
+            needsOffscreenAlphaCompositing
         >
             <Hoverable>
                 {(hovered) => (
                     <PressableWithSecondaryInteraction
-                        ref={(el) => (popoverAnchor = el)}
+                        ref={popoverAnchor}
                         onPress={(e) => {
                             if (e) {
                                 e.preventDefault();
                             }
 
                             props.onSelectRow(optionItem, popoverAnchor);
+                        }}
+                        onMouseDown={(e) => {
+                            if (!e) {
+                                return;
+                            }
+
+                            // Prevent losing Composer focus
+                            e.preventDefault();
                         }}
                         onSecondaryInteraction={(e) => showPopover(e)}
                         withoutFocusOnSecondaryInteraction
@@ -166,7 +184,7 @@ function OptionRowLHN(props) {
                             (hovered || isContextMenuActive) && !props.isFocused ? hoverStyle : null,
                         ]}
                         accessibilityRole={CONST.ACCESSIBILITY_ROLE.BUTTON}
-                        accessibilityLabel={props.translate('accessibilityHints.navigatesToChat')}
+                        accessibilityLabel={translate('accessibilityHints.navigatesToChat')}
                     >
                         <View style={sidebarInnerRowStyle}>
                             <View style={[styles.flexRow, styles.alignItemsCenter]}>
@@ -194,7 +212,7 @@ function OptionRowLHN(props) {
                                 <View style={contentContainerStyles}>
                                     <View style={[styles.flexRow, styles.alignItemsCenter, styles.mw100, styles.overflowHidden]}>
                                         <DisplayNames
-                                            accessibilityLabel={props.translate('accessibilityHints.chatUserDisplayNames')}
+                                            accessibilityLabel={translate('accessibilityHints.chatUserDisplayNames')}
                                             fullTitle={optionItem.text}
                                             displayNamesWithTooltips={optionItem.displayNamesWithTooltips}
                                             tooltipEnabled
@@ -204,14 +222,22 @@ function OptionRowLHN(props) {
                                                 optionItem.isChatRoom || optionItem.isPolicyExpenseChat || optionItem.isTaskReport || optionItem.isThread || optionItem.isMoneyRequestReport
                                             }
                                         />
+                                        {isStatusVisible && (
+                                            <Tooltip
+                                                text={statusContent}
+                                                shiftVertical={-4}
+                                            >
+                                                <Text style={styles.ml1}>{emojiCode}</Text>
+                                            </Tooltip>
+                                        )}
                                     </View>
                                     {optionItem.alternateText ? (
                                         <Text
                                             style={alternateTextStyle}
                                             numberOfLines={1}
-                                            accessibilityLabel={props.translate('accessibilityHints.lastChatMessagePreview')}
+                                            accessibilityLabel={translate('accessibilityHints.lastChatMessagePreview')}
                                         >
-                                            {optionItem.alternateText}
+                                            {optionItem.isLastMessageDeletedParentAction ? translate('parentReportAction.deletedMessage') : optionItem.alternateText}
                                         </Text>
                                     ) : null}
                                 </View>
@@ -240,10 +266,10 @@ function OptionRowLHN(props) {
                                     fill={theme.success}
                                 />
                             )}
-                            {optionItem.hasDraftComment && (
+                            {optionItem.hasDraftComment && optionItem.isAllowedToComment && (
                                 <View
                                     style={styles.ml2}
-                                    accessibilityLabel={props.translate('sidebarScreen.draftedMessage')}
+                                    accessibilityLabel={translate('sidebarScreen.draftedMessage')}
                                 >
                                     <Icon src={Expensicons.Pencil} />
                                 </View>
@@ -251,7 +277,7 @@ function OptionRowLHN(props) {
                             {!shouldShowGreenDotIndicator && optionItem.isPinned && (
                                 <View
                                     style={styles.ml2}
-                                    accessibilityLabel={props.translate('sidebarScreen.chatPinned')}
+                                    accessibilityLabel={translate('sidebarScreen.chatPinned')}
                                 >
                                     <Icon src={Expensicons.Pin} />
                                 </View>
@@ -268,13 +294,6 @@ OptionRowLHN.propTypes = propTypes;
 OptionRowLHN.defaultProps = defaultProps;
 OptionRowLHN.displayName = 'OptionRowLHN';
 
-export default compose(
-    withLocalize,
-    withReportCommentDrafts({
-        propName: 'comment',
-        transformValue: (drafts, props) => {
-            const draftKey = `${ONYXKEYS.COLLECTION.REPORT_DRAFT_COMMENT}${props.reportID}`;
-            return lodashGet(drafts, draftKey, '');
-        },
-    }),
-)(OptionRowLHN);
+export default withTheme(React.memo(OptionRowLHN));
+
+export {propTypes, defaultProps};

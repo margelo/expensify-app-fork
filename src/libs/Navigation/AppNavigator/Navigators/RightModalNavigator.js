@@ -6,7 +6,7 @@ import RHPScreenOptions from '../RHPScreenOptions';
 
 const Stack = createStackNavigator();
 
-function RigthModalNavigator() {
+function RightModalNavigator() {
     return (
         <Stack.Navigator screenOptions={RHPScreenOptions}>
             <Stack.Screen
@@ -66,6 +66,10 @@ function RigthModalNavigator() {
                 component={ModalStackNavigators.NewTaskModalStackNavigator}
             />
             <Stack.Screen
+                name="TeachersUnite"
+                component={ModalStackNavigators.NewTeachersUniteNavigator}
+            />
+            <Stack.Screen
                 name="Task_Details"
                 component={ModalStackNavigators.TaskModalStackNavigator}
             />
@@ -93,8 +97,12 @@ function RigthModalNavigator() {
                 name="EditRequest"
                 component={ModalStackNavigators.EditRequestStackNavigator}
             />
+            <Stack.Screen
+                name="SignIn"
+                component={ModalStackNavigators.SignInModalStackNavigator}
+            />
         </Stack.Navigator>
     );
 }
 
-export default RigthModalNavigator;
+export default RightModalNavigator;
