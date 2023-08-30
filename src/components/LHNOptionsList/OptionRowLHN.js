@@ -16,7 +16,6 @@ import colors from '../../styles/colors';
 import Text from '../Text';
 import SubscriptAvatar from '../SubscriptAvatar';
 import CONST from '../../CONST';
-import themeColors from '../../styles/themes/default';
 import OfflineWithFeedback from '../OfflineWithFeedback';
 import PressableWithSecondaryInteraction from '../PressableWithSecondaryInteraction';
 import * as ReportActionContextMenu from '../../pages/home/report/ContextMenu/ReportActionContextMenu';
@@ -26,6 +25,9 @@ import * as ReportUtils from '../../libs/ReportUtils';
 import useLocalize from '../../hooks/useLocalize';
 import Permissions from '../../libs/Permissions';
 import Tooltip from '../Tooltip';
+import withTheme from '../withTheme';
+import withThemeStyles from '../withThemeStyles';
+import compose from '../../libs/compose';
 
 const propTypes = {
     /** Style for hovered state */
@@ -65,17 +67,18 @@ const defaultProps = {
 };
 
 function OptionRowLHN(props) {
-    const themeStyles = useThemeStyles();
+    // const themeStyles = useThemeStyles();
+    const themeStyles = props.themeStyles;
     const hoverStyle = props.hoverStyle || themeStyles.sidebarLinkHover;
-    const theme = useTheme();
+    // const theme = useTheme();
+    const theme = props.theme;
 
-    const optionItem = SidebarUtils.getOptionData(props.reportID);
     const [isContextMenuActive, setIsContextMenuActive] = useState(false);
     const popoverAnchor = useRef(null);
 
     const {translate} = useLocalize();
 
-    // const optionItem = props.optionItem;
+    const optionItem = props.optionItem;
 
     if (!optionItem) {
         return null;
@@ -294,6 +297,6 @@ OptionRowLHN.propTypes = propTypes;
 OptionRowLHN.defaultProps = defaultProps;
 OptionRowLHN.displayName = 'OptionRowLHN';
 
-export default withTheme(React.memo(OptionRowLHN));
+export default compose(withTheme, withThemeStyles)(React.memo(OptionRowLHN));
 
 export {propTypes, defaultProps};
