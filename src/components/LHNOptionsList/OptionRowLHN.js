@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import {View, StyleSheet} from 'react-native';
 import lodashGet from 'lodash/get';
 import * as optionRowStyles from '../../styles/optionRowStyles';
-import styles from '../../styles/styles';
 import * as StyleUtils from '../../styles/StyleUtils';
 import DateUtils from '../../libs/DateUtils';
 import Icon from '../Icon';
@@ -25,8 +24,8 @@ import * as ReportUtils from '../../libs/ReportUtils';
 import useLocalize from '../../hooks/useLocalize';
 import Permissions from '../../libs/Permissions';
 import Tooltip from '../Tooltip';
-import withTheme from '../withTheme';
-import withThemeStyles from '../withThemeStyles';
+import withTheme, {withThemePropTypes} from '../withTheme';
+import withThemeStyles, {withThemeStylesPropTypes} from '../withThemeStyles';
 import compose from '../../libs/compose';
 
 const propTypes = {
@@ -54,6 +53,9 @@ const propTypes = {
     /** The item that should be rendered */
     // eslint-disable-next-line react/forbid-prop-types
     optionItem: PropTypes.object,
+
+    ...withThemePropTypes,
+    ...withThemeStylesPropTypes,
 };
 
 const defaultProps = {
