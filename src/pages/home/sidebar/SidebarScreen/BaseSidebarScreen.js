@@ -1,6 +1,5 @@
 import React, {useEffect} from 'react';
 import {View} from 'react-native';
-import styles from '../../../../styles/styles';
 import SidebarLinksData from '../SidebarLinksData';
 import ScreenWrapper from '../../../../components/ScreenWrapper';
 import Timing from '../../../../libs/actions/Timing';
@@ -36,11 +35,12 @@ function BaseSidebarScreen(props) {
         <ScreenWrapper
             includeSafeAreaPaddingBottom={false}
             shouldEnableKeyboardAvoidingView={false}
-            style={[themeStyles.sidebar, Browser.isMobile() ? styles.userSelectNone : {}]}
+            style={[themeStyles.sidebar, Browser.isMobile() ? themeStyles.userSelectNone : {}]}
+            shouldDisableFocusTrap
         >
             {({insets}) => (
                 <>
-                    <View style={[styles.flex1]}>
+                    <View style={[themeStyles.flex1]}>
                         <SidebarLinksData
                             onLinkClick={startTimer}
                             insets={insets}
