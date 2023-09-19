@@ -24,52 +24,52 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Get pull request details
-        id: getPullRequestDetails
-        uses: margelo/expensify-app-fork/.github/actions/javascript/getPullRequestDetails@main
-        with:
-          GITHUB_TOKEN: ${{ secrets.HANNO_TOKEN }}
-          PULL_REQUEST_NUMBER: ${{ inputs.PR_NUMBER }}
-          USER: ${{ github.actor }}
+      # - name: Get pull request details
+      #   id: getPullRequestDetails
+      #   uses: margelo/expensify-app-fork/.github/actions/javascript/getPullRequestDetails@main
+      #   with:
+      #     GITHUB_TOKEN: ${{ secrets.HANNO_TOKEN }}
+      #     PULL_REQUEST_NUMBER: ${{ inputs.PR_NUMBER }}
+      #     USER: ${{ github.actor }}
 
-      - name: Merged PR - Get merge commit sha for the pull request
-        if: ${{ fromJSON(steps.getPullRequestDetails.outputs.IS_MERGED) }}
-        id: getMergeCommitShaIfMergedPR
-        run: |
-          MERGE_COMMIT_SHA=${{ steps.getPullRequestDetails.outputs.MERGE_COMMIT_SHA }}
-          git fetch origin "$MERGE_COMMIT_SHA" --no-tags --depth=1
-          echo "MERGE_COMMIT_SHA=$MERGE_COMMIT_SHA" >> "$GITHUB_OUTPUT"
-        env:
-          GITHUB_TOKEN: ${{ secrets.HANNO_TOKEN }}
+      # - name: Merged PR - Get merge commit sha for the pull request
+      #   if: ${{ fromJSON(steps.getPullRequestDetails.outputs.IS_MERGED) }}
+      #   id: getMergeCommitShaIfMergedPR
+      #   run: |
+      #     MERGE_COMMIT_SHA=${{ steps.getPullRequestDetails.outputs.MERGE_COMMIT_SHA }}
+      #     git fetch origin "$MERGE_COMMIT_SHA" --no-tags --depth=1
+      #     echo "MERGE_COMMIT_SHA=$MERGE_COMMIT_SHA" >> "$GITHUB_OUTPUT"
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.HANNO_TOKEN }}
 
-      - name: Unmerged PR - Fetch head ref of unmerged PR
-        if: ${{ !fromJSON(steps.getPullRequestDetails.outputs.IS_MERGED) }}
-        run: |
-          git fetch origin ${{ steps.getPullRequestDetails.outputs.HEAD_COMMIT_SHA }} --no-tags --depth=1
+      # - name: Unmerged PR - Fetch head ref of unmerged PR
+      #   if: ${{ !fromJSON(steps.getPullRequestDetails.outputs.IS_MERGED) }}
+      #   run: |
+      #     git fetch origin ${{ steps.getPullRequestDetails.outputs.HEAD_COMMIT_SHA }} --no-tags --depth=1
 
-      - name: Unmerged PR - Set dummy git credentials before merging
-        if: ${{ !fromJSON(steps.getPullRequestDetails.outputs.IS_MERGED) }}
-        run: |
-          git config --global user.email "test@test.com"
-          git config --global user.name "Test"
+      # - name: Unmerged PR - Set dummy git credentials before merging
+      #   if: ${{ !fromJSON(steps.getPullRequestDetails.outputs.IS_MERGED) }}
+      #   run: |
+      #     git config --global user.email "test@test.com"
+      #     git config --global user.name "Test"
 
-      - name: Unmerged PR - Merge pull request locally and get merge commit sha
-        if: ${{ !fromJSON(steps.getPullRequestDetails.outputs.IS_MERGED) }}
-        id: getMergeCommitShaIfUnmergedPR
-        run: |
-          git merge --no-commit ${{ steps.getPullRequestDetails.outputs.HEAD_COMMIT_SHA }}
-          git checkout ${{ steps.getPullRequestDetails.outputs.HEAD_COMMIT_SHA }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.HANNO_TOKEN }}
+      # - name: Unmerged PR - Merge pull request locally and get merge commit sha
+      #   if: ${{ !fromJSON(steps.getPullRequestDetails.outputs.IS_MERGED) }}
+      #   id: getMergeCommitShaIfUnmergedPR
+      #   run: |
+      #     git merge --no-commit ${{ steps.getPullRequestDetails.outputs.HEAD_COMMIT_SHA }}
+      #     git checkout ${{ steps.getPullRequestDetails.outputs.HEAD_COMMIT_SHA }}
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.HANNO_TOKEN }}
 
-      - name: Determine "delta ref"
-        id: getDeltaRef
-        run: echo "DELTA_REF=${{ steps.getMergeCommitShaIfMergedPR.outputs.MERGE_COMMIT_SHA || steps.getMergeCommitShaIfUnmergedPR.outputs.MERGE_COMMIT_SHA }}" >> "$GITHUB_OUTPUT"
-        env:
-          GITHUB_TOKEN: ${{ secrets.HANNO_TOKEN }}
+      # - name: Determine "delta ref"
+      #   id: getDeltaRef
+      #   run: echo "DELTA_REF=${{ steps.getMergeCommitShaIfMergedPR.outputs.MERGE_COMMIT_SHA || steps.getMergeCommitShaIfUnmergedPR.outputs.MERGE_COMMIT_SHA }}" >> "$GITHUB_OUTPUT"
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.HANNO_TOKEN }}
 
       - name: Checkout "delta ref"
-        run: git checkout ${{ steps.getDeltaRef.outputs.DELTA_REF }}
+        run: git checkout local/andrew-fix-e2e-fork
 
       - name: Configure MapBox SDK
         run: ./scripts/setup-mapbox-sdk.sh ${{ secrets.MAPBOX_SDK_DOWNLOAD_TOKEN }}
