@@ -17,7 +17,7 @@ on:
 
 jobs:
   buildDelta:
-    runs-on: ubuntu-latest-xl
+    runs-on: ubuntu-latest
     name: Build apk from delta ref
     outputs:
       DELTA_REF: ${{ steps.getDeltaRef.outputs.DELTA_REF }}
