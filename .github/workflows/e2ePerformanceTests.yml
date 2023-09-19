@@ -30,7 +30,7 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ github.token }}
           PULL_REQUEST_NUMBER: ${{ inputs.PR_NUMBER }}
-          USER: ${{ github.actor }}
+          USER: margelo
 
       - name: Merged PR - Get merge commit sha for the pull request
         if: ${{ fromJSON(steps.getPullRequestDetails.outputs.IS_MERGED) }}
