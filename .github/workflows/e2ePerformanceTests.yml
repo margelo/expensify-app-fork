@@ -28,7 +28,7 @@ jobs:
         id: getPullRequestDetails
         uses: margelo/expensify-app-fork/.github/actions/javascript/getPullRequestDetails@main
         with:
-          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ secrets.HANNO_TOKEN }}
           PULL_REQUEST_NUMBER: ${{ inputs.PR_NUMBER }}
           USER: margelo
 
@@ -40,7 +40,7 @@ jobs:
           git fetch origin "$MERGE_COMMIT_SHA" --no-tags --depth=1
           echo "MERGE_COMMIT_SHA=$MERGE_COMMIT_SHA" >> "$GITHUB_OUTPUT"
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ secrets.HANNO_TOKEN }}
 
       - name: Unmerged PR - Fetch head ref of unmerged PR
         if: ${{ !fromJSON(steps.getPullRequestDetails.outputs.IS_MERGED) }}
@@ -60,13 +60,13 @@ jobs:
           git merge --no-commit ${{ steps.getPullRequestDetails.outputs.HEAD_COMMIT_SHA }}
           git checkout ${{ steps.getPullRequestDetails.outputs.HEAD_COMMIT_SHA }}
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ secrets.HANNO_TOKEN }}
 
       - name: Determine "delta ref"
         id: getDeltaRef
         run: echo "DELTA_REF=${{ steps.getMergeCommitShaIfMergedPR.outputs.MERGE_COMMIT_SHA || steps.getMergeCommitShaIfUnmergedPR.outputs.MERGE_COMMIT_SHA }}" >> "$GITHUB_OUTPUT"
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ secrets.HANNO_TOKEN }}
 
       - name: Checkout "delta ref"
         run: git checkout ${{ steps.getDeltaRef.outputs.DELTA_REF }}
@@ -155,4 +155,4 @@ jobs:
             echo '✅ no performance regression detected'
           fi
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ secrets.HANNO_TOKEN }}
