@@ -11,7 +11,6 @@ import ONYXKEYS from '../../ONYXKEYS';
 import withCurrentReportID, {withCurrentReportIDPropTypes, withCurrentReportIDDefaultProps} from '../withCurrentReportID';
 import OptionRowLHN, {propTypes as basePropTypes, defaultProps as baseDefaultProps} from './OptionRowLHN';
 import * as Report from '../../libs/actions/Report';
-import * as UserUtils from '../../libs/UserUtils';
 import * as ReportActionsUtils from '../../libs/ReportActionsUtils';
 import * as TransactionUtils from '../../libs/TransactionUtils';
 
@@ -140,29 +139,6 @@ OptionRowLHNData.defaultProps = defaultProps;
 OptionRowLHNData.displayName = 'OptionRowLHNData';
 
 /**
- * @param {Object} [personalDetails]
- * @returns {Object|undefined}
- */
-const personalDetailsSelector = (personalDetails) =>
-    _.reduce(
-        personalDetails,
-        (finalPersonalDetails, personalData, accountID) => {
-            // It's OK to do param-reassignment in _.reduce() because we absolutely know the starting state of finalPersonalDetails
-            // eslint-disable-next-line no-param-reassign
-            finalPersonalDetails[accountID] = {
-                accountID: Number(accountID),
-                login: personalData.login,
-                displayName: personalData.displayName,
-                firstName: personalData.firstName,
-                status: personalData.status,
-                avatar: UserUtils.getAvatar(personalData.avatar, personalData.accountID),
-            };
-            return finalPersonalDetails;
-        },
-        {},
-    );
-
-/**
  * This component is rendered in a list.
  * On scroll we want to avoid that a item re-renders
  * just because the list has to re-render when adding more items.
@@ -186,10 +162,6 @@ export default React.memo(
             reportActions: {
                 key: ({reportID}) => `${ONYXKEYS.COLLECTION.REPORT_ACTIONS}${reportID}`,
                 canEvict: false,
-            },
-            personalDetails: {
-                key: ONYXKEYS.PERSONAL_DETAILS_LIST,
-                selector: personalDetailsSelector,
             },
             preferredLocale: {
                 key: ONYXKEYS.NVP_PREFERRED_LOCALE,

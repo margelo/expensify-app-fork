@@ -16,6 +16,8 @@ import useLocalize from '../../../hooks/useLocalize';
 import styles from '../../../styles/styles';
 import withNavigationFocus from '../../../components/withNavigationFocus';
 import * as SessionUtils from '../../../libs/SessionUtils';
+import * as UserUtils from '../../../libs/UserUtils';
+import participantPropTypes from '../../../components/participantPropTypes';
 
 const propTypes = {
     ...basePropTypes,
@@ -52,6 +54,9 @@ const propTypes = {
     /** The policies which the user has access to */
     // eslint-disable-next-line react/forbid-prop-types
     policies: PropTypes.object,
+
+    /** List of users' personal details */
+    personalDetails: PropTypes.objectOf(participantPropTypes),
 };
 
 const defaultProps = {
@@ -61,9 +66,23 @@ const defaultProps = {
     priorityMode: CONST.PRIORITY_MODE.DEFAULT,
     betas: [],
     policies: [],
+    personalDetails: {},
 };
 
-function SidebarLinksData({isFocused, allReportActions, betas, chatReports, currentReportID, insets, isLoadingReportData, isSmallScreenWidth, onLinkClick, policies, priorityMode}) {
+function SidebarLinksData({
+    isFocused,
+    allReportActions,
+    betas,
+    chatReports,
+    currentReportID,
+    insets,
+    isLoadingReportData,
+    isSmallScreenWidth,
+    onLinkClick,
+    policies,
+    priorityMode,
+    personalDetails,
+}) {
     const {translate} = useLocalize();
 
     const reportIDsRef = useRef(null);
@@ -113,6 +132,7 @@ function SidebarLinksData({isFocused, allReportActions, betas, chatReports, curr
                 isActiveReport={isActiveReport}
                 isLoading={isLoading}
                 optionListItems={optionListItemsWithCurrentReport}
+                personalDetails={personalDetails}
             />
         </View>
     );
@@ -191,6 +211,29 @@ const policySelector = (policy) =>
         avatar: policy.avatar,
     };
 
+/**
+ * @param {Object} [personalDetails]
+ * @returns {Object|undefined}
+ */
+const personalDetailsSelector = (personalDetails) =>
+    _.reduce(
+        personalDetails,
+        (finalPersonalDetails, personalData, accountID) => {
+            // It's OK to do param-reassignment in _.reduce() because we absolutely know the starting state of finalPersonalDetails
+            // eslint-disable-next-line no-param-reassign
+            finalPersonalDetails[accountID] = {
+                accountID: Number(accountID),
+                login: personalData.login,
+                displayName: personalData.displayName,
+                firstName: personalData.firstName,
+                status: personalData.status,
+                avatar: UserUtils.getAvatar(personalData.avatar, personalData.accountID),
+            };
+            return finalPersonalDetails;
+        },
+        {},
+    );
+
 export default compose(
     withCurrentReportID,
     withNavigationFocus,
@@ -215,6 +258,10 @@ export default compose(
         policies: {
             key: ONYXKEYS.COLLECTION.POLICY,
             selector: policySelector,
+        },
+        personalDetails: {
+            key: ONYXKEYS.PERSONAL_DETAILS_LIST,
+            selector: personalDetailsSelector,
         },
     }),
 )(SidebarLinksData);

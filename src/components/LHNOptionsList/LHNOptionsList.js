@@ -6,6 +6,7 @@ import CONST from '../../CONST';
 import styles from '../../styles/styles';
 import OptionRowLHNData from './OptionRowLHNData';
 import variables from '../../styles/variables';
+import participantPropTypes from '../participantPropTypes';
 
 const propTypes = {
     /** Wrapper style for the section list */
@@ -27,14 +28,18 @@ const propTypes = {
 
     /** Whether to allow option focus or not */
     shouldDisableFocusOptions: PropTypes.bool,
+
+    /** List of users' personal details */
+    personalDetails: PropTypes.objectOf(participantPropTypes),
 };
 
 const defaultProps = {
     style: styles.flex1,
     shouldDisableFocusOptions: false,
+    personalDetails: {},
 };
 
-function LHNOptionsList({style, contentContainerStyles, data, onSelectRow, optionMode, shouldDisableFocusOptions}) {
+function LHNOptionsList({style, contentContainerStyles, data, onSelectRow, optionMode, shouldDisableFocusOptions, personalDetails}) {
     /**
      * This function is used to compute the layout of any given item in our list. Since we know that each item will have the exact same height, this is a performance optimization
      * so that the heights can be determined before the options are rendered. Otherwise, the heights are determined when each option is rendering and it causes a lot of overhead on large
@@ -68,6 +73,7 @@ function LHNOptionsList({style, contentContainerStyles, data, onSelectRow, optio
             viewMode={optionMode}
             shouldDisableFocusOptions={shouldDisableFocusOptions}
             onSelectRow={onSelectRow}
+            personalDetails={personalDetails}
         />
     );
 

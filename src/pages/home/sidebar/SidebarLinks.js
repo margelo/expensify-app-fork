@@ -30,6 +30,7 @@ import KeyboardShortcut from '../../../libs/KeyboardShortcut';
 import onyxSubscribe from '../../../libs/onyxSubscribe';
 import * as ReportActionContextMenu from '../report/ContextMenu/ReportActionContextMenu';
 import SignInOrAvatarWithOptionalStatus from './SignInOrAvatarWithOptionalStatus';
+import participantPropTypes from '../../../components/participantPropTypes';
 
 const basePropTypes = {
     /** Toggles the navigation menu open and closed */
@@ -53,11 +54,15 @@ const propTypes = {
 
     isActiveReport: PropTypes.func.isRequired,
 
+    /** List of users' personal details */
+    personalDetails: PropTypes.objectOf(participantPropTypes),
+
     ...withLocalizePropTypes,
 };
 
 const defaultProps = {
     priorityMode: CONST.PRIORITY_MODE.DEFAULT,
+    personalDetails: {},
 };
 
 class SidebarLinks extends React.PureComponent {
@@ -188,6 +193,7 @@ class SidebarLinks extends React.PureComponent {
                     onSelectRow={this.showReportPage}
                     shouldDisableFocusOptions={this.props.isSmallScreenWidth}
                     optionMode={viewMode}
+                    personalDetails={this.props.personalDetails}
                 />
                 {this.props.isLoading && <OptionsListSkeletonView shouldAnimate />}
             </View>
