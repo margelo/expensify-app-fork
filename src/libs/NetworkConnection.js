@@ -71,6 +71,7 @@ Onyx.connect({
  * Set up the event listener for NetInfo to tell whether the user has
  * internet connectivity or not. This is more reliable than the Pusher
  * `disconnected` event which takes about 10-15 seconds to emit.
+ * @returns {Function} unsubscribe method
  */
 function subscribeToNetInfo() {
     // Note: We are disabling the configuration for NetInfo when using the local web API since requests can get stuck in a 'Pending' state and are not reliable indicators for "offline".
@@ -100,7 +101,7 @@ function subscribeToNetInfo() {
 
     // Subscribe to the state change event via NetInfo so we can update
     // whether a user has internet connectivity or not.
-    NetInfo.addEventListener((state) => {
+    const unsubscribe = NetInfo.addEventListener((state) => {
         Log.info('[NetworkConnection] NetInfo state change', false, state);
         if (shouldForceOffline) {
             Log.info('[NetworkConnection] Not setting offline status because shouldForceOffline = true');
@@ -108,6 +109,8 @@ function subscribeToNetInfo() {
         }
         setOfflineStatus(state.isInternetReachable === false);
     });
+
+    return unsubscribe
 }
 
 function listenForReconnect() {

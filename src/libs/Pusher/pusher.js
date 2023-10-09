@@ -31,6 +31,21 @@ function callSocketEventCallbacks(eventName, data) {
     _.each(socketEventCallbacks, (cb) => cb(eventName, data));
 }
 
+const connectionError = (error) => {
+  callSocketEventCallbacks('error', error);
+}
+
+const connectedFn = (resolve) => {
+  pusherSocketID = socket.connection.socket_id;
+  callSocketEventCallbacks('connected');
+  resolve();
+}
+const disconnected = () => {
+  callSocketEventCallbacks('disconnected');
+}
+const stateChange = (states) => {
+  callSocketEventCallbacks('state_change', states);
+}
 /**
  * Initialize our pusher lib
  *
@@ -77,23 +92,13 @@ function init(args, params) {
         }
 
         // Listen for connection errors and log them
-        socket.connection.bind('error', (error) => {
-            callSocketEventCallbacks('error', error);
-        });
+        socket.connection.bind('error', connectionError);
 
-        socket.connection.bind('connected', () => {
-            pusherSocketID = socket.connection.socket_id;
-            callSocketEventCallbacks('connected');
-            resolve();
-        });
+        socket.connection.bind('connected', () => connectedFn(resolve));
 
-        socket.connection.bind('disconnected', () => {
-            callSocketEventCallbacks('disconnected');
-        });
+        socket.connection.bind('disconnected', disconnected);
 
-        socket.connection.bind('state_change', (states) => {
-            callSocketEventCallbacks('state_change', states);
-        });
+        socket.connection.bind('state_change', stateChange);
     });
 }
 

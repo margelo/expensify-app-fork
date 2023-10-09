@@ -30,6 +30,7 @@ import KeyboardShortcutsModal from './components/KeyboardShortcutsModal';
 import AppleAuthWrapper from './components/SignInButtons/AppleAuthWrapper';
 import EmojiPicker from './components/EmojiPicker/EmojiPicker';
 import * as EmojiPickerAction from './libs/actions/EmojiPickerAction';
+import * as Environment from './libs/Environment/Environment';
 import DeeplinkWrapper from './components/DeeplinkWrapper';
 
 // This lib needs to be imported, but it has nothing to export since all it contains is an Onyx connection
@@ -38,14 +39,16 @@ import UnreadIndicatorUpdater from './libs/UnreadIndicatorUpdater';
 // eslint-disable-next-line no-unused-vars
 import subscribePushNotification from './libs/Notification/PushNotification/subscribePushNotification';
 
-Onyx.registerLogger(({level, message}) => {
-    if (level === 'alert') {
-        Log.alert(message);
-        console.error(message);
-    } else {
-        Log.info(message);
-    }
-});
+if (Environment.isDevelopment()) {
+    Onyx.registerLogger(({level, message}) => {
+        if (level === 'alert') {
+            Log.alert(message);
+            console.error(message);
+        } else {
+            Log.info(message);
+        }
+    });
+}
 
 const propTypes = {
     /* Onyx Props */
@@ -133,7 +136,9 @@ function Expensify(props) {
         ActiveClientManager.init();
 
         // Used for the offline indicator appearing when someone is offline
-        NetworkConnection.subscribeToNetInfo();
+        const unsubscribe = NetworkConnection.subscribeToNetInfo();
+
+        return unsubscribe;
     }, []);
 
     useEffect(() => {

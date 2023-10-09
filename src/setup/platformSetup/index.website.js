@@ -34,6 +34,14 @@ function webUpdate() {
         });
 }
 
+function handleVisibilityChange() {
+    if (Visibility.isVisible()) {
+        return;
+    }
+
+    webUpdate();
+}
+
 /**
  * Create an object whose shape reflects the callbacks used in checkForUpdates.
  *
@@ -44,13 +52,12 @@ const webUpdater = () => ({
         // We want to check for updates and refresh the page if necessary when the app is backgrounded.
         // That way, it will auto-update silently when they minimize the page,
         // and we don't bug the user any more than necessary :)
-        window.addEventListener('visibilitychange', () => {
-            if (Visibility.isVisible()) {
-                return;
-            }
+        window.addEventListener('visibilitychange', handleVisibilityChange);
 
-            webUpdate();
-        });
+        // Return a cleanup function to be called when it's time to remove the listener
+        return () => {
+            window.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
     },
     update: () => webUpdate(),
 });
@@ -67,4 +74,6 @@ export default function () {
 
     // Start current date updater
     DateUtils.startCurrentDateUpdater();
+
+    return DateUtils.stopCurrentDateUpdater();
 }

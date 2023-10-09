@@ -78,18 +78,24 @@ function getOldDotURL(url) {
     return pathname;
 }
 
+function handleEvent(event) {
+    const url = event.data;
+    // TODO: use this value to navigate to a new path
+    // eslint-disable-next-line no-unused-vars
+    const newDotURL = getNewDotURL(url);
+}
+
 export default function ReportScreen() {
     const [oldDotURL, setOldDotURL] = useState('https://www.expensify.com.dev');
 
     useEffect(() => {
         setOldDotURL(`https://expensify.com.dev/${getOldDotURL(window.location.href)}`);
 
-        window.addEventListener('message', (event) => {
-            const url = event.data;
-            // TODO: use this value to navigate to a new path
-            // eslint-disable-next-line no-unused-vars
-            const newDotURL = getNewDotURL(url);
-        });
+        window.addEventListener('message', handleEvent);
+
+        return () => {
+            window.removeEventListener('message', handleEvent);
+        };
     }, []);
 
     return (

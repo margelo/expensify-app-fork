@@ -240,11 +240,27 @@ const updateCurrentDate = throttle(() => {
 /**
  * Initialises the event listeners that trigger the current date update
  */
-function startCurrentDateUpdater() {
-    const trackedEvents = ['mousemove', 'touchstart', 'keydown', 'scroll'];
-    trackedEvents.forEach((eventName) => {
-        document.addEventListener(eventName, updateCurrentDate);
-    });
+type EventListenerObject = {
+  eventName: keyof GlobalEventHandlersEventMap;
+  handler: (event: Event) => void;
+};
+
+let eventListeners: EventListenerObject[] = [];
+
+function startCurrentDateUpdater(): void {
+  const trackedEvents: Array<keyof GlobalEventHandlersEventMap> = ['mousemove', 'touchstart', 'keydown', 'scroll'];
+  eventListeners = trackedEvents.map((eventName) => {
+      const handler = updateCurrentDate;
+      document.addEventListener(eventName, handler);
+      return {eventName, handler};
+  });
+}
+
+function stopCurrentDateUpdater(): void {
+  eventListeners.forEach(({eventName, handler}) => {
+      document.removeEventListener(eventName, handler);
+  });
+  eventListeners = [];
 }
 
 function getCurrentTimezone(): Required<Timezone> {
@@ -344,6 +360,7 @@ const DateUtils = {
     datetimeToRelative,
     datetimeToCalendarTime,
     startCurrentDateUpdater,
+    stopCurrentDateUpdater,
     getLocalDateFromDatetime,
     getCurrentTimezone,
     canUpdateTimezone,

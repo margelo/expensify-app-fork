@@ -116,7 +116,7 @@ function setSidebarLoaded() {
 }
 
 let appState;
-AppState.addEventListener('change', (nextAppState) => {
+AppState.addEventListener('change', (nextAppState) => { // TODO: Remove this when we have reliable updates
     if (nextAppState.match(/inactive|background/) && appState === 'active') {
         Log.info('Flushing logs as app is going inactive', true, {}, true);
     }

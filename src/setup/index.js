@@ -55,5 +55,7 @@ export default function () {
     intlPolyfill();
 
     // Perform any other platform-specific setup
-    platformSetup();
+    const unsubscribe = platformSetup();
+
+    return unsubscribe
 }

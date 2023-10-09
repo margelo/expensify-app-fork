@@ -40,6 +40,8 @@ function BaseTextInput(props) {
     const input = useRef(null);
     const isLabelActive = useRef(initialActiveLabel);
 
+    const focus = () => input.current.focus()
+
     // AutoFocus which only works on mount:
     useEffect(() => {
         // We are manually managing focus to prevent this issue: https://github.com/Expensify/App/issues/4514
@@ -49,7 +51,7 @@ function BaseTextInput(props) {
 
         let focusTimeout;
         if (props.shouldDelayFocus) {
-            focusTimeout = setTimeout(() => input.current.focus(), CONST.ANIMATED_TRANSITION);
+            focusTimeout = setTimeout(focus, CONST.ANIMATED_TRANSITION);
             return;
         }
         input.current.focus();
