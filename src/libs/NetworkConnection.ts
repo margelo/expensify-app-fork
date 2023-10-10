@@ -1,6 +1,6 @@
-import _ from 'underscore';
 import Onyx from 'react-native-onyx';
 import NetInfo from '@react-native-community/netinfo';
+import throttle from 'lodash/throttle';
 import AppStateMonitor from './AppStateMonitor';
 import Log from './Log';
 import * as NetworkActions from './actions/Network';
@@ -13,15 +13,17 @@ let hasPendingNetworkCheck = false;
 
 // Holds all of the callbacks that need to be triggered when the network reconnects
 let callbackID = 0;
-const reconnectionCallbacks = {};
+const reconnectionCallbacks: Record<string, () => Promise<void>> = {};
 
 /**
  * Loop over all reconnection callbacks and fire each one
  */
-const triggerReconnectionCallbacks = _.throttle(
+const triggerReconnectionCallbacks = throttle(
     (reason) => {
         Log.info(`[NetworkConnection] Firing reconnection callbacks because ${reason}`);
-        _.each(reconnectionCallbacks, (callback) => callback());
+        Object.values(reconnectionCallbacks).forEach((callback) => {
+            callback();
+        });
     },
     5000,
     {trailing: false},
@@ -30,10 +32,8 @@ const triggerReconnectionCallbacks = _.throttle(
 /**
  * Called when the offline status of the app changes and if the network is "reconnecting" (going from offline to online)
  * then all of the reconnection callbacks are triggered
- *
- * @param {Boolean} isCurrentlyOffline
  */
-function setOfflineStatus(isCurrentlyOffline) {
+function setOfflineStatus(isCurrentlyOffline: boolean): void {
     NetworkActions.setIsOffline(isCurrentlyOffline);
 
     // When reconnecting, ie, going from offline to online, all the reconnection callbacks
@@ -73,7 +73,7 @@ Onyx.connect({
  * `disconnected` event which takes about 10-15 seconds to emit.
  * @returns {Function} unsubscribe method
  */
-function subscribeToNetInfo() {
+function subscribeToNetInfo(): () => void {
     // Note: We are disabling the configuration for NetInfo when using the local web API since requests can get stuck in a 'Pending' state and are not reliable indicators for "offline".
     // If you need to test the "recheck" feature then switch to the production API proxy server.
     if (!CONFIG.IS_USING_LOCAL_WEB) {
@@ -102,7 +102,7 @@ function subscribeToNetInfo() {
     // Subscribe to the state change event via NetInfo so we can update
     // whether a user has internet connectivity or not.
     const unsubscribe = NetInfo.addEventListener((state) => {
-        Log.info('[NetworkConnection] NetInfo state change', false, state);
+        Log.info('[NetworkConnection] NetInfo state change', false, {...state});
         if (shouldForceOffline) {
             Log.info('[NetworkConnection] Not setting offline status because shouldForceOffline = true');
             return;
@@ -110,7 +110,7 @@ function subscribeToNetInfo() {
         setOfflineStatus(state.isInternetReachable === false);
     });
 
-    return unsubscribe
+    return unsubscribe;
 }
 
 function listenForReconnect() {
@@ -123,11 +123,9 @@ function listenForReconnect() {
 
 /**
  * Register callback to fire when we reconnect
- *
- * @param {Function} callback - must return a Promise
- * @returns {Function} unsubscribe method
+ * @returns unsubscribe method
  */
-function onReconnect(callback) {
+function onReconnect(callback: () => Promise<void>): () => void {
     const currentID = callbackID;
     callbackID++;
     reconnectionCallbacks[currentID] = callback;
@@ -138,7 +136,7 @@ function onReconnect(callback) {
  * Delete all queued reconnection callbacks
  */
 function clearReconnectionCallbacks() {
-    _.each(_.keys(reconnectionCallbacks), (key) => delete reconnectionCallbacks[key]);
+    Object.keys(reconnectionCallbacks).forEach((key) => delete reconnectionCallbacks[key]);
 }
 
 /**
