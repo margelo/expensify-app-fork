@@ -25,8 +25,9 @@ const startEmulator = require('./utils/startEmulator');
 const killEmulator = require('./utils/killEmulator');
 const getDevices = require('./utils/getDevices');
 const sleep = require('./utils/sleep');
-const checkEmulatorIsBooted = require('./utils/checkEmulatorIsBooted');
+const isDeviceBooted = require('./utils/isDeviceBooted');
 const listEmulators = require('./utils/listEmulators');
+const rebootDevice = require('./utils/rebootDevice');
 
 const args = process.argv.slice(2);
 
@@ -77,30 +78,17 @@ if (isDevMode) {
 }
 
 const restartApp = async (appPath) => {
-    let list = await listEmulators();
-    list = list.split('\n');
+    Logger.log('Rebooting device...');
+    await rebootDevice();
 
-    const emulatorName = list[0];
+    Logger.log('Device rebooted awaiting for 60 seconds...');
+    await sleep(60000);
 
-    const devices = await getDevices();
-    Logger.log('DEVICES');
-    Logger.log(devices.trim().split('\n'));
-    if (devices.trim().split('\n').length > 1) {
-        killEmulator();
-        await sleep(10000);
-    }
-
-    if (!emulatorName) {
-        throw new Error('No emulator found');
-    }
-
-    await startEmulator(emulatorName);
-    // await sleep(5000);
-
-    let emulatorIsBooted = await checkEmulatorIsBooted();
+    Logger.log('Start loop to check for full boot...');
+    let emulatorIsBooted = await isDeviceBooted();
     while (emulatorIsBooted.trim() !== '1') {
         await sleep(1000);
-        emulatorIsBooted = await checkEmulatorIsBooted();
+        emulatorIsBooted = await isDeviceBooted();
     }
     // Give it a bit more time to finish booting
     await sleep(5000);
