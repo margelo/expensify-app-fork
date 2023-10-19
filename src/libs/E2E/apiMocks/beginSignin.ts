@@ -1,4 +1,6 @@
-export default ({email}) => ({
+import Response from '../../../types/onyx/Response';
+
+export default ({email}: {email: string}): Response => ({
     onyxData: [
         {
             onyxMethod: 'merge',

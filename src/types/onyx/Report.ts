@@ -27,6 +27,9 @@ type Report = {
     /** The last time the report was visited */
     lastReadTime?: string;
 
+    /** The last time the user was mentioned */
+    lastMentionedTime?: string;
+
     /** The current user's notification preference for this report */
     notificationPreference?: string | number;
 

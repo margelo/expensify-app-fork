@@ -1,4 +1,4 @@
-export default ({email}) => ({
+export default ({email}: {email: string}) => ({
     onyxData: [
         {
             onyxMethod: 'merge',
