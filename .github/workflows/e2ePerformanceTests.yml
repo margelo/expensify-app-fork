@@ -21,6 +21,8 @@ jobs:
     name: Run E2E tests in AWS device farm
     steps:
       - uses: actions/checkout@v3
+        with:
+          lfs: true
 
       - name: Make zip directory for everything to send to AWS Device Farm
         run: mkdir zip
