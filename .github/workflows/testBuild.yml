@@ -66,7 +66,7 @@ jobs:
     name: Build and deploy Android for testing
     needs: [validateActor, getBranchRef]
     if: ${{ fromJSON(needs.validateActor.outputs.READY_TO_BUILD) }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-xl
     env:
       PULL_REQUEST_NUMBER: ${{ github.event.number || github.event.inputs.PULL_REQUEST_NUMBER }}
     steps:
@@ -261,7 +261,7 @@ jobs:
     if: ${{ fromJSON(needs.validateActor.outputs.READY_TO_BUILD) }}
     env:
       PULL_REQUEST_NUMBER: ${{ github.event.number || github.event.inputs.PULL_REQUEST_NUMBER }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-xl
     steps:
       - name: Checkout
         uses: actions/checkout@v3
