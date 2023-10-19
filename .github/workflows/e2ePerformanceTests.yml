@@ -17,7 +17,7 @@ on:
 
 jobs:
   buildBaseline:
-    runs-on: ubuntu-latest-xl
+    runs-on: ubuntu-latest
     name: Build apk from latest release as a baseline
     outputs:
       VERSION: ${{ steps.getMostRecentRelease.outputs.VERSION }}
@@ -56,7 +56,7 @@ jobs:
           ARTIFACT_NAME: baseline-apk-${{ steps.getMostRecentRelease.outputs.VERSION }}
 
   buildDelta:
-    runs-on: ubuntu-latest-xl
+    runs-on: ubuntu-latest
     name: Build apk from delta ref
     outputs:
       DELTA_REF: ${{ steps.getDeltaRef.outputs.DELTA_REF }}
