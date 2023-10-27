@@ -23,9 +23,8 @@ const mocks = {
     AuthenticatePusher: mockAuthenticatePusher,
 };
 
-type Mocks = typeof mocks;
-
-function mockCall<Command extends keyof Mocks>(command: Command, apiCommandParameters: Parameters<Mocks[Command]>[0], tag: string) {
+function mockCall(command: string, apiCommandParameters: Record<string, unknown>, tag: string) {
+    // @ts-expect-error Broken types
     const mockResponse = mocks[command](apiCommandParameters);
     if (!mockResponse || !Array.isArray(mockResponse.onyxData)) {
         Log.warn(`[${tag}] for command ${command} is not mocked yet!`);
