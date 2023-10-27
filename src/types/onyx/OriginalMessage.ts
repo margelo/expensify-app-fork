@@ -31,6 +31,7 @@ type OriginalMessageIOU = {
         currency: string;
         lastModified?: string;
         participantAccountIDs?: number[];
+        participants?: string[];
         type: ValueOf<typeof CONST.IOU.REPORT_ACTION_TYPE>;
     };
 };
@@ -72,7 +73,7 @@ type OriginalMessageAddComment = {
     originalMessage: {
         html: string;
         lastModified?: string;
-        taskReportID?: string;
+        taskReportID?: number;
         edits?: string[];
         childReportID?: string;
         isDeletedParentAction?: boolean;

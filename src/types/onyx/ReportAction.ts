@@ -69,6 +69,8 @@ type ReportActionBase = {
     /** ISO-formatted datetime */
     created: string;
 
+    timestamp?: number;
+
     /** report action message */
     message?: Message[];
 
@@ -81,15 +83,18 @@ type ReportActionBase = {
     avatar?: string;
     automatic?: boolean;
     shouldShow?: boolean;
-    childReportID?: string;
+    childReportID?: number;
     childReportName?: string;
     childType?: string;
+    childStatusNum?: number;
+    childStateNum?: number;
     childOldestFourEmails?: string;
     childOldestFourAccountIDs?: string;
     childCommenterCount?: number;
     childLastVisibleActionCreated?: string;
     childVisibleActionCount?: number;
     childMoneyRequestCount?: number;
+    childLastMoneyRequestComment?: string;
 
     /** ISO-formatted datetime */
     lastModified?: string;
