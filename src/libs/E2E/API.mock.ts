@@ -1,6 +1,5 @@
 /* eslint-disable rulesdir/no-api-in-views */
 import Onyx from 'react-native-onyx';
-import _ from 'underscore';
 import Log from '@libs/Log';
 import mockAuthenticatePusher from './apiMocks/authenticatePusher';
 // mock functions
