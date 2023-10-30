@@ -24,7 +24,7 @@ const mocks = {
 
 function mockCall(command: string, apiCommandParameters: Record<string, unknown>, tag: string) {
     // @ts-expect-error Broken types
-    const mockResponse = mocks[command](apiCommandParameters);
+    const mockResponse = mocks[command] == null ? undefined : mocks[command](apiCommandParameters);
     if (!mockResponse || !Array.isArray(mockResponse.onyxData)) {
         Log.warn(`[${tag}] for command ${command} is not mocked yet!`);
         return;
