@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import Response from '../../../types/onyx/Response';
+import Response from '@src/types/onyx/Response';
 
 export default (): Response => ({
     onyxData: [

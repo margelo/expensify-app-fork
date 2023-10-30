@@ -1,4 +1,4 @@
-import Response from '../../../types/onyx/Response';
+import Response from '@src/types/onyx/Response';
 
 export default ({email}: {email: string}): Response => ({
     onyxData: [
