@@ -112,6 +112,9 @@ type ReportActionBase = {
     errors?: OnyxCommon.Errors;
 
     isAttachment?: boolean;
+
+    /** We manually add this field while sorting to detect the end of the list */
+    isNewestReportAction?: boolean;
 };
 
 type ReportAction = ReportActionBase & OriginalMessage;
