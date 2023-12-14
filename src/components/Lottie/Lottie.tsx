@@ -1,6 +1,7 @@
 import LottieView, {LottieViewProps} from 'lottie-react-native';
 import React, {ForwardedRef, forwardRef} from 'react';
 import {View} from 'react-native';
+import {SkiaSkottieView} from 'react-native-skottie';
 import DotLottieAnimation from '@components/LottieAnimations/types';
 import useNetwork from '@hooks/useNetwork';
 import useThemeStyles from '@styles/useThemeStyles';
@@ -23,7 +24,7 @@ function Lottie({source, webStyle, ...props}: Props, ref: ForwardedRef<LottieVie
     }
 
     return (
-        <LottieView
+        <SkiaSkottieView
             // eslint-disable-next-line react/jsx-props-no-spreading
             {...props}
             source={source.file}
