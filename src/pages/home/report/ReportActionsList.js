@@ -2,7 +2,7 @@ import {useRoute} from '@react-navigation/native';
 import lodashGet from 'lodash/get';
 import PropTypes from 'prop-types';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {DeviceEventEmitter} from 'react-native';
+import {DeviceEventEmitter, InteractionManager} from 'react-native';
 import Animated, {useAnimatedStyle, useSharedValue, withTiming} from 'react-native-reanimated';
 import _ from 'underscore';
 import InvertedFlatList from '@components/InvertedFlatList';
@@ -11,7 +11,6 @@ import withCurrentUserPersonalDetails, {withCurrentUserPersonalDetailsDefaultPro
 import withWindowDimensions, {windowDimensionsPropTypes} from '@components/withWindowDimensions';
 import useLocalize from '@hooks/useLocalize';
 import useNetwork from '@hooks/useNetwork';
-import useReportScrollManager from '@hooks/useReportScrollManager';
 import useThemeStyles from '@hooks/useThemeStyles';
 import compose from '@libs/compose';
 import DateUtils from '@libs/DateUtils';
@@ -136,9 +135,9 @@ function ReportActionsList({
     loadOlderChats,
     onLayout,
     isComposerFullSize,
+    reportScrollManager,
 }) {
     const styles = useThemeStyles();
-    const reportScrollManager = useReportScrollManager();
     const {translate} = useLocalize();
     const {isOffline} = useNetwork();
     const route = useRoute();
@@ -159,6 +158,12 @@ function ReportActionsList({
     const lastVisibleActionCreatedRef = useRef(report.lastVisibleActionCreated);
     const lastReadTimeRef = useRef(report.lastReadTime);
 
+    const sortedVisibleReportActions = _.filter(sortedReportActions, (s) => isOffline || s.pendingAction !== CONST.RED_BRICK_ROAD_PENDING_ACTION.DELETE || s.errors);
+    const lastActionIndex = lodashGet(sortedVisibleReportActions, [0, 'reportActionID']);
+    const reportActionSize = useRef(sortedVisibleReportActions.length);
+
+    const previousLastIndex = useRef(lastActionIndex);
+
     const linkedReportActionID = lodashGet(route, 'params.reportActionID', '');
 
     // This state is used to force a re-render when the user manually marks a message as unread
@@ -172,6 +177,14 @@ function ReportActionsList({
     useEffect(() => {
         opacity.value = withTiming(1, {duration: 100});
     }, [opacity]);
+
+    useEffect(() => {
+        if (previousLastIndex.current !== lastActionIndex && reportActionSize.current > sortedVisibleReportActions.length) {
+            reportScrollManager.scrollToBottom();
+        }
+        previousLastIndex.current = lastActionIndex;
+        reportActionSize.current = sortedVisibleReportActions.length;
+    }, [lastActionIndex, sortedVisibleReportActions.length, reportScrollManager]);
 
     useEffect(() => {
         // If the reportID changes, we reset the userActiveSince to null, we need to do it because
@@ -259,7 +272,7 @@ function ReportActionsList({
             if (!isFromCurrentUser) {
                 return;
             }
-            reportScrollManager.scrollToBottom();
+            InteractionManager.runAfterInteractions(() => reportScrollManager.scrollToBottom());
         });
 
         const cleanup = () => {
@@ -383,7 +396,7 @@ function ReportActionsList({
                 index={index}
                 report={report}
                 linkedReportActionID={linkedReportActionID}
-                sortedReportActions={sortedReportActions}
+                displayAsGroup={ReportActionsUtils.isConsecutiveActionMadeByPreviousActor(sortedReportActions, index)}
                 mostRecentIOUReportActionID={mostRecentIOUReportActionID}
                 shouldHideThreadDividerLine={shouldHideThreadDividerLine}
                 shouldDisplayNewMarker={shouldDisplayNewMarker(reportAction, index)}
