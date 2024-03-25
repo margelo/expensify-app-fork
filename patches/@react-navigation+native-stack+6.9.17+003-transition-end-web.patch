@@ -1,0 +1,49 @@
+diff --git a/node_modules/@react-navigation/native-stack/lib/module/views/NativeStackView.js b/node_modules/@react-navigation/native-stack/lib/module/views/NativeStackView.js
+index 1a78813..417f447 100644
+--- a/node_modules/@react-navigation/native-stack/lib/module/views/NativeStackView.js
++++ b/node_modules/@react-navigation/native-stack/lib/module/views/NativeStackView.js
+@@ -5,9 +5,20 @@ const TRANSPARENT_PRESENTATIONS = ['transparentModal', 'containedTransparentModa
+ export default function NativeStackView(_ref) {
+   let {
+     state,
+-    descriptors
++    descriptors,
++    navigation: nav
+   } = _ref;
+   const parentHeaderBack = React.useContext(HeaderBackContext);
++  React.useEffect(() => {
++    const route = state.routes[state.index];
++
++    setTimeout(() => nav.emit({
++      type: 'transitionEnd',
++      data: { closing: false },
++      target: route.key,
++    }), 250)
++  }, [state.index]);
++
+   return /*#__PURE__*/React.createElement(SafeAreaProviderCompat, null, /*#__PURE__*/React.createElement(View, {
+     style: styles.container
+   }, state.routes.map((route, i) => {
+@@ -42,7 +53,8 @@ export default function NativeStackView(_ref) {
+       headerBackground,
+       headerBackTitle,
+       presentation,
+-      contentStyle
++      contentStyle,
++      cardStyle
+     } = options;
+     const nextPresentation = nextDescriptor === null || nextDescriptor === void 0 ? void 0 : nextDescriptor.options.presentation;
+     return /*#__PURE__*/React.createElement(Screen, {
+@@ -111,11 +123,7 @@ export default function NativeStackView(_ref) {
+         headerBackground: headerBackground,
+         headerStyle: headerStyle
+       }),
+-      style: [StyleSheet.absoluteFill, {
+-        display: isFocused || nextPresentation != null && TRANSPARENT_PRESENTATIONS.includes(nextPresentation) ? 'flex' : 'none'
+-      }, presentation != null && TRANSPARENT_PRESENTATIONS.includes(presentation) ? {
+-        backgroundColor: 'transparent'
+-      } : null]
++      style: [cardStyle]
+     }, /*#__PURE__*/React.createElement(HeaderBackContext.Provider, {
+       value: headerBack
+     }, /*#__PURE__*/React.createElement(View, {

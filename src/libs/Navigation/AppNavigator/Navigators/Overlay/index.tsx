@@ -13,10 +13,12 @@ type OverlayProps = {
     /* Returns whether a modal is displayed on the left side of the screen. By default, the modal is displayed on the right */
     isModalOnTheLeft?: boolean;
 };
-
+const current = {
+    progress: new Animated.Value(1),
+};
 function Overlay({onPress, isModalOnTheLeft = false}: OverlayProps) {
     const styles = useThemeStyles();
-    const {current} = useCardAnimation();
+    // const {current} = useCardAnimation();
     const {translate} = useLocalize();
 
     return (
