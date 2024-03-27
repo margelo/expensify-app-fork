@@ -106,7 +106,7 @@ export default () => {
                     lastUpdateIDAppliedToClient,
                 });
 
-                console.log('GET MISSING UPDATES');
+                console.log('=== GET MISSING UPDATES CALL ===');
 
                 // Get the missing Onyx updates from the server
                 canUnpauseQueuePromise = App.getMissingOnyxUpdates(lastUpdateIDAppliedToClient, previousUpdateIDFromServer);
@@ -188,9 +188,7 @@ export default () => {
                 });
             }
 
-            console.log('============================trigger unpausequeue============================');
-
-            new Promise((resolve) => setTimeout(resolve, 20000)).then(() => canUnpauseQueuePromise).finally(applyDeferredUpdates);
+            new Promise((resolve) => setTimeout(resolve, 10000)).then(() => canUnpauseQueuePromise).finally(applyDeferredUpdates);
         },
     });
 };

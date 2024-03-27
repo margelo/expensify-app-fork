@@ -151,6 +151,11 @@ function applyOnyxUpdatesReliably(updates: OnyxUpdatesFromServer) {
         ignoreUpdatesCount++;
         return;
     }
+    if (ignoreUpdatesCount === 3) {
+        ignoreUpdatesCount = -1;
+    } else {
+        ignoreUpdatesCount++;
+    }
 
     if (!doesClientNeedToBeUpdated(previousUpdateID)) {
         apply(updates);
