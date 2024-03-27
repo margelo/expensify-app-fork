@@ -142,8 +142,16 @@ function doesClientNeedToBeUpdated(previousUpdateID = 0): boolean {
     return lastUpdateIDAppliedToClient < previousUpdateID;
 }
 
+let ignoreUpdatesCount = -1;
+
 function applyOnyxUpdatesReliably(updates: OnyxUpdatesFromServer) {
     const previousUpdateID = Number(updates.previousUpdateID) || 0;
+
+    if (ignoreUpdatesCount >= 0 && ignoreUpdatesCount < 3) {
+        ignoreUpdatesCount++;
+        return;
+    }
+
     if (!doesClientNeedToBeUpdated(previousUpdateID)) {
         apply(updates);
         return;

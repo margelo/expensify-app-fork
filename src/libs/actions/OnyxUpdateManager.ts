@@ -54,6 +54,10 @@ export default () => {
                 return;
             }
 
+            if (Object.values(deferredUpdates).length === 0) {
+                console.log('last applied update id before all deferred', lastUpdateIDAppliedToClient);
+            }
+
             const updateParams = value;
             const lastUpdateIDFromServer = value.lastUpdateID;
             const previousUpdateIDFromServer = value.previousUpdateID;
@@ -88,6 +92,8 @@ export default () => {
                 // Add the new update to the deferred updates
                 deferredUpdates[Number(updateParams.lastUpdateID)] = updateParams;
 
+                console.log('new update: ', {updates: deferredUpdates, length: Object.keys(deferredUpdates).length});
+
                 // If there are already deferred updates, then we don't need to fetch the missing updates again
                 if (existingDeferredUpdatesCount > 0) {
                     return;
@@ -99,6 +105,8 @@ export default () => {
                     previousUpdateIDFromServer,
                     lastUpdateIDAppliedToClient,
                 });
+
+                console.log('GET MISSING UPDATES');
 
                 // Get the missing Onyx updates from the server
                 canUnpauseQueuePromise = App.getMissingOnyxUpdates(lastUpdateIDAppliedToClient, previousUpdateIDFromServer);
@@ -171,13 +179,18 @@ export default () => {
                     return;
                 }
 
+                console.log('last update applied before deferred ', {lastUpdateIDAppliedToClient});
+
                 Promise.all(pendingDeferredUpdateValues.map((update) => OnyxUpdates.apply(update))).finally(() => {
+                    console.log('last update applied after deferred ', lastUpdateIDAppliedToClient);
                     unpauseQueueAndReset();
                     deferredUpdates = [];
                 });
             }
 
-            canUnpauseQueuePromise.finally(applyDeferredUpdates);
+            console.log('============================trigger unpausequeue============================');
+
+            new Promise((resolve) => setTimeout(resolve, 20000)).then(() => canUnpauseQueuePromise).finally(applyDeferredUpdates);
         },
     });
 };

@@ -26,8 +26,11 @@ const SaveResponseInOnyx: Middleware = (requestResponse, request) =>
         };
 
         if (requestsToIgnoreLastUpdateID.includes(request.command) || !OnyxUpdates.doesClientNeedToBeUpdated(Number(response?.previousUpdateID ?? 0))) {
+            console.log("doesn't need to be updated", responseToApply);
             return OnyxUpdates.apply(responseToApply);
         }
+
+        console.log('trigger missing updates', responseToApply);
 
         // Save the update IDs to Onyx so they can be used to fetch incremental updates if the client gets out of sync from the server
         OnyxUpdates.saveUpdateInformation(responseToApply);
