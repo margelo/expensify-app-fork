@@ -152,7 +152,7 @@ function validateAndApplyDeferredUpdates(): Promise<Response[] | void> {
                 }
 
                 // Then we can fetch the missing updates and apply them
-                App.getMissingOnyxUpdates(lastUpdateIDAppliedToClient, latestMissingUpdateID)
+                return App.getMissingOnyxUpdates(lastUpdateIDAppliedToClient, latestMissingUpdateID)
                     .then(validateAndApplyDeferredUpdates)
                     .then(() => {
                         console.log('last update applied after re-applying pending deferred updates after gap', {lastUpdateIDAppliedToClient});
