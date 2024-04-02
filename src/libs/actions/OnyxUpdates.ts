@@ -142,11 +142,10 @@ function doesClientNeedToBeUpdated(previousUpdateID = 0): boolean {
     return lastUpdateIDAppliedToClient < previousUpdateID;
 }
 
-let delayedUpdatesCount = -1;
-const NUMBER_OF_DELAYED_OR_MISSING_UPDATES = 5;
+let delayedUpdatesCount = 0;
+const NUMBER_OF_DELAYED_OR_MISSING_UPDATES = 100;
 const MIN_DELAY = 1000;
 const MAX_DELAY = 10000 - MIN_DELAY;
-const MISSING_UPDATE_PROBABILITY = 0.7;
 
 function applyOnyxUpdatesReliably(updates: OnyxUpdatesFromServer) {
     const previousUpdateID = Number(updates.previousUpdateID) || 0;
@@ -162,16 +161,22 @@ function applyOnyxUpdatesReliably(updates: OnyxUpdatesFromServer) {
         saveUpdateInformation(updates);
     };
 
+    const previousDelayedUpdatesCount = delayedUpdatesCount;
+    if (delayedUpdatesCount === NUMBER_OF_DELAYED_OR_MISSING_UPDATES) {
+        delayedUpdatesCount = 0;
+    } else {
+        delayedUpdatesCount++;
+    }
+
     // Send delayed updates and sometimes don't send them at all
-    if (delayedUpdatesCount >= 0 && delayedUpdatesCount < NUMBER_OF_DELAYED_OR_MISSING_UPDATES) {
-        const shouldOmitUpdate = Math.random() > MISSING_UPDATE_PROBABILITY;
+    if (previousDelayedUpdatesCount > 0 && previousDelayedUpdatesCount < NUMBER_OF_DELAYED_OR_MISSING_UPDATES) {
+        const shouldOmitUpdate = !(previousDelayedUpdatesCount % 3) || !(previousDelayedUpdatesCount % 4);
         if (!shouldOmitUpdate) {
             setTimeout(() => {
                 applyUpdate();
             }, Math.random() * MAX_DELAY + MIN_DELAY);
         }
 
-        delayedUpdatesCount++;
         return;
     }
 

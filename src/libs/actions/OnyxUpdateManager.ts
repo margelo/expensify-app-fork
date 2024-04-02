@@ -105,7 +105,7 @@ function detectGapsAndSplit(updates: DeferredUpdatesDictionary): DetectGapAndSpl
 // This function will check for gaps in the deferred updates and
 // apply the updates in order after the missing updates are fetched and applied
 function validateAndApplyDeferredUpdates(): Promise<Response[] | void> {
-    console.log('last update after missing updates were applied, ', lastUpdateIDAppliedToClient);
+    console.log('AFTER GetMissingOnyxUpdates, ', lastUpdateIDAppliedToClient);
 
     // We only want to apply deferred updates that are newer than the last update that was applied to the client.
     // At this point, the missing updates from "GetMissingOnyxUpdates" have been applied already, so we can safely filter out.
@@ -137,7 +137,7 @@ function validateAndApplyDeferredUpdates(): Promise<Response[] | void> {
         return new Promise((resolve, reject) => {
             deferredUpdates = {};
 
-            console.log('last update applied before applicable', {lastUpdateIDAppliedToClient});
+            console.log('MISSING: BEFORE APPLICABLE', lastUpdateIDAppliedToClient);
 
             applyUpdates(applicableUpdates).then(() => {
                 // After we have applied the applicable updates, there might have been new deferred updates added.
@@ -146,7 +146,7 @@ function validateAndApplyDeferredUpdates(): Promise<Response[] | void> {
                 // as long as there was no new gap detected. Otherwise repeat the process.
                 deferredUpdates = {...deferredUpdates, ...updatesAfterGaps};
 
-                console.log('last update applied after applicable, before updates after gaps ', lastUpdateIDAppliedToClient);
+                console.log('MISSING: AFTER APPLICABLE', lastUpdateIDAppliedToClient);
 
                 // It should not be possible for lastUpdateIDAppliedToClient to be null, therefore we can ignore this case.
                 // If lastUpdateIDAppliedToClient got updated in the meantime, we will just retrigger the validation and application of the current deferred updates.
@@ -155,11 +155,13 @@ function validateAndApplyDeferredUpdates(): Promise<Response[] | void> {
                     return;
                 }
 
+                console.log(`MISSING: GetMissingOnyxMessages from ${lastUpdateIDAppliedToClient} to ${latestMissingUpdateID}`);
+
                 // Then we can fetch the missing updates and apply them
                 App.getMissingOnyxUpdates(lastUpdateIDAppliedToClient, latestMissingUpdateID)
                     .then(validateAndApplyDeferredUpdates)
                     .then(() => {
-                        console.log('last update applied after re-applying pending deferred updates after gap', {lastUpdateIDAppliedToClient});
+                        console.log('MISSING: AFTER RE-VALIDATE', {lastUpdateIDAppliedToClient});
                         return resolve();
                     })
                     .catch(reject);
@@ -169,7 +171,7 @@ function validateAndApplyDeferredUpdates(): Promise<Response[] | void> {
 
     // If there are no gaps in the deferred updates, we can apply all deferred updates in order
     return applyUpdates(applicableUpdates).then(() => {
-        console.log('last update after applying applicable, ', lastUpdateIDAppliedToClient);
+        console.log('AFTER APPLICABLE', lastUpdateIDAppliedToClient);
     });
 }
 
@@ -197,7 +199,7 @@ export default () => {
             }
 
             if (Object.values(deferredUpdates).length === 0) {
-                console.log('last applied update id before all deferred', lastUpdateIDAppliedToClient);
+                console.log('BEFORE ALL', lastUpdateIDAppliedToClient);
             }
 
             const updateParams = value;
@@ -237,7 +239,7 @@ export default () => {
                 // Add the new update to the deferred updates
                 deferredUpdates[Number(updateParams.lastUpdateID)] = updateParams;
 
-                console.log('new update: ', {updates: deferredUpdates, length: Object.keys(deferredUpdates).length});
+                console.log('update', {updates: deferredUpdates, length: Object.keys(deferredUpdates).length});
 
                 // If there are deferred updates already, we don't need to fetch the missing updates again.
                 if (existingDeferredUpdatesCount > 0) {
@@ -259,7 +261,7 @@ export default () => {
                     setTimeout(() => {
                         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                         App.getMissingOnyxUpdates(lastUpdateIDAppliedToClient!, previousUpdateIDFromServer).then(resolve).catch(reject);
-                    }, 10000);
+                    }, 20000);
                 }).then(validateAndApplyDeferredUpdates);
             }
 
