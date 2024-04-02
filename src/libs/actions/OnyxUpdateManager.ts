@@ -40,6 +40,8 @@ function finalizeUpdatesAndResumeQueue() {
     deferredUpdates = {};
     Onyx.set(ONYXKEYS.ONYX_UPDATES_FROM_SERVER, null);
     SequentialQueue.unpause();
+
+    console.log('=== CLEAR QUEUE AND RESET ===');
 }
 
 // This function applies a list of updates to Onyx in order and resolves when all updates have been applied
@@ -105,7 +107,7 @@ function detectGapsAndSplit(updates: DeferredUpdatesDictionary): DetectGapAndSpl
 // This function will check for gaps in the deferred updates and
 // apply the updates in order after the missing updates are fetched and applied
 function validateAndApplyDeferredUpdates(): Promise<Response[] | void> {
-    console.log('AFTER GetMissingOnyxUpdates, ', lastUpdateIDAppliedToClient);
+    console.log('AFTER GetMissingOnyxUpdates', lastUpdateIDAppliedToClient);
 
     // We only want to apply deferred updates that are newer than the last update that was applied to the client.
     // At this point, the missing updates from "GetMissingOnyxUpdates" have been applied already, so we can safely filter out.
@@ -253,14 +255,17 @@ export default () => {
                     lastUpdateIDAppliedToClient,
                 });
 
-                console.log('=== INITIAL CALL TO GetMissingOnyxMessages ===');
+                console.log(`INITIAL: GetMissingOnyxMessages from ${lastUpdateIDAppliedToClient} to ${previousUpdateIDFromServer}`);
 
                 // Get the missing Onyx updates from the server and afterwards validate and apply the deferred updates.
                 // This will trigger recursive calls to "validateAndApplyDeferredUpdates" if there are gaps in the deferred updates.
                 queryPromise = new Promise((resolve, reject) => {
                     setTimeout(() => {
                         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                        App.getMissingOnyxUpdates(lastUpdateIDAppliedToClient!, previousUpdateIDFromServer).then(resolve).catch(reject);
+                        App.getMissingOnyxUpdates(lastUpdateIDAppliedToClient!, previousUpdateIDFromServer)
+                            .then(() => {})
+                            .then(resolve)
+                            .catch(reject);
                     }, 20000);
                 }).then(validateAndApplyDeferredUpdates);
             }
