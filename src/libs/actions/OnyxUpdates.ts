@@ -146,6 +146,7 @@ let delayedUpdatesCount = -1;
 const NUMBER_OF_DELAYED_OR_MISSING_UPDATES = 5;
 const MIN_DELAY = 1000;
 const MAX_DELAY = 10000 - MIN_DELAY;
+const MISSING_UPDATE_PROBABILITY = 0.7;
 
 function applyOnyxUpdatesReliably(updates: OnyxUpdatesFromServer) {
     const previousUpdateID = Number(updates.previousUpdateID) || 0;
@@ -163,7 +164,7 @@ function applyOnyxUpdatesReliably(updates: OnyxUpdatesFromServer) {
 
     // Send delayed updates and sometimes don't send them at all
     if (delayedUpdatesCount >= 0 && delayedUpdatesCount < NUMBER_OF_DELAYED_OR_MISSING_UPDATES) {
-        const shouldOmitUpdate = Math.random() > 0.7;
+        const shouldOmitUpdate = Math.random() > MISSING_UPDATE_PROBABILITY;
         if (!shouldOmitUpdate) {
             setTimeout(() => {
                 applyUpdate();
