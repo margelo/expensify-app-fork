@@ -143,35 +143,38 @@ function doesClientNeedToBeUpdated(previousUpdateID = 0): boolean {
 }
 
 let delayedUpdatesCount = -1;
+const NUMBER_OF_DELAYED_OR_MISSING_UPDATES = 5;
+const MIN_DELAY = 1000;
+const MAX_DELAY = 10000 - MIN_DELAY;
 
 function applyOnyxUpdatesReliably(updates: OnyxUpdatesFromServer) {
-    console.log('applyOnyxUpdatesReliably');
-
     const previousUpdateID = Number(updates.previousUpdateID) || 0;
 
-    if (delayedUpdatesCount >= 0 && delayedUpdatesCount < 3) {
-        setTimeout(() => {
-            SequentialQueue.pause();
-            saveUpdateInformation(updates);
-        }, 5000);
+    const applyUpdate = () => {
+        if (!doesClientNeedToBeUpdated(previousUpdateID)) {
+            apply(updates);
+            return;
+        }
+
+        // If we reached this point, we need to pause the queue while we prepare to fetch older OnyxUpdates.
+        SequentialQueue.pause();
+        saveUpdateInformation(updates);
+    };
+
+    // Send delayed updates and sometimes don't send them at all
+    if (delayedUpdatesCount >= 0 && delayedUpdatesCount < NUMBER_OF_DELAYED_OR_MISSING_UPDATES) {
+        const shouldOmitUpdate = Math.random() > 0.7;
+        if (!shouldOmitUpdate) {
+            setTimeout(() => {
+                applyUpdate();
+            }, Math.random() * MAX_DELAY + MIN_DELAY);
+        }
+
         delayedUpdatesCount++;
         return;
     }
 
-    if (delayedUpdatesCount === 3) {
-        delayedUpdatesCount = -1;
-    } else {
-        delayedUpdatesCount++;
-    }
-
-    if (!doesClientNeedToBeUpdated(previousUpdateID)) {
-        apply(updates);
-        return;
-    }
-
-    // If we reached this point, we need to pause the queue while we prepare to fetch older OnyxUpdates.
-    SequentialQueue.pause();
-    saveUpdateInformation(updates);
+    applyUpdate();
 }
 
 // eslint-disable-next-line import/prefer-default-export

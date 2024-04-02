@@ -105,6 +105,8 @@ function detectGapsAndSplit(updates: DeferredUpdatesDictionary): DetectGapAndSpl
 // This function will check for gaps in the deferred updates and
 // apply the updates in order after the missing updates are fetched and applied
 function validateAndApplyDeferredUpdates(): Promise<Response[] | void> {
+    console.log('last update after missing updates were applied, ', lastUpdateIDAppliedToClient);
+
     // We only want to apply deferred updates that are newer than the last update that was applied to the client.
     // At this point, the missing updates from "GetMissingOnyxUpdates" have been applied already, so we can safely filter out.
     const pendingDeferredUpdates = Object.fromEntries(
@@ -126,6 +128,8 @@ function validateAndApplyDeferredUpdates(): Promise<Response[] | void> {
     }
 
     const {applicableUpdates, updatesAfterGaps, latestMissingUpdateID} = detectGapsAndSplit(pendingDeferredUpdates);
+
+    console.log({applicableUpdates, updatesAfterGaps, latestMissingUpdateID});
 
     // If we detected a gap in the deferred updates, only apply the deferred updates before the gap,
     // re-fetch the missing updates and then apply the remaining deferred updates after the gap
@@ -164,7 +168,9 @@ function validateAndApplyDeferredUpdates(): Promise<Response[] | void> {
     }
 
     // If there are no gaps in the deferred updates, we can apply all deferred updates in order
-    return applyUpdates(applicableUpdates);
+    return applyUpdates(applicableUpdates).then(() => {
+        console.log('last update after applying applicable, ', lastUpdateIDAppliedToClient);
+    });
 }
 
 export default () => {
@@ -245,16 +251,16 @@ export default () => {
                     lastUpdateIDAppliedToClient,
                 });
 
-                console.log('=== GET MISSING UPDATES CALL ===');
+                console.log('=== INITIAL CALL TO GetMissingOnyxMessages ===');
 
                 // Get the missing Onyx updates from the server and afterwards validate and apply the deferred updates.
                 // This will trigger recursive calls to "validateAndApplyDeferredUpdates" if there are gaps in the deferred updates.
                 queryPromise = new Promise((resolve, reject) => {
                     setTimeout(() => {
                         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                        App.getMissingOnyxUpdates(lastUpdateIDAppliedToClient!, previousUpdateIDFromServer).then(validateAndApplyDeferredUpdates).then(resolve).catch(reject);
+                        App.getMissingOnyxUpdates(lastUpdateIDAppliedToClient!, previousUpdateIDFromServer).then(resolve).catch(reject);
                     }, 10000);
-                });
+                }).then(validateAndApplyDeferredUpdates);
             }
 
             queryPromise.finally(finalizeUpdatesAndResumeQueue);
