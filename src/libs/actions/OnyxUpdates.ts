@@ -142,19 +142,26 @@ function doesClientNeedToBeUpdated(previousUpdateID = 0): boolean {
     return lastUpdateIDAppliedToClient < previousUpdateID;
 }
 
-let ignoreUpdatesCount = -1;
+let delayedUpdatesCount = -1;
 
 function applyOnyxUpdatesReliably(updates: OnyxUpdatesFromServer) {
+    console.log('applyOnyxUpdatesReliably');
+
     const previousUpdateID = Number(updates.previousUpdateID) || 0;
 
-    if (ignoreUpdatesCount >= 0 && ignoreUpdatesCount < 3) {
-        ignoreUpdatesCount++;
+    if (delayedUpdatesCount >= 0 && delayedUpdatesCount < 3) {
+        setTimeout(() => {
+            SequentialQueue.pause();
+            saveUpdateInformation(updates);
+        }, 5000);
+        delayedUpdatesCount++;
         return;
     }
-    if (ignoreUpdatesCount === 3) {
-        ignoreUpdatesCount = -1;
+
+    if (delayedUpdatesCount === 3) {
+        delayedUpdatesCount = -1;
     } else {
-        ignoreUpdatesCount++;
+        delayedUpdatesCount++;
     }
 
     if (!doesClientNeedToBeUpdated(previousUpdateID)) {
