@@ -1,13 +1,13 @@
 import type {StackScreenProps} from '@react-navigation/stack';
-import React, {useMemo} from 'react';
-import {View} from 'react-native';
+import React from 'react';
+import {Platform, View} from 'react-native';
 import NoDropZone from '@components/DragAndDrop/NoDropZone';
 import useThemeStyles from '@hooks/useThemeStyles';
 import useWindowDimensions from '@hooks/useWindowDimensions';
-import ModalNavigatorScreenOptions from '@libs/Navigation/AppNavigator/ModalNavigatorScreenOptions';
 import * as ModalStackNavigators from '@libs/Navigation/AppNavigator/ModalStackNavigators';
-import useModalScreenOptions from '@libs/Navigation/AppNavigator/ModalStackNavigators';
-import createPlatformStackNavigator from '@libs/Navigation/PlatformStackNavigator/createPlatformStackNavigator/createPlatformStackNavigator';
+import useNativeModalScreenOptions from '@libs/Navigation/AppNavigator/ModalStackNavigators/modalScreenOptions/useNativeModalScreenOptions';
+import useWebModalScreenOptions from '@libs/Navigation/AppNavigator/ModalStackNavigators/modalScreenOptions/useWebModalScreenOptions';
+import createPlatformStackNavigator from '@libs/Navigation/createPlatformStackNavigator';
 import type {AuthScreensParamList, LeftModalNavigatorParamList} from '@libs/Navigation/types';
 import type NAVIGATORS from '@src/NAVIGATORS';
 import SCREENS from '@src/SCREENS';
@@ -21,7 +21,9 @@ function LeftModalNavigator({navigation}: LeftModalNavigatorProps) {
     const styles = useThemeStyles();
     const {isSmallScreenWidth} = useWindowDimensions();
     // const screenOptions = useMemo(() => ModalNavigatorScreenOptions(styles), [styles]);
-    const screenOptions = useModalScreenOptions();
+    const nativeScreenOptions = useNativeModalScreenOptions();
+    const webScreenOptions = useWebModalScreenOptions();
+    const screenOptions = Platform.OS === 'ios' || Platform.OS === 'android' ? nativeScreenOptions : webScreenOptions;
 
     return (
         <NoDropZone>
