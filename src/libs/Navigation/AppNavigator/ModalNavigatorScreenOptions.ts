@@ -1,6 +1,7 @@
 import type {StackNavigationOptions} from '@react-navigation/stack';
 import {CardStyleInterpolators} from '@react-navigation/stack';
 import type {ThemeStyles} from '@styles/index';
+import subRouteOptions from './ModalStackNavigators/subRouteOptions/webSubRouteOptions';
 
 /**
  * Modal stack navigator screen options generator function
@@ -13,6 +14,7 @@ const ModalNavigatorScreenOptions = (themeStyles: ThemeStyles): StackNavigationO
     gestureDirection: 'horizontal',
     cardStyle: themeStyles.navigationScreenCardStyle,
     cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+    ...subRouteOptions,
 });
 
 export default ModalNavigatorScreenOptions;

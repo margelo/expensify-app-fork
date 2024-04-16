@@ -1,7 +1,7 @@
 import type {ParamListBase} from '@react-navigation/routers';
-import type {StackNavigationOptions} from '@react-navigation/stack';
 import React from 'react';
-import createPlatformStackNavigator from '@libs/Navigation/PlatformStackNavigation/createPlatformStackNavigator';
+import {Platform} from 'react-native';
+import createPlatformStackNavigator from '@libs/Navigation/createPlatformStackNavigator';
 import type {
     AddPersonalBankAccountNavigatorParamList,
     DetailsNavigatorParamList,
@@ -31,10 +31,10 @@ import type {
     WalletStatementNavigatorParamList,
     WorkspaceSwitcherNavigatorParamList,
 } from '@navigation/types';
-import type {ThemeStyles} from '@styles/index';
 import type {Screen} from '@src/SCREENS';
 import SCREENS from '@src/SCREENS';
-import useModalScreenOptions from './useModalScreenOptions';
+import useNativeModalScreenOptions from './modalScreenOptions/useNativeModalScreenOptions';
+import useWebModalScreenOptions from './modalScreenOptions/useWebModalScreenOptions';
 import WorkspaceSettingsModalStackNavigator from './WorkspaceSettingsModalStackNavigator';
 
 type Screens = Partial<Record<Screen, () => React.ComponentType>>;
@@ -45,11 +45,13 @@ type Screens = Partial<Record<Screen, () => React.ComponentType>>;
  * @param screens key/value pairs where the key is the name of the screen and the value is a functon that returns the lazy-loaded component
  * @param getScreenOptions optional function that returns the screen options, override the default options
  */
-function createModalStackNavigator<TStackParams extends ParamListBase>(screens: Screens, getScreenOptions?: (styles: ThemeStyles) => StackNavigationOptions): React.ComponentType {
+function createModalStackNavigator<TStackParams extends ParamListBase>(screens: Screens): React.ComponentType {
     const ModalStackNavigator = createPlatformStackNavigator<TStackParams>();
 
     function ModalStack() {
-        const screenOptions = useModalScreenOptions(getScreenOptions);
+        const nativeScreenOptions = useNativeModalScreenOptions();
+        const webScreenOptions = useWebModalScreenOptions();
+        const screenOptions = Platform.OS === 'ios' || Platform.OS === 'android' ? nativeScreenOptions : webScreenOptions;
 
         return (
             <ModalStackNavigator.Navigator screenOptions={screenOptions}>

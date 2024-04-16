@@ -1,13 +1,14 @@
 import type {StackScreenProps} from '@react-navigation/stack';
-import React, {useMemo, useRef} from 'react';
-import {View} from 'react-native';
+import React, {useRef} from 'react';
+import {Platform, View} from 'react-native';
 import NoDropZone from '@components/DragAndDrop/NoDropZone';
 import useThemeStyles from '@hooks/useThemeStyles';
 import useWindowDimensions from '@hooks/useWindowDimensions';
 import hideKeyboardOnSwipe from '@libs/Navigation/AppNavigator/hideKeyboardOnSwipe';
-import ModalNavigatorScreenOptions from '@libs/Navigation/AppNavigator/ModalNavigatorScreenOptions';
 import * as ModalStackNavigators from '@libs/Navigation/AppNavigator/ModalStackNavigators';
-import createPlatformStackNavigator from '@libs/Navigation/PlatformStackNavigation/createPlatformStackNavigator';
+import useNativeModalScreenOptions from '@libs/Navigation/AppNavigator/ModalStackNavigators/modalScreenOptions/useNativeModalScreenOptions';
+import useWebModalScreenOptions from '@libs/Navigation/AppNavigator/ModalStackNavigators/modalScreenOptions/useWebModalScreenOptions';
+import createPlatformStackNavigator from '@libs/Navigation/createPlatformStackNavigator';
 import type {AuthScreensParamList, RightModalNavigatorParamList} from '@navigation/types';
 import type NAVIGATORS from '@src/NAVIGATORS';
 import SCREENS from '@src/SCREENS';
@@ -20,7 +21,10 @@ const Stack = createPlatformStackNavigator<RightModalNavigatorParamList>();
 function RightModalNavigator({navigation}: RightModalNavigatorProps) {
     const styles = useThemeStyles();
     const {isSmallScreenWidth} = useWindowDimensions();
-    const screenOptions = useMemo(() => ModalNavigatorScreenOptions(styles), [styles]);
+    // const screenOptions = useMemo(() => ModalNavigatorScreenOptions(styles), [styles]);
+    const nativeScreenOptions = useNativeModalScreenOptions();
+    const webScreenOptions = useWebModalScreenOptions();
+    const screenOptions = Platform.OS === 'ios' || Platform.OS === 'android' ? nativeScreenOptions : webScreenOptions;
     const isExecutingRef = useRef<boolean>(false);
 
     return (

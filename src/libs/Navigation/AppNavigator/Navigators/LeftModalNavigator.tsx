@@ -6,7 +6,8 @@ import useThemeStyles from '@hooks/useThemeStyles';
 import useWindowDimensions from '@hooks/useWindowDimensions';
 import ModalNavigatorScreenOptions from '@libs/Navigation/AppNavigator/ModalNavigatorScreenOptions';
 import * as ModalStackNavigators from '@libs/Navigation/AppNavigator/ModalStackNavigators';
-import createPlatformStackNavigator from '@libs/Navigation/PlatformStackNavigation/createPlatformStackNavigator';
+import useModalScreenOptions from '@libs/Navigation/AppNavigator/ModalStackNavigators';
+import createPlatformStackNavigator from '@libs/Navigation/PlatformStackNavigator/createPlatformStackNavigator/createPlatformStackNavigator';
 import type {AuthScreensParamList, LeftModalNavigatorParamList} from '@libs/Navigation/types';
 import type NAVIGATORS from '@src/NAVIGATORS';
 import SCREENS from '@src/SCREENS';
@@ -19,7 +20,8 @@ const Stack = createPlatformStackNavigator<LeftModalNavigatorParamList>();
 function LeftModalNavigator({navigation}: LeftModalNavigatorProps) {
     const styles = useThemeStyles();
     const {isSmallScreenWidth} = useWindowDimensions();
-    const screenOptions = useMemo(() => ModalNavigatorScreenOptions(styles), [styles]);
+    // const screenOptions = useMemo(() => ModalNavigatorScreenOptions(styles), [styles]);
+    const screenOptions = useModalScreenOptions();
 
     return (
         <NoDropZone>

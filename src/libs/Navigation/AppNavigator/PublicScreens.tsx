@@ -1,5 +1,5 @@
 import React from 'react';
-import createPlatformStackNavigator from '@libs/Navigation/PlatformStackNavigation/createPlatformStackNavigator';
+import createPlatformStackNavigator from '@libs/Navigation/createPlatformStackNavigator';
 import type {PublicScreensParamList} from '@navigation/types';
 import LogInWithShortLivedAuthTokenPage from '@pages/LogInWithShortLivedAuthTokenPage';
 import AppleSignInDesktopPage from '@pages/signin/AppleSignInDesktopPage';
