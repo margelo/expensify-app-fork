@@ -107,7 +107,7 @@ function validateAndApplyDeferredUpdates(clientLastUpdateID?: number): Promise<v
         return new Promise((resolve, reject) => {
             deferredUpdatesProxy.deferredUpdates = {};
 
-            console.log('MISSING: BEFORE APPLICABLE', lastUpdateIDAppliedToClient);
+            console.log('MISSING: BEFORE APPLICABLE', lastUpdateIDFromClient);
 
             applyUpdates(applicableUpdates).then(() => {
                 // After we have applied the applicable updates, there might have been new deferred updates added.
@@ -119,7 +119,7 @@ function validateAndApplyDeferredUpdates(clientLastUpdateID?: number): Promise<v
 
                 deferredUpdatesProxy.deferredUpdates = {...deferredUpdatesProxy.deferredUpdates, ...updatesAfterGaps};
 
-                console.log('MISSING: AFTER APPLICABLE', lastUpdateIDAppliedToClient);
+                console.log('MISSING: AFTER APPLICABLE', newLastUpdateIDFromClient);
 
                 // If lastUpdateIDAppliedToClient got updated in the meantime, we will just retrigger the validation and application of the current deferred updates.
                 if (latestMissingUpdateID <= newLastUpdateIDFromClient) {
@@ -129,13 +129,13 @@ function validateAndApplyDeferredUpdates(clientLastUpdateID?: number): Promise<v
                     return;
                 }
 
-                console.log(`MISSING: GetMissingOnyxMessages from ${lastUpdateIDFromClient} to ${latestMissingUpdateID}`);
+                console.log(`MISSING: GetMissingOnyxMessages from ${newLastUpdateIDFromClient} to ${latestMissingUpdateID}`);
 
                 // Then we can fetch the missing updates and apply them
                 App.getMissingOnyxUpdates(newLastUpdateIDFromClient, latestMissingUpdateID)
                     .then(() => validateAndApplyDeferredUpdates(clientLastUpdateID))
                     .then(() => {
-                        console.log('MISSING: AFTER RE-VALIDATE', {lastUpdateIDFromClient});
+                        console.log('MISSING: AFTER RE-VALIDATE', {newLastUpdateIDFromClient});
                         return resolve();
                     })
                     .catch(reject);
