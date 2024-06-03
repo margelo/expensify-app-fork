@@ -1,3 +1,4 @@
+import {DeviceEventEmitter} from 'react-native';
 import Onyx from 'react-native-onyx';
 import * as ActiveClientManager from '@libs/ActiveClientManager';
 import * as Request from '@libs/Request';
@@ -61,6 +62,7 @@ function process(): Promise<void> {
 
     const persistedRequests = PersistedRequests.getAll();
     if (persistedRequests.length === 0 || NetworkStore.isOffline()) {
+        DeviceEventEmitter.emit('sequentialQueueEmpty');
         return Promise.resolve();
     }
 

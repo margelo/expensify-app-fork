@@ -2,6 +2,7 @@ import Config from 'react-native-config';
 import type {PerformanceEntry} from 'react-native-performance';
 import E2ELogin from '@libs/E2E/actions/e2eLogin';
 import waitForAppLoaded from '@libs/E2E/actions/waitForAppLoaded';
+import waitForSequentialQueueToBeEmpty from '@libs/E2E/actions/waitForSequentialQueueToBeEmpty';
 import E2EClient from '@libs/E2E/client';
 import Performance from '@libs/Performance';
 
@@ -30,6 +31,7 @@ const test = () => {
                 }),
             ),
         )
+            .then(waitForSequentialQueueToBeEmpty)
             .then(() => {
                 console.debug('[E2E] Done, exiting…');
                 E2EClient.submitTestDone();

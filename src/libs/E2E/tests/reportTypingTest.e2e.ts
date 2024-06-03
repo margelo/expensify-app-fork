@@ -3,6 +3,7 @@ import Config from 'react-native-config';
 import E2ELogin from '@libs/E2E/actions/e2eLogin';
 import waitForAppLoaded from '@libs/E2E/actions/waitForAppLoaded';
 import waitForKeyboard from '@libs/E2E/actions/waitForKeyboard';
+import waitForSequentialQueueToBeEmpty from '@libs/E2E/actions/waitForSequentialQueueToBeEmpty';
 import E2EClient from '@libs/E2E/client';
 import getConfigValueOrThrow from '@libs/E2E/utils/getConfigValueOrThrow';
 import Navigation from '@libs/Navigation/Navigation';
@@ -54,7 +55,9 @@ const test = (config: NativeConfig) => {
                                 branch: Config.E2E_BRANCH,
                                 name: 'Composer typing rerender count',
                                 renderCount: rerenderCount,
-                            }).then(E2EClient.submitTestDone);
+                            })
+                                .then(waitForSequentialQueueToBeEmpty)
+                                .then(E2EClient.submitTestDone);
                         }, 3000);
                     })
                     .catch((error) => {

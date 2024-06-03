@@ -4,6 +4,7 @@ import {getViewableItems} from '@components/InvertedFlatList/BaseInvertedFlatLis
 import Timing from '@libs/actions/Timing';
 import E2ELogin from '@libs/E2E/actions/e2eLogin';
 import waitForAppLoaded from '@libs/E2E/actions/waitForAppLoaded';
+import waitForSequentialQueueToBeEmpty from '@libs/E2E/actions/waitForSequentialQueueToBeEmpty';
 import E2EClient from '@libs/E2E/client';
 import getConfigValueOrThrow from '@libs/E2E/utils/getConfigValueOrThrow';
 import Navigation from '@libs/Navigation/Navigation';
@@ -51,6 +52,7 @@ const test = (config: NativeConfig) => {
                             name: 'Comment linking',
                             duration: entry.duration,
                         })
+                            .then(waitForSequentialQueueToBeEmpty)
                             .then(() => {
                                 console.debug('[E2E] Test completed successfully, exiting…');
                                 E2EClient.submitTestDone();

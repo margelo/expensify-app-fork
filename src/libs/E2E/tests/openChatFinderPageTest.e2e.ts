@@ -1,6 +1,7 @@
 import Config from 'react-native-config';
 import E2ELogin from '@libs/E2E/actions/e2eLogin';
 import waitForAppLoaded from '@libs/E2E/actions/waitForAppLoaded';
+import waitForSequentialQueueToBeEmpty from '@libs/E2E/actions/waitForSequentialQueueToBeEmpty';
 import E2EClient from '@libs/E2E/client';
 import getPromiseWithResolve from '@libs/E2E/utils/getPromiseWithResolve';
 import Navigation from '@libs/Navigation/Navigation';
@@ -25,11 +26,13 @@ const test = () => {
         const [openSearchPagePromise, openSearchPageResolve] = getPromiseWithResolve();
         const [loadSearchOptionsPromise, loadSearchOptionsResolve] = getPromiseWithResolve();
 
-        Promise.all([openSearchPagePromise, loadSearchOptionsPromise]).then(() => {
-            console.debug(`[E2E] Submitting!`);
+        Promise.all([openSearchPagePromise, loadSearchOptionsPromise])
+            .then(waitForSequentialQueueToBeEmpty)
+            .then(() => {
+                console.debug(`[E2E] Submitting!`);
 
-            E2EClient.submitTestDone();
-        });
+                E2EClient.submitTestDone();
+            });
 
         Performance.subscribeToMeasurements((entry) => {
             if (entry.name === CONST.TIMING.SIDEBAR_LOADED) {
