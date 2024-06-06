@@ -71,7 +71,8 @@ function IOURequestStepTaxAmountPage({
 
     const focusTimeoutRef = useRef<NodeJS.Timeout>();
 
-    const transactionDetails = ReportUtils.getTransactionDetails(isEditingSplitBill && !isEmptyObject(splitDraftTransaction) ? splitDraftTransaction : transaction);
+    const currentTransaction = isEditingSplitBill && !isEmptyObject(splitDraftTransaction) ? splitDraftTransaction : transaction;
+    const transactionDetails = ReportUtils.getTransactionDetails(currentTransaction);
     const currency = CurrencyUtils.isValidCurrencyCode(selectedCurrency) ? selectedCurrency : transactionDetails?.currency;
 
     useFocusEffect(
@@ -117,7 +118,7 @@ function IOURequestStepTaxAmountPage({
         }
 
         if (isEditing) {
-            if (taxAmountInSmallestCurrencyUnits === TransactionUtils.getTaxAmount(transaction, false)) {
+            if (taxAmountInSmallestCurrencyUnits === TransactionUtils.getTaxAmount(currentTransaction, false)) {
                 navigateBack();
                 return;
             }
@@ -126,7 +127,7 @@ function IOURequestStepTaxAmountPage({
             return;
         }
 
-        IOU.setMoneyRequestTaxAmount(transactionID, taxAmountInSmallestCurrencyUnits, true);
+        IOU.setMoneyRequestTaxAmount(transactionID, taxAmountInSmallestCurrencyUnits);
 
         // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
         IOU.setMoneyRequestCurrency(transactionID, currency || CONST.CURRENCY.USD);
@@ -163,7 +164,7 @@ function IOURequestStepTaxAmountPage({
                 isEditing={Boolean(backTo || isEditing)}
                 currency={currency}
                 amount={Math.abs(transactionDetails?.taxAmount ?? 0)}
-                taxAmount={getTaxAmount(transaction, policy, currency, Boolean(backTo || isEditing))}
+                taxAmount={getTaxAmount(currentTransaction, policy, currency, Boolean(backTo || isEditing))}
                 ref={(e) => (textInput.current = e)}
                 onCurrencyButtonPress={navigateToCurrencySelectionPage}
                 onSubmitButtonPress={updateTaxAmount}

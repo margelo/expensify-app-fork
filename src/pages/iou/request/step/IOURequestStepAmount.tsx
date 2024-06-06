@@ -39,6 +39,9 @@ type IOURequestStepAmountOnyxProps = {
     /** Whether the confirmation step should be skipped */
     skipConfirmation: OnyxEntry<boolean>;
 
+    /** The draft transaction object being modified in Onyx */
+    draftTransaction: OnyxEntry<OnyxTypes.Transaction>;
+
     /** Personal details of all users */
     personalDetails: OnyxEntry<OnyxTypes.PersonalDetailsList>;
 
@@ -51,6 +54,9 @@ type IOURequestStepAmountProps = IOURequestStepAmountOnyxProps &
     WithWritableReportOrNotFoundProps<typeof SCREENS.MONEY_REQUEST.STEP_AMOUNT | typeof SCREENS.MONEY_REQUEST.CREATE> & {
         /** The transaction object being modified in Onyx */
         transaction: OnyxEntry<OnyxTypes.Transaction>;
+
+        /** Whether the user input should be kept or not */
+        shouldKeepUserInput?: boolean;
     };
 
 function IOURequestStepAmount({
@@ -64,6 +70,8 @@ function IOURequestStepAmount({
     currentUserPersonalDetails,
     splitDraftTransaction,
     skipConfirmation,
+    draftTransaction,
+    shouldKeepUserInput = false,
 }: IOURequestStepAmountProps) {
     const {translate} = useLocalize();
     const textInput = useRef<BaseTextInputRef | null>(null);
@@ -76,7 +84,7 @@ function IOURequestStepAmount({
     const isEditingSplitBill = isEditing && isSplitBill;
     const currentTransaction = isEditingSplitBill && !isEmptyObject(splitDraftTransaction) ? splitDraftTransaction : transaction;
     const {amount: transactionAmount} = ReportUtils.getTransactionDetails(currentTransaction) ?? {amount: 0};
-    const {currency: originalCurrency} = ReportUtils.getTransactionDetails(currentTransaction) ?? {currency: CONST.CURRENCY.USD};
+    const {currency: originalCurrency} = ReportUtils.getTransactionDetails(isEditing ? draftTransaction : transaction) ?? {currency: CONST.CURRENCY.USD};
     const currency = CurrencyUtils.isValidCurrencyCode(selectedCurrency) ? selectedCurrency : originalCurrency;
 
     // For quick button actions, we'll skip the confirmation page unless the report is archived or this is a workspace request, as
@@ -160,7 +168,11 @@ function IOURequestStepAmount({
         const amountInSmallestCurrencyUnits = CurrencyUtils.convertToBackendAmount(Number.parseFloat(amount));
 
         // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-        IOU.setMoneyRequestAmount(transactionID, amountInSmallestCurrencyUnits, currency || CONST.CURRENCY.USD);
+        IOU.setMoneyRequestAmount(transactionID, amountInSmallestCurrencyUnits, currency || CONST.CURRENCY.USD, shouldKeepUserInput);
+
+        // Initially when we're creating money request, we do not know the participant and hence if the request is with workspace with tax tracking enabled
+        // So, we reset the taxAmount here and calculate it in the hook in MoneyRequestConfirmationList component
+        IOU.setMoneyRequestTaxAmount(transactionID, null);
 
         if (backTo) {
             Navigation.goBack(backTo);
@@ -306,6 +318,7 @@ function IOURequestStepAmount({
                 policyID={policy?.id ?? ''}
                 bankAccountRoute={ReportUtils.getBankAccountRoute(report)}
                 ref={(e) => (textInput.current = e)}
+                shouldKeepUserInput={transaction?.shouldShowOriginalAmount}
                 onCurrencyButtonPress={navigateToCurrencySelectionPage}
                 onSubmitButtonPress={saveAmountAndCurrency}
                 selectedTab={iouRequestType}
@@ -321,6 +334,12 @@ const IOURequestStepAmountWithOnyx = withOnyx<IOURequestStepAmountProps, IOURequ
         key: ({route}) => {
             const transactionID = route.params.transactionID ?? 0;
             return `${ONYXKEYS.COLLECTION.SPLIT_TRANSACTION_DRAFT}${transactionID}`;
+        },
+    },
+    draftTransaction: {
+        key: ({route}) => {
+            const transactionID = route.params.transactionID ?? 0;
+            return `${ONYXKEYS.COLLECTION.TRANSACTION_DRAFT}${transactionID}`;
         },
     },
     skipConfirmation: {
