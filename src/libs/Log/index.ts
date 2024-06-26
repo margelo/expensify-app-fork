@@ -3,16 +3,18 @@
 
 /* eslint-disable rulesdir/no-api-in-views */
 import {ExpensiMark, Logger} from 'expensify-common';
+import {NativeModules} from 'react-native';
 import Onyx from 'react-native-onyx';
 import type {Merge} from 'type-fest';
+import {shouldAttachLog} from '@libs/Console';
+import getPlatform from '@libs/getPlatform';
+import * as Network from '@libs/Network';
+import requireParameters from '@libs/requireParameters';
+import {addLog} from '@userActions/Console';
 import CONST from '@src/CONST';
 import ONYXKEYS from '@src/ONYXKEYS';
-import pkg from '../../package.json';
-import {addLog} from './actions/Console';
-import {shouldAttachLog} from './Console';
-import getPlatform from './getPlatform';
-import * as Network from './Network';
-import requireParameters from './requireParameters';
+import pkg from '@src/package.json';
+import type {NativeLogsCallback} from './NativeLogsModule';
 
 let timeout: NodeJS.Timeout;
 let shouldCollectLogs = false;
@@ -81,5 +83,11 @@ const Log = new Logger({
 });
 timeout = setTimeout(() => Log.info('Flushing logs older than 10 minutes', true, {}, true), 10 * 60 * 1000);
 ExpensiMark.setLogger(Log);
+
+const handler: NativeLogsCallback = (name, message, error) => {
+    // TODO: Implement handler
+    Log.info(message);
+};
+NativeModules.NativeLogsModule.registerHandler(handler);
 
 export default Log;

@@ -8,6 +8,7 @@ import type {CSSProperties, FocusEventHandler, KeyboardEventHandler, MouseEventH
 import 'react-native';
 import type {BootSplashModule} from '@libs/BootSplash/types';
 import type {EnvironmentCheckerModule} from '@libs/Environment/betaChecker/types';
+import type NativeLogsModule from '@libs/Log/NativeLogsModule';
 import type StartupTimer from '@libs/StartupTimer/types';
 
 type HybridAppModule = {
@@ -395,6 +396,7 @@ declare module 'react-native' {
         StartupTimer: StartupTimer;
         RNTextInputReset: RNTextInputResetModule;
         EnvironmentChecker: EnvironmentCheckerModule;
+        NativeLogsModule: NativeLogsModule;
     }
 
     namespace Animated {
