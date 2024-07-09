@@ -6,6 +6,7 @@ import {ExpensiMark, Logger} from 'expensify-common';
 import Onyx from 'react-native-onyx';
 import type {Merge} from 'type-fest';
 import CONST from '@src/CONST';
+import {NativeLogs} from '@src/modules';
 import ONYXKEYS from '@src/ONYXKEYS';
 import pkg from '../../package.json';
 import {addLog} from './actions/Console';
@@ -81,5 +82,13 @@ const Log = new Logger({
 });
 timeout = setTimeout(() => Log.info('Flushing logs older than 10 minutes', true, {}, true), 10 * 60 * 1000);
 ExpensiMark.setLogger(Log);
+
+NativeLogs.registerHandler((newLogs: string[]) => {
+    newLogs.forEach((log) => {
+        console.log(log);
+    });
+    // console.log('Native log received', newLogs);
+    // console.log(params.filter((p) => p.includes('[NotificationService]')));
+});
 
 export default Log;
