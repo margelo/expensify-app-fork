@@ -1,4 +1,5 @@
 require('dotenv').config();
+const path = require('path');
 
 const IS_E2E_TESTING = process.env.E2E_TESTING === 'true';
 
@@ -97,6 +98,7 @@ const metro = {
                     '@userActions': './src/libs/actions',
                     '@desktop': './desktop',
                     '@github': './.github',
+                    'react-native-app-logs': path.join(__dirname, '..', 'react-native-app-logs', './src/index.tsx'),
                 },
             },
         ],
