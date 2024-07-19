@@ -15,7 +15,7 @@ import type {TranslationBase, TranslationFlatObject} from './types';
 export function flattenObject(obj: TranslationBase): TranslationFlatObject {
     const result: Record<string, unknown> = {};
 
-    const recursive = (data: TranslationBase, key: string): void => {
+    function recursive(data: TranslationBase, key: string): void {
         // If the data is a function or not a object (eg. a string or array),
         // it's the final value for the key being built and there is no need
         // for more recursion

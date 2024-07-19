@@ -116,6 +116,10 @@ describe('SidebarUtils', () => {
         await waitForBatchedUpdates();
         await measureFunction(() =>
             SidebarUtils.getOrderedReportIDs(currentReportId, allReports, mockedBetas, policies, CONST.PRIORITY_MODE.DEFAULT, allReportActions, transactionViolations),
+        {
+            runs: 1,
+            warmupRuns: 0,
+        }
         );
 
         console.log(global.functionInvocationCount)

@@ -173,11 +173,11 @@ function getOrderedReportIDs(
 
     if (currentPolicyID || policyMemberAccountIDs.length > 0) {
         reportsToDisplay = reportsToDisplay.filter(
-            (report) => report?.reportID === currentReportId || ReportUtils.doesReportBelongToWorkspace(report, policyMemberAccountIDs, currentPolicyID),
+            function reportsToDisplayFilter (report) { return report?.reportID === currentReportId || ReportUtils.doesReportBelongToWorkspace(report, policyMemberAccountIDs, currentPolicyID)},
         );
     }
     // There are a few properties that need to be calculated for the report which are used when sorting reports.
-    reportsToDisplay.forEach((reportToDisplay) => {
+    reportsToDisplay.forEach(function reportsToDisplayForEach(reportToDisplay) {
         const report = reportToDisplay;
         const miniReport: MiniReport = {
             reportID: report?.reportID,
@@ -202,12 +202,12 @@ function getOrderedReportIDs(
     });
 
     // Sort each group of reports accordingly
-    pinnedAndGBRReports.sort((a, b) => (a?.displayName && b?.displayName ? localeCompare(a.displayName, b.displayName) : 0));
-    errorReports.sort((a, b) => (a?.displayName && b?.displayName ? localeCompare(a.displayName, b.displayName) : 0));
-    draftReports.sort((a, b) => (a?.displayName && b?.displayName ? localeCompare(a.displayName, b.displayName) : 0));
+    pinnedAndGBRReports.sort(function pinnedAndGBRReportsSort(a, b){ return (a?.displayName && b?.displayName ? localeCompare(a.displayName, b.displayName) : 0)});
+    errorReports.sort(function errorReportsSort(a, b) { return (a?.displayName && b?.displayName ? localeCompare(a.displayName, b.displayName) : 0)});
+    draftReports.sort(function draftReportsSort(a, b) { return (a?.displayName && b?.displayName ? localeCompare(a.displayName, b.displayName) : 0)});
 
     if (isInDefaultMode) {
-        nonArchivedReports.sort((a, b) => {
+        nonArchivedReports.sort(function nonArchivedReportsSort (a, b) {
             const compareDates = a?.lastVisibleActionCreated && b?.lastVisibleActionCreated ? compareStringDates(b.lastVisibleActionCreated, a.lastVisibleActionCreated) : 0;
             if (compareDates) {
                 return compareDates;
@@ -216,10 +216,10 @@ function getOrderedReportIDs(
             return compareDisplayNames;
         });
         // For archived reports ensure that most recent reports are at the top by reversing the order
-        archivedReports.sort((a, b) => (a?.lastVisibleActionCreated && b?.lastVisibleActionCreated ? compareStringDates(b.lastVisibleActionCreated, a.lastVisibleActionCreated) : 0));
+        archivedReports.sort(function archivedReportsSort(a, b) { return (a?.lastVisibleActionCreated && b?.lastVisibleActionCreated ? compareStringDates(b.lastVisibleActionCreated, a.lastVisibleActionCreated) : 0)});
     } else {
-        nonArchivedReports.sort((a, b) => (a?.displayName && b?.displayName ? localeCompare(a.displayName, b.displayName) : 0));
-        archivedReports.sort((a, b) => (a?.displayName && b?.displayName ? localeCompare(a.displayName, b.displayName) : 0));
+        nonArchivedReports.sort(function nonArchivedReportsSort(a, b) { (a?.displayName && b?.displayName ? localeCompare(a.displayName, b.displayName) : 0)});
+        archivedReports.sort(function (a, b) { return (a?.displayName && b?.displayName ? localeCompare(a.displayName, b.displayName) : 0)});
     }
 
     // Now that we have all the reports grouped and sorted, they must be flattened into an array and only return the reportID.
