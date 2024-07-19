@@ -7,6 +7,7 @@ const ReactCompilerConfig = {
 };
 const defaultPresets = ['@babel/preset-react', '@babel/preset-env', '@babel/preset-flow', '@babel/preset-typescript'];
 const defaultPlugins = [
+    './babelPlugin.js',
     ['babel-plugin-react-compiler', ReactCompilerConfig], // must run first!
     // Adding the commonjs: true option to react-native-web plugin can cause styling conflicts
     ['react-native-web'],
@@ -18,8 +19,9 @@ const defaultPlugins = [
     // source code transformation as we do not use class property assignment.
     'transform-class-properties',
 
+    
     // Keep it last
-    'react-native-reanimated/plugin',
+    // 'react-native-reanimated/plugin',
 ];
 
 // The Fullstory annotate plugin generated a few errors when executed in Electron. Let's
@@ -43,6 +45,7 @@ const webpack = {
 const metro = {
     presets: [require('@react-native/babel-preset')],
     plugins: [
+        './babelPlugin.js',
         // This is needed due to a react-native bug: https://github.com/facebook/react-native/issues/29084#issuecomment-1030732709
         // It is included in metro-react-native-babel-preset but needs to be before plugin-proposal-class-properties or FlatList will break
         '@babel/plugin-transform-flow-strip-types',
@@ -50,9 +53,11 @@ const metro = {
         ['@babel/plugin-proposal-class-properties', {loose: true}],
         ['@babel/plugin-proposal-private-methods', {loose: true}],
         ['@babel/plugin-proposal-private-property-in-object', {loose: true}],
-        // The reanimated babel plugin needs to be last, as stated here: https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/installation
-        'react-native-reanimated/plugin',
 
+        
+        // The reanimated babel plugin needs to be last, as stated here: https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/installation
+        // 'react-native-reanimated/plugin',
+        
         /* Fullstory */
         '@fullstory/react-native',
         [

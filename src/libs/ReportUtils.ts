@@ -3363,10 +3363,20 @@ function getInvoicesChatName(report: OnyxEntry<Report>): string {
     return getPolicyName(report, false, allPolicies?.[`${ONYXKEYS.COLLECTION.POLICY}${invoiceReceiverPolicyID}`]);
 }
 
+const countCallsByReportId: Record<string, number | undefined> = {}
+
 /**
  * Get the title for a report.
  */
 function getReportName(report: OnyxEntry<Report>, policy?: OnyxEntry<Policy>, parentReportActionParam?: OnyxInputOrEntry<ReportAction>): string {
+    // const reportId = report?.reportID
+    // if (reportId){
+    //     countCallsByReportId[reportId] = countCallsByReportId[reportId] ? countCallsByReportId[reportId] + 1 : 1
+    //     if (countCallsByReportId[reportId] > 1) {
+    //         console.debug('getReportName called multiple times for reportId:', reportId, 'times', countCallsByReportId[reportId])
+    //     }
+    // }
+
     let formattedName: string | undefined;
     const parentReportAction = parentReportActionParam ?? ReportActionsUtils.getParentReportAction(report);
     if (isChatThread(report)) {

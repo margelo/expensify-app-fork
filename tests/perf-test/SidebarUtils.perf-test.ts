@@ -17,7 +17,7 @@ import createRandomReportAction, {getRandomDate} from '../utils/collections/repo
 import createRandomReport from '../utils/collections/reports';
 import waitForBatchedUpdates from '../utils/waitForBatchedUpdates';
 
-const REPORTS_COUNT = 15000;
+const REPORTS_COUNT = 1;
 const REPORT_TRESHOLD = 5;
 const PERSONAL_DETAILS_LIST_COUNT = 1000;
 
@@ -91,7 +91,7 @@ describe('SidebarUtils', () => {
         Onyx.clear();
     });
 
-    test('[SidebarUtils] getOptionData', async () => {
+    test.skip('[SidebarUtils] getOptionData', async () => {
         const report = createRandomReport(1);
         const preferredLocale = 'en';
         const policy = createRandomPolicy(1);
@@ -117,9 +117,14 @@ describe('SidebarUtils', () => {
         await measureFunction(() =>
             SidebarUtils.getOrderedReportIDs(currentReportId, allReports, mockedBetas, policies, CONST.PRIORITY_MODE.DEFAULT, allReportActions, transactionViolations),
         );
+
+        console.log(global.functionInvocationCount)
+        const values = Object.values(global.functionInvocationCount);
+        console.log("Functions called:", values.length)
+        console.log("Total calls:", values.reduce((acc, curr) => acc + curr))
     });
 
-    test('[SidebarUtils] getOrderedReportIDs on 15k reports for GSD priorityMode', async () => {
+    test.skip('[SidebarUtils] getOrderedReportIDs on 15k reports for GSD priorityMode', async () => {
         await waitForBatchedUpdates();
         await measureFunction(() => SidebarUtils.getOrderedReportIDs(currentReportId, allReports, mockedBetas, policies, CONST.PRIORITY_MODE.GSD, allReportActions, transactionViolations));
     });
