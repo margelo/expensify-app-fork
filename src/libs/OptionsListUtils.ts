@@ -1899,6 +1899,7 @@ function getOptions(
         const report = option.item;
         const doesReportHaveViolations = shouldShowViolations(report, betas, transactionViolations);
 
+        return true;
         return ReportUtils.shouldReportBeInOptionList({
             report,
             currentReportId: topmostReportId,
@@ -1912,6 +1913,7 @@ function getOptions(
             includeDomainEmail,
         });
     });
+    console.log('filteredReportOptions', filteredReportOptions.length);
 
     // Sorting the reports works like this:
     // - Order everything by the last message timestamp (descending)
@@ -2525,6 +2527,7 @@ function filterOptions(options: Options, searchInputValue: string, config?: Filt
 
         return keys;
     };
+    console.log('Hanno Filter for options', {pd: options.personalDetails.length, rR: options.recentReports.length});
     const matchResults = searchTerms.reduceRight((items, term) => {
         const recentReports = filterArrayByMatch(items.recentReports, term, (item) => {
             let values: string[] = [];
@@ -2560,9 +2563,10 @@ function filterOptions(options: Options, searchInputValue: string, config?: Filt
 
             return uniqFast(values);
         });
-        const personalDetails = filterArrayByMatch(items.personalDetails, term, (item) =>
-            uniqFast([item.participantsList?.[0]?.displayName ?? '', item.login ?? '', item.login?.replace(emailRegex, '') ?? '']),
-        );
+        const personalDetails = filterArrayByMatch(items.personalDetails, term, (item) => {
+            const personalDetailSearchTerms = getPersonalDetailSearchTerms(item);
+            return uniqFast(personalDetailSearchTerms);
+        });
 
         const currentUserOptionSearchText = uniqFast([
             items.currentUserOption?.text ?? '',
