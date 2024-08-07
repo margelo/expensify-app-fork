@@ -77,13 +77,13 @@ function MyPerformanceTest() {
                     const durations = [];
                     for (let i = 0; i < iterations; i++) {
                         const start = performance.now();
-                        OptionsListUtils.filterOptions(searchOptions, SEARCH_VALUE, {sortByReportTypeInSearch: true, betas: mockedBetas, preferChatroomsOverThreads: true});
+                        // OptionsListUtils.filterOptions(searchOptions, SEARCH_VALUE, {sortByReportTypeInSearch: true, betas: mockedBetas, preferChatroomsOverThreads: true});
                         // for (const pD of searchOptions.personalDetails) {
                         //     OptionsListUtils.getPersonalDetailSearchTerms(pD);
                         // }
 
-                        // const res = trie.search(SEARCH_VALUE);
-                        // console.log('Search results:', res.length);
+                        const res = trie.search(SEARCH_VALUE);
+                        console.log('Search results:', res.length);
 
                         const end = performance.now();
                         durations.push(end - start);
