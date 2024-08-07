@@ -1,9 +1,7 @@
-class SubstringRadixNode<T> {
-    children = new Map<string, SubstringRadixNode<T>>();
+class SubstringTrieNode<T> {
+    children = new Map<string, SubstringTrieNode<T>>();
 
     items = new Set<T>();
-
-    prefix = '';
 }
 
-export default SubstringRadixNode;
+export default SubstringTrieNode;

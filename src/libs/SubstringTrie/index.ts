@@ -1,102 +1,39 @@
-import SubstringRadixNode from './SubstringTrieNode';
+import SubstringTrieNode from './SubstringTrieNode';
 
 const maxSubstringLength = 10;
-
-class SubstringRadixTree<T> {
-    private root = new SubstringRadixNode<T>();
+class SubstringTrie<T> {
+    private root = new SubstringTrieNode<T>();
 
     insert(word: string, item: T) {
         for (let i = 0; i < word.length; i++) {
-            this.insertSubstring(word.slice(i), item);
+            let node = this.root;
+            // Each substring of the word we add to the trie now:
+            for (let j = i; j < Math.min(i + maxSubstringLength, word.length); j++) {
+                const char = word[j];
+                if (!node.children.has(char)) {
+                    node.children.set(char, new SubstringTrieNode<T>());
+                }
+
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                node = node.children.get(char)!;
+                node.items.add(item);
+            }
         }
     }
 
-    private insertSubstring(substring: string, item: T) {
+    search(word: string) {
         let node = this.root;
-        let current = substring;
-
-        while (current.length > 0) {
-            if (current.length > maxSubstringLength) {
-                current = current.slice(0, maxSubstringLength);
-            }
-
-            let matchingPrefix = '';
-            let childKey: string | undefined;
-
-            // Use Array.from() to iterate over Map entries
-            Array.from(node.children.entries()).some(([key, child]) => {
-                matchingPrefix = this.findMatchingPrefix(current, key);
-                if (matchingPrefix) {
-                    childKey = key;
-                    return true;
-                }
+        for (const char of word) {
+            if (!node.children.has(char)) {
                 return false;
-            });
-
-            if (matchingPrefix) {
-                if (matchingPrefix === childKey) {
-                    // Move to the child node
-                    node = node.children.get(childKey)!;
-                    current = current.slice(matchingPrefix.length);
-                } else {
-                    // Split the existing node
-                    const childNode = node.children.get(childKey!)!;
-                    const newNode = new SubstringRadixNode<T>();
-                    newNode.prefix = matchingPrefix;
-
-                    node.children.delete(childKey!);
-                    node.children.set(matchingPrefix, newNode);
-
-                    childNode.prefix = childKey!.slice(matchingPrefix.length);
-                    newNode.children.set(childNode.prefix, childNode);
-
-                    node = newNode;
-                    current = current.slice(matchingPrefix.length);
-                }
-            } else {
-                // Create a new node
-                const newNode = new SubstringRadixNode<T>();
-                newNode.prefix = current;
-                node.children.set(current, newNode);
-                node = newNode;
-                current = '';
             }
 
-            node.items.add(item);
-        }
-    }
-
-    private findMatchingPrefix(str1: string, str2: string): string {
-        let i = 0;
-        while (i < str1.length && i < str2.length && str1[i] === str2[i]) {
-            i++;
-        }
-        return str1.slice(0, i);
-    }
-
-    search(word: string): T[] {
-        let node = this.root;
-        let current = word;
-
-        while (current.length > 0) {
-            let matchFound = false;
-            // Use Array.from() to iterate over Map entries
-            Array.from(node.children.entries()).some(([prefix, child]) => {
-                if (current.startsWith(prefix)) {
-                    node = child;
-                    current = current.slice(prefix.length);
-                    matchFound = true;
-                    return true;
-                }
-                return false;
-            });
-            if (!matchFound) {
-                return [];
-            }
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            node = node.children.get(char)!;
         }
 
         return Array.from(node.items);
     }
 }
 
-export default SubstringRadixTree;
+export default SubstringTrie;
