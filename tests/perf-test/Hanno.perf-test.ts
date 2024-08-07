@@ -29,13 +29,13 @@ const reportActionsMap = {};
 const reportsMap = ReportsList.reduce((acc, report) => {
     acc[`${ONYXKEYS.COLLECTION.REPORT}${report.reportID}`] = report;
 
-    // adding the actions isn't really working...
-    const random20Start = Math.floor(Math.random() * (Actions.length - 20));
-    const random20Actions = Actions.slice(random20Start, random20Start + 20);
-    reportActionsMap[`${ONYXKEYS.COLLECTION.REPORT_ACTIONS}${report.reportID}`] = random20Actions.reduce((reportActions, action) => {
-        reportActions[action.reportActionID] = action;
-        return reportActions;
-    }, {});
+    // // adding the actions isn't really working...
+    // const random20Start = Math.floor(Math.random() * (Actions.length - 20));
+    // const random20Actions = Actions.slice(random20Start, random20Start + 20);
+    // reportActionsMap[`${ONYXKEYS.COLLECTION.REPORT_ACTIONS}${report.reportID}`] = random20Actions.reduce((reportActions, action) => {
+    //     reportActions[action.reportActionID] = action;
+    //     return reportActions;
+    // }, {});
 
     return acc;
 }, {});
