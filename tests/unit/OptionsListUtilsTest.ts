@@ -2643,6 +2643,7 @@ describe('OptionsListUtils', () => {
             expect(filteredOptions.recentReports[1].text).toBe('Spider-Man');
             expect(filteredOptions.recentReports[2].text).toBe('Black Widow');
             expect(filteredOptions.recentReports[3].text).toBe('Mister Fantastic, Invisible Woman');
+            console.log(filteredOptions.recentReports[3]);
             expect(filteredOptions.recentReports[4].text).toBe("SHIELD's workspace (archived)");
         });
 

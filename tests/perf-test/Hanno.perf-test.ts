@@ -1,13 +1,26 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type * as NativeNavigation from '@react-navigation/native';
 import Onyx from 'react-native-onyx';
 import {measureFunction} from 'reassure';
 import * as OptionsListUtils from '@libs/OptionsListUtils';
+import PersonalDetailsTrie from '@libs/PersonalDetailsTrie';
+import SubstringTrie from '@libs/SubstringTrie';
 import CONST from '@src/CONST';
 import ONYXKEYS from '@src/ONYXKEYS';
+import type {PersonalDetails} from '@src/types/onyx';
 import waitForBatchedUpdates from '../utils/waitForBatchedUpdates';
 import Actions from './actions.json';
 import PersonalDetailsMap from './personaldetails.json';
 import ReportsList from './reports.json';
+import { SearchPersonalDetails } from '@src/types/onyx/SearchResults';
 
 // Run with NODE_OPTIONS=--experimental-vm-modules npx reassure --testMatch "tests/perf-test/Hanno.perf-test.ts" --baseline
 
@@ -40,7 +53,7 @@ const reportsMap = ReportsList.reduce((acc, report) => {
     return acc;
 }, {});
 
-const options = OptionsListUtils.createOptionList(PersonalDetailsMap, reportsMap); // is this code needed?
+const options = OptionsListUtils.createOptionList(PersonalDetailsMap, reportsMap);
 console.log('All reports length:', ReportsList.length);
 console.log('PD Options length:', options.personalDetails.length);
 console.log('Report Options length:', options.reports.length);
@@ -63,11 +76,92 @@ describe('OptionsListUtils', () => {
         return Onyx.clear();
     });
 
+    function generateSearchableString(personalDetails: PersonalDetails): string {
+        const parts = [
+            personalDetails.displayName ?? '',
+            personalDetails.login ?? '',
+            personalDetails.firstName ?? '',
+            personalDetails.lastName ?? '',
+            // TODO: other things such as abbreviations and replaced emails
+        ];
+        return parts.join('').toLowerCase();
+    }
+
+    function roughSizeOfObject(object: any) {
+        const objectList = new Set<any>();
+        const stack: any[] = [object];
+        let bytes = 0;
+
+        while (stack.length) {
+            const value = stack.pop();
+
+            if (value === null || value === undefined) {
+                bytes += 4;
+            } else if (typeof value === 'boolean') {
+                bytes += 4;
+            } else if (typeof value === 'string') {
+                bytes += value.length * 2;
+            } else if (typeof value === 'number') {
+                bytes += 8;
+            } else if (typeof value === 'object' && !objectList.has(value)) {
+                objectList.add(value);
+                bytes += 4; // Reference to the object
+
+                if (Array.isArray(value)) {
+                    stack.push(...value);
+                } else if (value instanceof Set) {
+                    bytes += 4; // Additional overhead for Set
+                    stack.push(...Array.from(value.values()));
+                } else if (value instanceof Map) {
+                    bytes += 4; // Additional overhead for Map
+                    value.forEach((mapValue, mapKey) => {
+                        stack.push(mapKey);
+                        stack.push(mapValue);
+                    });
+                } else {
+                    // If it's a class instance, get its prototype properties too
+                    let proto = Object.getPrototypeOf(value);
+                    while (proto && proto !== Object.prototype) {
+                        stack.push(...Object.getOwnPropertyNames(proto).map((key) => value[key]));
+                        proto = Object.getPrototypeOf(proto);
+                    }
+
+                    // Push own properties
+                    stack.push(...Object.values(value));
+                }
+            } else if (typeof value === 'function') {
+                bytes += 8; // Rough estimate for function reference
+            }
+        }
+        return bytes;
+    }
+
     test('[OptionsListUtils] filterOptions with search value', async () => {
         await waitForBatchedUpdates();
-        const searchOptions = OptionsListUtils.getSearchOptions(options, '', mockedBetas);
-        console.log('PD search options', searchOptions.personalDetails.length);
-        console.log('Report search options', searchOptions.recentReports.length);
-        await measureFunction(() => OptionsListUtils.filterOptions(searchOptions, SEARCH_VALUE, {sortByReportTypeInSearch: true, betas: mockedBetas, preferChatroomsOverThreads: true}));
+        // const searchOptions = OptionsListUtils.getSearchOptions(options, '', mockedBetas);
+        // console.log('PD search options', searchOptions.personalDetails.length);
+        // console.log('Report search options', searchOptions.recentReports.length);
+        // await measureFunction(() => OptionsListUtils.filterOptions(searchOptions, SEARCH_VALUE, {sortByReportTypeInSearch: true, betas: mockedBetas, preferChatroomsOverThreads: true}));
+        // const start = performance.now();
+        // options.personalDetails.forEach((pd) => {
+        //     PersonalDetailsTrie.addPersonalDetail(pd.item);
+        // });
+        // const end = performance.now();
+        // console.log('Time to add all personal details to trie:', end - start, 'ms');
+
+        // Build substring trie
+        const trie = new SubstringTrie<OptionsListUtils.SearchOption<PersonalDetails>>();
+        const start2 = performance.now();
+        options.personalDetails.forEach((pd) => {
+            trie.insert(generateSearchableString(pd.item), pd);
+        });
+        const end2 = performance.now();
+        console.log('Time to add all personal details to substring trie:', end2 - start2, 'ms');
+        const size = roughSizeOfObject(trie);
+        console.log('Size of substring trie:', size, 'bytes');
+        const resultTrie = trie.search(SEARCH_VALUE);
+        console.log('Substring trie search result:', resultTrie);
+
+        await measureFunction(() => trie.search(SEARCH_VALUE));
     });
 });

@@ -1851,7 +1851,7 @@ function getOptions(
         const report = option.item;
         const doesReportHaveViolations = shouldShowViolations(report, betas, transactionViolations);
 
-        return true;
+        // return true;
         return ReportUtils.shouldReportBeInOptionList({
             report,
             currentReportId: topmostReportId,
@@ -2498,7 +2498,7 @@ function filterOptions(options: Options, searchInputValue: string, config?: Filt
         });
         const personalDetails = filterArrayByMatch(items.personalDetails, term, (item) => {
             const personalDetailSearchTerms = getPersonalDetailSearchTerms(item);
-            return uniqFast(personalDetailSearchTerms);
+            return personalDetailSearchTerms; // uniqFast(personalDetailSearchTerms);
         });
 
         const currentUserOptionSearchText = items.currentUserOption ? uniqFast(getCurrentUserSearchTerms(items.currentUserOption)).join(' ') : '';

@@ -81,6 +81,7 @@ function normalizeCRLF(value?: string): string | undefined {
     return value?.replace(/\r\n/g, '\n');
 }
 
+const SPLIT_BY_WHITESPACE_AND_HYPHEN = /[\s-]+/;
 /**
  * Generates an acronym for a string.
  * @param string the string for which to produce the acronym
