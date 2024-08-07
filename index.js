@@ -8,6 +8,7 @@ import Config from './src/CONFIG';
 import CONST from './src/CONST';
 import BootSplash from './src/libs/BootSplash';
 import * as OptionsListUtils from './src/libs/OptionsListUtils';
+import SubstringTrie from './src/libs/SubstringTrie';
 import ONYXKEYS from './src/ONYXKEYS';
 import additionalAppSetup from './src/setup';
 import PersonalDetailsMap from './tests/perf-test/personaldetails.json';
@@ -38,6 +39,26 @@ const searchOptions = OptionsListUtils.getSearchOptions(options, '', mockedBetas
 console.log('PD search options', searchOptions.personalDetails.length);
 console.log('Report search options', searchOptions.recentReports.length);
 
+function generateSearchableString(personalDetails) {
+    const parts = [
+        personalDetails.displayName ?? '',
+        personalDetails.login ?? '',
+        personalDetails.firstName ?? '',
+        personalDetails.lastName ?? '',
+        // TODO: other things such as abbreviations and replaced emails
+    ];
+    return parts.join('').toLowerCase();
+}
+
+// build search trie
+const trie = new SubstringTrie();
+const start2 = performance.now();
+options.personalDetails.forEach((pd) => {
+    trie.insert(generateSearchableString(pd.item), pd);
+});
+const end2 = performance.now();
+console.log('Time to add all personal details to substring trie:', end2 - start2, 'ms');
+
 function MyPerformanceTest() {
     useEffect(() => {
         BootSplash.hide();
@@ -56,10 +77,13 @@ function MyPerformanceTest() {
                     const durations = [];
                     for (let i = 0; i < iterations; i++) {
                         const start = performance.now();
-                        // OptionsListUtils.filterOptions(searchOptions, SEARCH_VALUE, {sortByReportTypeInSearch: true, betas: mockedBetas, preferChatroomsOverThreads: true});
-                        for (const pD of searchOptions.personalDetails) {
-                            OptionsListUtils.getPersonalDetailSearchTerms(pD);
-                        }
+                        OptionsListUtils.filterOptions(searchOptions, SEARCH_VALUE, {sortByReportTypeInSearch: true, betas: mockedBetas, preferChatroomsOverThreads: true});
+                        // for (const pD of searchOptions.personalDetails) {
+                        //     OptionsListUtils.getPersonalDetailSearchTerms(pD);
+                        // }
+
+                        // const res = trie.search(SEARCH_VALUE);
+                        // console.log('Search results:', res.length);
 
                         const end = performance.now();
                         durations.push(end - start);
