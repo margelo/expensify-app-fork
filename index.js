@@ -7,6 +7,7 @@ import App from './src/App';
 import Config from './src/CONFIG';
 import CONST from './src/CONST';
 import BootSplash from './src/libs/BootSplash';
+import GeneralizedSuffixTree from './src/libs/GeneralizedSuffixTree';
 import * as OptionsListUtils from './src/libs/OptionsListUtils';
 import SubstringTrie from './src/libs/SubstringTrie';
 import ONYXKEYS from './src/ONYXKEYS';
@@ -51,10 +52,17 @@ function generateSearchableString(personalDetails) {
 }
 
 // build search trie
-const trie = new SubstringTrie();
+const trie = new GeneralizedSuffixTree();
 const start2 = performance.now();
+console.log({trie});
 options.personalDetails.forEach((pd) => {
-    trie.insert(generateSearchableString(pd.item), pd);
+    trie.insert(pd, [
+        pd.item.displayName ?? '',
+        pd.item.login ?? '',
+        pd.item.firstName ?? '',
+        pd.item.lastName ?? '',
+        // TODO: other things such as abbreviations and replaced emails
+    ]);
 });
 const end2 = performance.now();
 console.log('Time to add all personal details to substring trie:', end2 - start2, 'ms');

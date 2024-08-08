@@ -21,6 +21,9 @@ import Actions from './actions.json';
 import PersonalDetailsMap from './personaldetails.json';
 import ReportsList from './reports.json';
 import { SearchPersonalDetails } from '@src/types/onyx/SearchResults';
+import GeneralizedSuffixTree from '@libs/GeneralizedSuffixTree';
+import SuffixTree from '@libs/SuffixTree';
+import SearchTrie from '@libs/SuffixTree/SearchTrie';
 
 // Run with NODE_OPTIONS=--experimental-vm-modules npx reassure --testMatch "tests/perf-test/Hanno.perf-test.ts" --baseline
 
@@ -150,18 +153,52 @@ describe('OptionsListUtils', () => {
         // console.log('Time to add all personal details to trie:', end - start, 'ms');
 
         // Build substring trie
-        const trie = new SubstringTrie<OptionsListUtils.SearchOption<PersonalDetails>>();
-        const start2 = performance.now();
-        options.personalDetails.forEach((pd) => {
-            trie.insert(generateSearchableString(pd.item), pd);
-        });
-        const end2 = performance.now();
-        console.log('Time to add all personal details to substring trie:', end2 - start2, 'ms');
-        const size = roughSizeOfObject(trie);
-        console.log('Size of substring trie:', size, 'bytes');
-        const resultTrie = trie.search(SEARCH_VALUE);
-        console.log('Substring trie search result:', resultTrie);
+        // const trie = new SubstringTrie<OptionsListUtils.SearchOption<PersonalDetails>>();
+        // const start2 = performance.now();
+        // options.personalDetails.forEach((pd) => {
+        //     trie.insert(generateSearchableString(pd.item), pd);
+        // });
+        // const end2 = performance.now();
+        // console.log('Time to add all personal details to substring trie:', end2 - start2, 'ms');
+        // const size = roughSizeOfObject(trie);
+        // console.log('Size of substring trie:', size, 'bytes');
+        // const resultTrie = trie.search(SEARCH_VALUE);
+        // console.log('Substring trie search result:', resultTrie);
 
-        await measureFunction(() => trie.search(SEARCH_VALUE));
+        // const gst = new GeneralizedSuffixTree<OptionsListUtils.SearchOption<PersonalDetails>>();
+        // const start3 = performance.now();
+        // options.personalDetails.forEach((pd) => {
+        //     gst.insert(pd, [pd.item.displayName ?? '', pd.item.login ?? '', pd.item.firstName ?? '', pd.item.lastName ?? '']);
+        // });
+        // const end3 = performance.now();
+        // console.log('Time to add all personal details to generalized suffix tree:', end3 - start3, 'ms');
+        // const size3 = roughSizeOfObject(gst);
+        // console.log('Size of generalized suffix tree:', size3, 'bytes');
+        // const resultGST = gst.search(SEARCH_VALUE);
+        // console.log('Generalized suffix tree search result:', resultGST);
+
+        // await measureFunction(() => gst.search(SEARCH_VALUE));
+
+        // const suffixTree = new SuffixTree();
+        // suffixTree.addString("bananahanno$");
+        // suffixTree.addString("hanno123$");
+        // suffixTree.print();
+        // const occurrences = suffixTree.findAllOccurrences("an");
+        // console.log(occurrences);
+
+        // Suffix test
+        const start4 = performance.now();
+        options.personalDetails.forEach((pd) => {
+            SearchTrie.addPersonalDetail(pd);
+        });
+        const end4 = performance.now();
+        console.log('Time to add all personal details to suffix tree:', end4 - start4, 'ms');
+        // const size4 = roughSizeOfObject(SearchTrie);
+        // console.log('Size of suffix tree:', size4, 'bytes');
+        const result = SearchTrie.search(SEARCH_VALUE);
+        console.log('Suffix tree search result:', result);
+        console.log("Length", SearchTrie.getLength());
+
+        await measureFunction(() => SearchTrie.search(SEARCH_VALUE));
     });
 });
