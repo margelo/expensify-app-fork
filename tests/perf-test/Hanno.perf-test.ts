@@ -10,20 +10,20 @@
 import type * as NativeNavigation from '@react-navigation/native';
 import Onyx from 'react-native-onyx';
 import {measureFunction} from 'reassure';
+import GeneralizedSuffixTree from '@libs/GeneralizedSuffixTree';
 import * as OptionsListUtils from '@libs/OptionsListUtils';
 import PersonalDetailsTrie from '@libs/PersonalDetailsTrie';
 import SubstringTrie from '@libs/SubstringTrie';
+import SuffixTree from '@libs/SuffixTree';
+import SearchTrie from '@libs/SuffixTree/SearchTrie';
 import CONST from '@src/CONST';
 import ONYXKEYS from '@src/ONYXKEYS';
 import type {PersonalDetails} from '@src/types/onyx';
+import {SearchPersonalDetails} from '@src/types/onyx/SearchResults';
 import waitForBatchedUpdates from '../utils/waitForBatchedUpdates';
 import Actions from './actions.json';
 import PersonalDetailsMap from './personaldetails.json';
 import ReportsList from './reports.json';
-import { SearchPersonalDetails } from '@src/types/onyx/SearchResults';
-import GeneralizedSuffixTree from '@libs/GeneralizedSuffixTree';
-import SuffixTree from '@libs/SuffixTree';
-import SearchTrie from '@libs/SuffixTree/SearchTrie';
 
 // Run with NODE_OPTIONS=--experimental-vm-modules npx reassure --testMatch "tests/perf-test/Hanno.perf-test.ts" --baseline
 
@@ -191,14 +191,15 @@ describe('OptionsListUtils', () => {
         options.personalDetails.forEach((pd) => {
             SearchTrie.addPersonalDetail(pd);
         });
+        console.log('text', SearchTrie.toString());
         const end4 = performance.now();
         console.log('Time to add all personal details to suffix tree:', end4 - start4, 'ms');
         // const size4 = roughSizeOfObject(SearchTrie);
         // console.log('Size of suffix tree:', size4, 'bytes');
         const result = SearchTrie.search(SEARCH_VALUE);
         console.log('Suffix tree search result:', result);
-        console.log("Length", SearchTrie.getLength());
+        // console.log("Length", SearchTrie.getLength());
 
-        await measureFunction(() => SearchTrie.search(SEARCH_VALUE));
+        await measureFunction(() => SearchTrie.search('ann'));
     });
 });

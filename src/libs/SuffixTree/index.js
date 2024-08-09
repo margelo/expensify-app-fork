@@ -159,16 +159,6 @@ class SuffixTree {
         const root = this.root;
 
         const findString = (node, stringIndex, depth) => {
-            // console.log(
-            //     'find string - ',
-            //     'stringIndex',
-            //     stringIndex,
-            //     'depth',
-            //     depth,
-            //     'transitions:',
-            //     Object.keys(node.transition),
-            //     Object.keys(node.transition).map((key) => [node.transition[key][1], node.transition[key][2]]),
-            // );
             if (stringIndex >= searchString.length) {
                 // We've found the entire string, now collect all leaf nodes
                 this.collectLeafDepths(node, depth, occurrences);
