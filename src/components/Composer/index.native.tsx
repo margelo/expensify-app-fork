@@ -1,7 +1,7 @@
 import type {MarkdownStyle} from '@expensify/react-native-live-markdown';
 import type {ForwardedRef} from 'react';
-import React, {useCallback, useMemo, useRef} from 'react';
-import type {NativeSyntheticEvent, TextInput, TextInputChangeEventData, TextInputPasteEventData} from 'react-native';
+import React, {useCallback, useEffect, useMemo, useRef} from 'react';
+import type {NativeSyntheticEvent, TextInput, TextInputChangeEventData, TextInputContentSizeChangeEventData, TextInputPasteEventData} from 'react-native';
 import {StyleSheet} from 'react-native';
 import type {FileObject} from '@components/AttachmentModal';
 import type {AnimatedMarkdownTextInputRef} from '@components/RNMarkdownTextInput';
@@ -71,6 +71,19 @@ function Composer(
         },
         [onClearProp],
     );
+    const onContentSizeChange = useCallback(
+        (e: NativeSyntheticEvent<TextInputContentSizeChangeEventData>) => {
+            updateIsFullComposerAvailable({maxLines, isComposerFullSize, isDisabled, setIsFullComposerAvailable}, e, styles, true);
+        },
+        [maxLines, isComposerFullSize, isDisabled, setIsFullComposerAvailable, styles],
+    );
+
+    useEffect(() => {
+        textInput.current?.measure((_x, _y, width, height) => {
+            // be sure that `setIsFullComposerAvailable` is called with proper values (on Android it's not called on component mount)
+            onContentSizeChange({nativeEvent: {contentSize: {height, width}}} as unknown as NativeSyntheticEvent<TextInputContentSizeChangeEventData>);
+        });
+    }, []);
 
     const pasteFile = useCallback(
         (e: NativeSyntheticEvent<TextInputPasteEventData>) => {
@@ -96,7 +109,7 @@ function Composer(
             placeholderTextColor={theme.placeholderText}
             ref={setTextInputRef}
             value={value}
-            onContentSizeChange={(e) => updateIsFullComposerAvailable({maxLines, isComposerFullSize, isDisabled, setIsFullComposerAvailable}, e, styles, true)}
+            onContentSizeChange={onContentSizeChange}
             rejectResponderTermination={false}
             smartInsertDelete={false}
             textAlignVertical="center"
