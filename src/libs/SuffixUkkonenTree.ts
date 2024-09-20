@@ -1,4 +1,4 @@
-import enEmojis from '@assets/emojis/en';
+const enEmojis = {};
 
 const CHAR_CODE_A = 'a'.charCodeAt(0);
 const ALPHABET_SIZE = 28;
@@ -87,11 +87,14 @@ function makeTree<T>(compose: Array<PrepareDataParams<T>>) {
         strings.push(str);
         indexes.push(searchIndexList);
     }
+
+    console.log({strings, indexes});
+
     const stringToSearch = `${strings.join('')}|`; // End Character
     console.log('building search strings', performance.now() - start1);
 
     const a = stringToArray(stringToSearch);
-    const N = 25000; // TODO: i reduced this number from 1_000_000 down to this, for faster performance - however its possible that it needs to be bigger for larger search strings
+    const N = 1000000; // TODO: i reduced this number from 1_000_000 down to this, for faster performance - however its possible that it needs to be bigger for larger search strings
     const start = performance.now();
     const t = Array.from({length: N}, () => Array(ALPHABET_SIZE).fill(-1) as number[]);
     const l = Array(N).fill(0) as number[];
@@ -294,7 +297,7 @@ function performanceProfile<T>(input: PrepareDataParams<T>, search = 'sasha') {
 }
 
 // Demo function testing the performance for emojis
-function testEmojis() {
+/*function testEmojis() {
     const data = Object.values(enEmojis);
     return performanceProfile(
         {
@@ -305,6 +308,6 @@ function testEmojis() {
         },
         'smile',
     );
-}
+}*/
 
-export {makeTree, prepareData, testEmojis};
+export {makeTree, prepareData};
