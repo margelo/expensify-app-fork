@@ -1,8 +1,12 @@
 import enEmojis from '@assets/emojis/en';
 
 const CHAR_CODE_A = 'a'.charCodeAt(0);
-const ALPHABET_SIZE = 28;
+const LETTER_ALPHABET_SIZE = 26;
+const CHAR_CODE_0 = '0'.charCodeAt(0);
+const NUMBERS_ALPHABET_SIZE = 10;
+const ALPHABET_SIZE = LETTER_ALPHABET_SIZE + NUMBERS_ALPHABET_SIZE + 2; // 2 extra characters for the delimiter and end character
 const DELIMITER_CHAR_CODE = ALPHABET_SIZE - 2;
+const END_CHAR_CODE = ALPHABET_SIZE - 1;
 
 // TODO:
 // make makeTree faster
@@ -13,22 +17,34 @@ const DELIMITER_CHAR_CODE = ALPHABET_SIZE - 2;
  * Converts a string to an array of numbers representing the characters of the string.
  * The numbers are offset by the character code of 'a' (97).
  * - This is so that the numbers from a-z are in the range 0-25.
- * - 26 is for the delimiter character "{",
- * - 27 is for the end character "|".
+ * - The numbers from 0-9 are in the range 26-35.
+ * - 36 is for the delimiter character "{",
+ * - 37 is for the end character "|".
  */
 function stringToArray(input: string) {
     const res: number[] = [];
     for (let i = 0; i < input.length; i++) {
-        const charCode = input.charCodeAt(i) - CHAR_CODE_A;
-        if (charCode >= 0 && charCode < ALPHABET_SIZE) {
-            res.push(charCode);
+        const char = input[i];
+        const charCode = char.charCodeAt(0);
+        if (char >= 'a' && char <= 'z') {
+            res.push(charCode - CHAR_CODE_A);
+        } else if (char >= '0' && char <= '9') {
+            res.push((charCode - CHAR_CODE_0) + LETTER_ALPHABET_SIZE);
+        } else if (char === '{') {
+            res.push(DELIMITER_CHAR_CODE);
         }
+
+        // const charCode = input.charCodeAt(i) - CHAR_CODE_A;
+        // if (charCode >= 0 && charCode < ALPHABET_SIZE) {
+        //     res.push(charCode);
+        // }
     }
+    console.log("stringToArray", res)
     return res;
 }
 
-const aToZRegex = /[^a-z]/gi;
-// The character that separates the different options in the search string
+const aToZRegex = /[^a-z0-9]/gi;
+// The character that separates the different options in the search string ("z"+1)
 const delimiterChar = '{';
 
 type PrepareDataParams<T> = {
@@ -36,24 +52,28 @@ type PrepareDataParams<T> = {
     transform: (data: T) => string;
 };
 
+function cleanedString(input: string) {
+    return input.toLowerCase().replace(aToZRegex, '');
+}
+
 function prepareData<T>({data, transform}: PrepareDataParams<T>): [string, Array<T | undefined>] {
     const searchIndexList: Array<T | undefined> = [];
     const str = data
         .map((option) => {
-            let searchStringForTree = transform(option);
+            const searchStringForTree = transform(option);
             // Remove all none a-z chars:
-            searchStringForTree = searchStringForTree.toLowerCase().replace(aToZRegex, '');
+            const cleanedSearchStringForTree = cleanedString(searchStringForTree);
 
-            if (searchStringForTree.length > 0) {
+            if (cleanedSearchStringForTree.length > 0) {
                 // We need to push an array that has the same length as the length of the string we insert for this option:
-                const indexes = Array.from({length: searchStringForTree.length}, () => option);
+                const indexes = Array.from({length: cleanedSearchStringForTree.length}, () => option);
                 // Note: we add undefined for the delimiter character
                 searchIndexList.push(...indexes, undefined);
             } else {
                 return undefined;
             }
 
-            return searchStringForTree;
+            return cleanedSearchStringForTree;
         })
         // slightly faster alternative to `.filter(Boolean).join(delimiterChar)`
         .reduce((acc: string, curr) => {
@@ -80,6 +100,9 @@ function prepareData<T>({data, transform}: PrepareDataParams<T>): [string, Array
 function makeTree<T>(compose: Array<PrepareDataParams<T>>) {
     const start1 = performance.now();
     const strings = [];
+
+    // We might received multiple lists of data that we want to search in
+    // thus indexes is a list of those data lists
     const indexes: Array<Array<T | undefined>> = [];
 
     for (const {data, transform} of compose) {
@@ -89,10 +112,11 @@ function makeTree<T>(compose: Array<PrepareDataParams<T>>) {
     }
     const stringToSearch = `${strings.join('')}|`; // End Character
     console.log("Search String length", stringToSearch.length);
+    console.log(stringToSearch)
     console.log('building search strings', performance.now() - start1);
 
     const a = stringToArray(stringToSearch);
-    const N = 25000; // TODO: i reduced this number from 1_000_000 down to this, for faster performance - however its possible that it needs to be bigger for larger search strings
+    const N = 1_000_000; // TODO: i reduced this number from 1_000_000 down to this, for faster performance - however its possible that it needs to be bigger for larger search strings
     const start = performance.now();
     const t = Array.from({length: N}, () => Array(ALPHABET_SIZE).fill(-1) as number[]);
     const l = Array(N).fill(0) as number[];
@@ -205,6 +229,8 @@ function makeTree<T>(compose: Array<PrepareDataParams<T>>) {
      */
     function findSubstring(searchString: string) {
         const occurrences: number[] = [];
+        const cleanedSearchString = cleanedString(searchString);
+        const numericSearchQuery = stringToArray(cleanedSearchString);
 
         function dfs(node: number, depth: number) {
             const leftRange = l[node];
@@ -212,7 +238,7 @@ function makeTree<T>(compose: Array<PrepareDataParams<T>>) {
             const rangeLen = node === 0 ? 0 : rightRange - leftRange + 1;
 
             for (let i = 0; i < rangeLen && depth + i < searchString.length; i++) {
-                if (searchString.charCodeAt(depth + i) - CHAR_CODE_A !== a[leftRange + i]) {
+                if (numericSearchQuery[depth + i] !== a[leftRange + i]) {
                     return;
                 }
             }
@@ -236,8 +262,9 @@ function makeTree<T>(compose: Array<PrepareDataParams<T>>) {
 
     function findInSearchTree(searchInput: string): T[][] {
         const now = performance.now();
-        const result = findSubstring(searchInput);
-        console.log('FindSubstring index result for searchInput', searchInput, result);
+        const cleanedSearchInput = searchInput.toLowerCase().replace(aToZRegex, '');
+        const result = findSubstring(cleanedSearchInput);
+        console.log('FindSubstring index result for searchInput', cleanedSearchInput, result);
         
         // Map the results to the original options
         const mappedResults = Array.from({length: compose.length}, () => new Set<T>());
