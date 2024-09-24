@@ -91,6 +91,8 @@ jobs:
         id: schedule-awsdf-main
         uses: nick-fields/retry@v2
         with:
+          timeout_minutes: 360 # 3 * 120
+          max_attempts: 3
           command: |
               gh extension install ${{ github.server_url }}/${{ github.repository }}/actions/realm/aws-devicefarm/test-application@7b9a91236c456c97e28d384c9e476035d5ea686b
               gh realm/aws-devicefarm/test-application \
