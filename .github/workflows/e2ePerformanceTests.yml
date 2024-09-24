@@ -37,29 +37,34 @@ jobs:
       - name: Make zip directory for everything to send to AWS Device Farm
         run: mkdir zip
 
-      - name: Download baseline APK
-        uses: actions/download-artifact@v4
-        id: downloadBaselineAPK
-        with:
-          name: baseline-apk-${{ needs.buildBaseline.outputs.VERSION }}
-          path: zip
-          # Set github-token only if the baseline was built in this workflow run:
-          github-token: ${{ needs.buildBaseline.outputs.ARTIFACT_WORKFLOW_ID && github.token }}
-          run-id: ${{ needs.buildBaseline.outputs.ARTIFACT_WORKFLOW_ID }}
+      # - name: Download baseline APK
+      #  uses: actions/download-artifact@v4
+      #  id: downloadBaselineAPK
+      #  with:
+      #    name: baseline-apk-${{ needs.buildBaseline.outputs.VERSION }}
+      #    path: zip
+      #    # Set github-token only if the baseline was built in this workflow run:
+      #    github-token: ${{ needs.buildBaseline.outputs.ARTIFACT_WORKFLOW_ID && github.token }}
+      #    run-id: ${{ needs.buildBaseline.outputs.ARTIFACT_WORKFLOW_ID }}
 
       # The downloaded artifact will be a file named "app-e2e-release.apk" so we have to rename it
-      - name: Rename baseline APK
-        run: mv "${{steps.downloadBaselineAPK.outputs.download-path}}/app-e2e-release.apk" "${{steps.downloadBaselineAPK.outputs.download-path}}/app-e2eRelease.apk"
+      # - name: Rename baseline APK
+      #   run: mv "${{steps.downloadBaselineAPK.outputs.download-path}}/app-e2e-release.apk" "${{steps.downloadBaselineAPK.outputs.download-path}}/app-e2eRelease.apk"
 
-      - name: Download delta APK
-        uses: actions/download-artifact@v4
-        id: downloadDeltaAPK
-        with:
-          name: delta-apk-${{ needs.buildDelta.outputs.DELTA_REF }}
-          path: zip
+      #- name: Download delta APK
+      #  uses: actions/download-artifact@v4
+      #  id: downloadDeltaAPK
+      #  with:
+      #    name: delta-apk-${{ needs.buildDelta.outputs.DELTA_REF }}
+      #    path: zip
 
-      - name: Rename delta APK
-        run: mv "${{steps.downloadDeltaAPK.outputs.download-path}}/app-e2edelta-release.apk" "${{steps.downloadDeltaAPK.outputs.download-path}}/app-e2edeltaRelease.apk"
+      #- name: Rename delta APK
+      #  run: mv "${{steps.downloadDeltaAPK.outputs.download-path}}/app-e2edelta-release.apk" "${{steps.downloadDeltaAPK.outputs.download-path}}/app-e2edeltaRelease.apk"
+
+      - name: Copy .apk files into zip folder
+        run: |
+          cp android/app/build/outputs/apk/e2e/release/app-e2eRelease.apk zip/app-e2eRelease.apk
+          cp android/app/build/outputs/apk/e2edelta/release/app-e2edeltaRelease.apk zip/app-e2edeltaRelease.apk
 
       - name: Compile test runner to be executable in a nodeJS environment
         run: npm run e2e-test-runner-build
