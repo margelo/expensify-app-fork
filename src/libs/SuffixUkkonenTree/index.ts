@@ -16,7 +16,8 @@ import {ALPHABET_SIZE, DELIMITER_CHAR_CODE, END_CHAR_CODE, SPECIAL_CHAR_CODE, st
  *
  * The tree will be built using the Ukkonen's algorithm: https://www.cs.helsinki.fi/u/ukkonen/SuffixT1withFigs.pdf
  */
-function makeTree(numericSearchValues: Int8Array) {
+function makeTree(numericSearchValuesParam: Int8Array) {
+    let numericSearchValues = numericSearchValuesParam;
     const maxNodes = 2 * numericSearchValues.length;
     // Allocate an ArrayBuffer to store all transitions (flat buffer), 4 bytes per transition (Uint32)
     const transitionNodes = new Int32Array(maxNodes * ALPHABET_SIZE * 4);
@@ -116,6 +117,16 @@ function makeTree(numericSearchValues: Int8Array) {
         }
     }
 
+    function update(updatedNumericSearchValues: Int8Array, start: number, end: number) {
+        currentIndex = start;
+        while (currentIndex < end) {
+            const c = numericSearchValues[currentIndex];
+            processCharacter(c);
+            currentIndex++;
+        }
+        numericSearchValues = updatedNumericSearchValues;
+    }
+
     /**
      * Returns all occurrences of the given (sub)string in the input string.
      *
@@ -166,6 +177,7 @@ function makeTree(numericSearchValues: Int8Array) {
 
     return {
         build,
+        update,
         findSubstring,
     };
 }
