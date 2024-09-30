@@ -1,14 +1,18 @@
-import type {StackCardInterpolationProps, StackNavigationOptions} from '@react-navigation/stack';
+import type {StackCardInterpolationProps} from '@react-navigation/stack';
 import {CardStyleInterpolators} from '@react-navigation/stack';
 import {useMemo} from 'react';
 import useResponsiveLayout from '@hooks/useResponsiveLayout';
 import useStyleUtils from '@hooks/useStyleUtils';
 import useThemeStyles from '@hooks/useThemeStyles';
 import {isSafari} from '@libs/Browser';
+import hideKeyboardOnSwipe from '@libs/Navigation/AppNavigator/hideKeyboardOnSwipe';
+import type {PlatformStackNavigationOptions} from '@libs/Navigation/PlatformStackNavigation/types';
 import createModalCardStyleInterpolator from '@navigation/AppNavigator/createModalCardStyleInterpolator';
 import type {ThemeStyles} from '@src/styles';
 
-function useModalScreenOptions(getScreenOptions?: (styles: ThemeStyles) => StackNavigationOptions) {
+type GetModalStackScreenOptions = (styles: ThemeStyles) => PlatformStackNavigationOptions;
+
+function useModalScreenOptions(getScreenOptions?: GetModalStackScreenOptions) {
     const styles = useThemeStyles();
     const styleUtils = useStyleUtils();
     const {shouldUseNarrowLayout} = useResponsiveLayout();
@@ -21,15 +25,19 @@ function useModalScreenOptions(getScreenOptions?: (styles: ThemeStyles) => Stack
     }
 
     const defaultSubRouteOptions = useMemo(
-        (): StackNavigationOptions => ({
-            cardStyle: styles.navigationScreenCardStyle,
+        (): PlatformStackNavigationOptions => ({
+            ...hideKeyboardOnSwipe,
             headerShown: false,
-            cardStyleInterpolator,
+            web: {
+                cardStyle: styles.navigationScreenCardStyle,
+                cardStyleInterpolator,
+            },
         }),
-        [styles, cardStyleInterpolator],
+        [cardStyleInterpolator, styles.navigationScreenCardStyle],
     );
 
     return getScreenOptions?.(styles) ?? defaultSubRouteOptions;
 }
 
 export default useModalScreenOptions;
+export type {GetModalStackScreenOptions};
