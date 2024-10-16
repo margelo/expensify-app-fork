@@ -13,7 +13,7 @@ import RequireTwoFactorAuthenticationModal from './components/RequireTwoFactorAu
 import AppleAuthWrapper from './components/SignInButtons/AppleAuthWrapper';
 import SplashScreenHider from './components/SplashScreenHider';
 import UpdateAppModal from './components/UpdateAppModal';
-import * as CONFIG from './CONFIG';
+import * as CONFIG from './CONFIG'; 
 import CONST from './CONST';
 import useLocalize from './hooks/useLocalize';
 import {updateLastRoute} from './libs/actions/App';
