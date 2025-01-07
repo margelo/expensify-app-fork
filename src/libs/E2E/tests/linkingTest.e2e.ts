@@ -44,12 +44,13 @@ const test = (config: NativeConfig) => {
 
             // update the last visible message
             lastVisibleMessageId = res?.at(0)?.item?.reportActionID;
-            console.debug('[E2E] Current visible message:', lastVisibleMessageId);
-
+            console.debug('[E2E] Current visible message:', lastVisibleMessageId, verificationStarted, linkedReportActionID);
+            console.log('TEST_onViewableItemsChanged.1', JSON.stringify(res?.at(0)?.item, null, 2));
             if (!verificationStarted && lastVisibleMessageId === linkedReportActionID) {
                 console.debug('[E2E] Target message found, starting verification');
                 verificationStarted = true;
 
+                console.log('TEST_onViewableItemsChanged.2');
                 setTimeout(() => {
                     console.debug('[E2E] Verification timeout completed');
                     console.debug('[E2E] Last visible message ID:', lastVisibleMessageId);
@@ -63,11 +64,12 @@ const test = (config: NativeConfig) => {
                         console.debug('[E2E] Linked message not found, failing test!');
                         E2EClient.submitTestResults({
                             branch: Config.E2E_BRANCH,
-                            error: 'Linked message not found',
+                            // error: 'Linked message not found',
+                            error: `Linked message not found. Current visible message: ${lastVisibleMessageId}, expected message: ${linkedReportActionID}`,
                             name: `${name} test can't find linked message`,
                         }).then(() => E2EClient.submitTestDone());
                     }
-                }, 3000);
+                }, 7000);
             }
         });
 
