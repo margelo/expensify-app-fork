@@ -8,7 +8,7 @@ import * as Url from './libs/Url';
 // react-native-config doesn't trim whitespace on iOS for some reason so we
 // add a trim() call to prevent headaches
 const get = (config: NativeConfig, key: string, defaultValue: string): string => (config?.[key] ?? defaultValue).trim();
-
+console.log('Config.root========================================', Config);
 // Set default values to contributor friendly values to make development work out of the box without an .env file
 const ENVIRONMENT = get(Config, 'ENVIRONMENT', CONST.ENVIRONMENT.DEV);
 const newExpensifyURL = Url.addTrailingForwardSlash(get(Config, 'NEW_EXPENSIFY_URL', 'https://new.expensify.com/'));
@@ -81,7 +81,8 @@ export default {
         DEFAULT: '/favicon.png',
         UNREAD: '/favicon-unread.png',
     },
-    CAPTURE_METRICS: get(Config, 'CAPTURE_METRICS', 'false') === 'true',
+    // CAPTURE_METRICS: get(Config, 'CAPTURE_METRICS', 'false') === 'true',
+    CAPTURE_METRICS: true,
     ONYX_METRICS: get(Config, 'ONYX_METRICS', 'false') === 'true',
     DEV_PORT: process.env.PORT ?? 8082,
     E2E_TESTING: get(Config, 'E2E_TESTING', 'false') === 'true',
