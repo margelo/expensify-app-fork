@@ -15,6 +15,7 @@ function BaseInvertedFlatListE2e(props: BaseInvertedFlatListProps, ref: React.Fo
     const handleViewableItemsChanged = useMemo(
         () =>
             ({viewableItems}: {viewableItems: ViewToken[]}) => {
+                console.log('ROOT.onViewableItemsChanged', JSON.stringify(viewableItems?.at(0)));
                 DeviceEventEmitter.emit('onViewableItemsChanged', viewableItems);
             },
         [],
