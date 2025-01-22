@@ -24,6 +24,7 @@ import createReportActionContextMenuStyleUtils from './generators/ReportActionCo
 import createTooltipStyleUtils from './generators/TooltipStyleUtils';
 import getContextMenuItemStyles from './getContextMenuItemStyles';
 import getHighResolutionInfoWrapperStyle from './getHighResolutionInfoWrapperStyle';
+import getNavigationBarType from './getNavigationBarType/index.android';
 import getNavigationModalCardStyle from './getNavigationModalCardStyles';
 import getSafeAreaInsets from './getSafeAreaInsets';
 import getSignInBgStyles from './getSignInBgStyles';
@@ -327,13 +328,30 @@ type SafeAreaPadding = {
     paddingBottom: number;
     paddingLeft: number;
     paddingRight: number;
+
+    /**
+     * If we the device has a gesture bar (soft keys or gesture bar), this is the height of the gesture bar.
+     * Since `paddingBottom` is set to 0 on devices with gesture bar, this value is used to add padding to the bottom of the screen if necessary.
+     */
+    gestureBarHeight: number;
 };
 
 /**
- * Takes safe area insets and returns padding to use for a View
+ * Takes safe area insets and returns platform specific padding to use for a View
  */
-function getSafeAreaPadding(insets?: EdgeInsets, insetsPercentageProp?: number): SafeAreaPadding {
+function getPlatformSafeAreaPadding(insets?: EdgeInsets, insetsPercentageProp?: number): SafeAreaPadding {
     const platform = getPlatform();
+    const navigationBarType = getNavigationBarType(insets);
+
+    // If the navigation bar is a gesture bar, we want `paddingBottom` to be 0,
+    // while providing the `gestureBarHeight` as an extra property
+    let platformBottomInset = insets?.bottom ?? 0;
+    let gestureBarHeight = 0;
+    if (navigationBarType === CONST.NAVIGATION_BAR_TYPE.GESTURE_BAR) {
+        gestureBarHeight = platformBottomInset;
+        platformBottomInset = 0;
+    }
+
     let insetsPercentage = insetsPercentageProp;
     if (insetsPercentage == null) {
         switch (platform) {
@@ -350,9 +368,10 @@ function getSafeAreaPadding(insets?: EdgeInsets, insetsPercentageProp?: number):
 
     return {
         paddingTop: insets?.top ?? 0,
-        paddingBottom: (insets?.bottom ?? 0) * insetsPercentage,
+        paddingBottom: platformBottomInset * insetsPercentage,
         paddingLeft: (insets?.left ?? 0) * insetsPercentage,
         paddingRight: (insets?.right ?? 0) * insetsPercentage,
+        gestureBarHeight,
     };
 }
 
@@ -1220,7 +1239,7 @@ const staticStyleUtils = {
     getPaymentMethodMenuWidth,
     getSafeAreaInsets,
     getSafeAreaMargins,
-    getSafeAreaPadding,
+    getPlatformSafeAreaPadding,
     getSignInWordmarkWidthStyle,
     getTextColorStyle,
     getTransparentColor,
