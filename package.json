@@ -5,6 +5,7 @@
   "homepage": "https://new.expensify.com",
   "description": "New Expensify is the next generation of Expensify: a reimagination of payments based atop a foundation of chat.",
   "license": "MIT",
+  "main": "src/libs/E2E/reactNativeLaunchingTest.ts",
   "private": true,
   "scripts": {
     "i-standalone": "STANDALONE_NEW_DOT=true npm i",
