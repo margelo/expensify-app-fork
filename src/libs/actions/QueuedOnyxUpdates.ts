@@ -25,25 +25,25 @@ function queueOnyxUpdates(updates: OnyxUpdate[]): Promise<void> {
 }
 
 function flushQueue(): Promise<void> {
-    if (!currentAccountID && !CONFIG.IS_TEST_ENV && !CONFIG.E2E_TESTING) {
-        const preservedKeys: OnyxKey[] = [
-            ONYXKEYS.NVP_TRY_FOCUS_MODE,
-            ONYXKEYS.PREFERRED_THEME,
-            ONYXKEYS.NVP_PREFERRED_LOCALE,
-            ONYXKEYS.SESSION,
-            ONYXKEYS.IS_LOADING_APP,
-            ONYXKEYS.CREDENTIALS,
-            ONYXKEYS.IS_SIDEBAR_LOADED,
-            ONYXKEYS.ACCOUNT,
-            ONYXKEYS.IS_CHECKING_PUBLIC_ROOM,
-            ONYXKEYS.MODAL,
-            ONYXKEYS.NETWORK,
-            ONYXKEYS.SHOULD_SHOW_COMPOSE_INPUT,
-            ONYXKEYS.PRESERVED_USER_SESSION,
-        ];
+    // if (!currentAccountID && !CONFIG.IS_TEST_ENV && !CONFIG.E2E_TESTING) {
+    //     const preservedKeys: OnyxKey[] = [
+    //         ONYXKEYS.NVP_TRY_FOCUS_MODE,
+    //         ONYXKEYS.PREFERRED_THEME,
+    //         ONYXKEYS.NVP_PREFERRED_LOCALE,
+    //         ONYXKEYS.SESSION,
+    //         ONYXKEYS.IS_LOADING_APP,
+    //         ONYXKEYS.CREDENTIALS,
+    //         ONYXKEYS.IS_SIDEBAR_LOADED,
+    //         ONYXKEYS.ACCOUNT,
+    //         ONYXKEYS.IS_CHECKING_PUBLIC_ROOM,
+    //         ONYXKEYS.MODAL,
+    //         ONYXKEYS.NETWORK,
+    //         ONYXKEYS.SHOULD_SHOW_COMPOSE_INPUT,
+    //         ONYXKEYS.PRESERVED_USER_SESSION,
+    //     ];
 
-        queuedOnyxUpdates = queuedOnyxUpdates.filter((update) => preservedKeys.includes(update.key as OnyxKey));
-    }
+    //     queuedOnyxUpdates = queuedOnyxUpdates.filter((update) => preservedKeys.includes(update.key as OnyxKey));
+    // }
 
     return Onyx.update(queuedOnyxUpdates).then(() => {
         queuedOnyxUpdates = [];
