@@ -114,7 +114,7 @@ function BaseSelectionList<TItem extends ListItem>(
         listItemWrapperStyle,
         shouldIgnoreFocus = false,
         scrollEventThrottle,
-        contentContainerStyle,
+        contentContainerStyle: contentContainerStyleProp,
         shouldHighlightSelectedItem = false,
         shouldKeepFocusedItemAtTopOfViewableArea = false,
         shouldDebounceScrolling = false,
@@ -125,6 +125,7 @@ function BaseSelectionList<TItem extends ListItem>(
         initialNumToRender = 12,
         listItemTitleContainerStyles,
         isScreenFocused = false,
+        TEMPORARY_enableBottomSafeAreaPaddingInContent: enableBottomSafeAreaPaddingInContent = false,
     }: BaseSelectionListProps<TItem>,
     ref: ForwardedRef<SelectionListHandle>,
 ) {
@@ -821,10 +822,17 @@ function BaseSelectionList<TItem extends ListItem>(
         );
 
     const {safeAreaPaddingBottomStyle} = useStyledSafeAreaInsets();
+    const paddingBottomStyle = useMemo(
+        () => (!isKeyboardShown || !!footerContent) && includeSafeAreaPaddingBottom && safeAreaPaddingBottomStyle,
+        [footerContent, includeSafeAreaPaddingBottom, isKeyboardShown, safeAreaPaddingBottomStyle],
+    );
+    const sectionListContentContainerStyle = useMemo(() => {
+        return enableBottomSafeAreaPaddingInContent ? [paddingBottomStyle, contentContainerStyleProp] : contentContainerStyleProp;
+    }, [contentContainerStyleProp, enableBottomSafeAreaPaddingInContent, paddingBottomStyle]);
 
     // TODO: test _every_ component that uses SelectionList
     return (
-        <View style={[styles.flex1, (!isKeyboardShown || !!footerContent) && includeSafeAreaPaddingBottom && safeAreaPaddingBottomStyle, containerStyle]}>
+        <View style={[styles.flex1, !enableBottomSafeAreaPaddingInContent && paddingBottomStyle, containerStyle]}>
             {shouldShowTextInput && !shouldShowTextInputAfterHeader && renderInput()}
             {/* If we are loading new options we will avoid showing any header message. This is mostly because one of the header messages says there are no options. */}
             {/* This is misleading because we might be in the process of loading fresh options from the server. */}
@@ -880,7 +888,7 @@ function BaseSelectionList<TItem extends ListItem>(
                         onEndReached={onEndReached}
                         onEndReachedThreshold={onEndReachedThreshold}
                         scrollEventThrottle={scrollEventThrottle}
-                        contentContainerStyle={contentContainerStyle}
+                        contentContainerStyle={sectionListContentContainerStyle}
                         CellRendererComponent={shouldPreventActiveCellVirtualization ? FocusAwareCellRendererComponent : undefined}
                     />
                     {children}
