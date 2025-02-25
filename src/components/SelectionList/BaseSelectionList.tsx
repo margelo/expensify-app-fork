@@ -130,6 +130,7 @@ function BaseSelectionList<TItem extends ListItem>(
         shouldSubscribeToArrowKeyEvents = true,
         addBottomSafeAreaPadding = false,
         shouldFooterContentStickToBottom = false,
+        shouldFooterContentUseSmallPadding = false,
     }: SelectionListProps<TItem>,
     ref: ForwardedRef<SelectionListHandle>,
 ) {
@@ -839,6 +840,8 @@ function BaseSelectionList<TItem extends ListItem>(
         additionalPaddingBottom: showConfirmButton && shouldFooterContentStickToBottom ? DEFAULT_CONFIRM_BUTTON_CONTENT_PADDING : 0,
     });
 
+    const shouldHideBottomSafeAreaPaddingWithFooter = !shouldFooterContentStickToBottom && (showConfirmButton || !!footerContent);
+
     // TODO: test _every_ component that uses SelectionList
     return (
         <View style={[styles.flex1, !addBottomSafeAreaPadding && paddingBottomStyle, containerStyle]}>
@@ -897,7 +900,7 @@ function BaseSelectionList<TItem extends ListItem>(
                         onEndReached={onEndReached}
                         onEndReachedThreshold={onEndReachedThreshold}
                         scrollEventThrottle={scrollEventThrottle}
-                        addBottomSafeAreaPadding={addBottomSafeAreaPadding}
+                        addBottomSafeAreaPadding={!shouldHideBottomSafeAreaPaddingWithFooter && addBottomSafeAreaPadding}
                         contentContainerStyle={contentContainerStyle}
                         CellRendererComponent={shouldPreventActiveCellVirtualization ? FocusAwareCellRendererComponent : undefined}
                     />
@@ -909,6 +912,7 @@ function BaseSelectionList<TItem extends ListItem>(
                     style={styles.mtAuto}
                     shouldStickToBottom={shouldFooterContentStickToBottom}
                     addBottomSafeAreaPadding={addBottomSafeAreaPadding}
+                    shouldUseSmallPadding={shouldFooterContentUseSmallPadding}
                 >
                     <Button
                         success={!shouldUseDefaultTheme}
@@ -928,6 +932,7 @@ function BaseSelectionList<TItem extends ListItem>(
                     style={styles.mtAuto}
                     shouldStickToBottom={shouldFooterContentStickToBottom}
                     addBottomSafeAreaPadding={addBottomSafeAreaPadding}
+                    shouldUseSmallPadding={shouldFooterContentUseSmallPadding}
                 >
                     {footerContent}
                 </FixedFooter>

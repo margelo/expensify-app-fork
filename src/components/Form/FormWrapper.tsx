@@ -49,6 +49,11 @@ type FormWrapperProps = ChildrenProps &
          * Whether the submit button should stick to the bottom of the screen.
          */
         shouldSubmitButtonStickToBottom?: boolean;
+
+        /**
+         * Whether the submit button should use small paddings.
+         */
+        shouldSubmitButtonUseSmallPadding?: boolean;
     };
 
 function FormWrapper({
@@ -73,6 +78,7 @@ function FormWrapper({
     isLoading = false,
     addBottomSafeAreaPadding = false,
     shouldSubmitButtonStickToBottom = false,
+    shouldSubmitButtonUseSmallPadding = false,
 }: FormWrapperProps) {
     const styles = useThemeStyles();
     const formRef = useRef<RNScrollView>(null);
@@ -114,8 +120,10 @@ function FormWrapper({
     }, [errors, formState?.errorFields, inputRefs]);
 
     const {paddingBottom} = useStyledSafeAreaInsets(true);
-    const SubmitButton = useMemo(
-        () =>
+    const SubmitButton = useMemo(() => {
+        const paddingStyles = shouldSubmitButtonUseSmallPadding ? {mt: styles.mt3, pb: styles.pb3} : {mt: styles.mt5, pb: styles.pb5};
+
+        return (
             isSubmitButtonVisible && (
                 <FormAlertWithSubmitButton
                     buttonText={submitButtonText}
@@ -128,7 +136,7 @@ function FormWrapper({
                     onFixTheErrorsLinkPressed={onFixTheErrorsLinkPressed}
                     containerStyles={[
                         styles.mh0,
-                        styles.mt5,
+                        paddingStyles.mt,
                         submitFlexEnabled ? styles.flex1 : {},
                         submitButtonStyles,
                         shouldSubmitButtonStickToBottom
@@ -137,7 +145,7 @@ function FormWrapper({
                                       position: 'absolute',
                                       left: 0,
                                       right: 0,
-                                      bottom: styles.pb5.paddingBottom + paddingBottom,
+                                      bottom: paddingStyles.pb.paddingBottom + paddingBottom,
                                   },
                                   style,
                               ]
@@ -149,34 +157,34 @@ function FormWrapper({
                     enterKeyEventListenerPriority={1}
                     shouldBlendOpacity={shouldSubmitButtonStickToBottom}
                 />
-            ),
-        [
-            disablePressOnEnter,
-            enabledWhenOffline,
-            errorMessage,
-            errors,
-            footerContent,
-            formState?.errorFields,
-            formState?.isLoading,
-            isLoading,
-            isSubmitActionDangerous,
-            isSubmitButtonVisible,
-            isSubmitDisabled,
-            onFixTheErrorsLinkPressed,
-            onSubmit,
-            paddingBottom,
-            shouldHideFixErrorsAlert,
-            shouldSubmitButtonStickToBottom,
-            style,
-            styles.flex1,
-            styles.mh0,
-            styles.mt5,
-            styles.pb5.paddingBottom,
-            submitButtonStyles,
-            submitButtonText,
-            submitFlexEnabled,
-        ],
-    );
+            )
+        );
+    }, [
+        disablePressOnEnter,
+        enabledWhenOffline,
+        errorMessage,
+        errors,
+        footerContent,
+        formState?.errorFields,
+        formState?.isLoading,
+        isLoading,
+        isSubmitActionDangerous,
+        isSubmitButtonVisible,
+        isSubmitDisabled,
+        onFixTheErrorsLinkPressed,
+        onSubmit,
+        paddingBottom,
+        shouldHideFixErrorsAlert,
+        shouldSubmitButtonStickToBottom,
+        style,
+        styles.flex1,
+        styles.mh0,
+        styles.mt5,
+        styles.pb5.paddingBottom,
+        submitButtonStyles,
+        submitButtonText,
+        submitFlexEnabled,
+    ]);
 
     const scrollViewContent = useCallback(
         () => (

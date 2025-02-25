@@ -21,14 +21,24 @@ type FixedFooterProps = {
      * Whether the footer should stick to the bottom of the screen.
      */
     shouldStickToBottom?: boolean;
+
+    /**
+     * Whether the footer should use small paddings.
+     */
+    shouldUseSmallPadding?: boolean;
 };
 
-function FixedFooter({style, children, addBottomSafeAreaPadding = false, shouldStickToBottom = false}: FixedFooterProps) {
+function FixedFooter({style, children, addBottomSafeAreaPadding = false, shouldStickToBottom = false, shouldUseSmallPadding = false}: FixedFooterProps) {
     const styles = useThemeStyles();
     const {paddingBottom} = useStyledSafeAreaInsets(true);
 
+    const paddingStyles = useMemo(
+        () => (shouldUseSmallPadding ? {pb: styles.pb3, pt: styles.pt3, ph: styles.ph3} : {pb: styles.pb5, pt: styles.pt5, ph: styles.ph5}),
+        [shouldUseSmallPadding, styles.pb3, styles.pb5, styles.ph3, styles.ph5, styles.pt3, styles.pt5],
+    );
+
     const footerStyle = useMemo<StyleProp<ViewStyle>>(() => {
-        const totalPaddingBottom = styles.pb5.paddingBottom + paddingBottom;
+        const totalPaddingBottom = paddingStyles.pb.paddingBottom + paddingBottom;
 
         if (shouldStickToBottom) {
             return {position: 'absolute', left: 0, right: 0, bottom: totalPaddingBottom};
@@ -38,14 +48,14 @@ function FixedFooter({style, children, addBottomSafeAreaPadding = false, shouldS
             return {paddingBottom: totalPaddingBottom};
         }
 
-        return styles.pb5;
-    }, [addBottomSafeAreaPadding, paddingBottom, shouldStickToBottom, styles.pb5]);
+        return paddingStyles.pb;
+    }, [addBottomSafeAreaPadding, paddingBottom, paddingStyles.pb, shouldStickToBottom]);
 
     if (!children) {
         return null;
     }
 
-    return <View style={[styles.ph5, styles.flexShrink0, footerStyle, style]}>{children}</View>;
+    return <View style={[paddingStyles.ph, paddingStyles.pt, styles.flexShrink0, footerStyle, style]}>{children}</View>;
 }
 
 FixedFooter.displayName = 'FixedFooter';

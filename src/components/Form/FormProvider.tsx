@@ -85,6 +85,11 @@ type FormProviderProps<TFormID extends OnyxFormKey = OnyxFormKey> = FormProps<TF
      * Whether the submit button should stick to the bottom of the screen.
      */
     shouldSubmitButtonStickToBottom?: boolean;
+
+    /**
+     * Whether the submit button should use small paddings.
+     */
+    shouldSubmitButtonUseSmallPadding?: boolean;
 };
 
 function FormProvider(
