@@ -17,6 +17,7 @@ import TextInput from '@components/TextInput';
 import useActiveElementRole from '@hooks/useActiveElementRole';
 import useArrowKeyFocusManager from '@hooks/useArrowKeyFocusManager';
 import useBottomSafeSafeAreaPaddingStyle from '@hooks/useBottomSafeSafeAreaPaddingStyle';
+import useDetectOverflow from '@hooks/useDetectOverflow';
 import useKeyboardShortcut from '@hooks/useKeyboardShortcut';
 import useKeyboardState from '@hooks/useKeyboardState';
 import useLocalize from '@hooks/useLocalize';
@@ -152,6 +153,17 @@ function BaseSelectionList<TItem extends ListItem>(
     const isTextInputFocusedRef = useRef<boolean>(false);
     const {singleExecution} = useSingleExecution();
     const [itemHeights, setItemHeights] = useState<Record<string, number>>({});
+
+    const {isOverflowing, handleScroll: handleScrollOverflow, setOriginalOnScroll} = useDetectOverflow();
+
+    useEffect(() => {
+        if (!onScroll) {
+            return;
+        }
+        setOriginalOnScroll(onScroll);
+    }, [onScroll, setOriginalOnScroll]);
+
+    console.log({isOverflowing});
 
     const onItemLayout = (event: LayoutChangeEvent, itemKey: string | null | undefined) => {
         if (!itemKey) {
@@ -868,7 +880,7 @@ function BaseSelectionList<TItem extends ListItem>(
                         )}
                         renderItem={renderItem}
                         getItemLayout={getItemLayout}
-                        onScroll={onScroll}
+                        onScroll={handleScrollOverflow}
                         onScrollBeginDrag={onScrollBeginDrag}
                         onContentSizeChange={onContentSizeChange}
                         keyExtractor={(item, index) => item.keyForList ?? `${index}`}
@@ -899,7 +911,7 @@ function BaseSelectionList<TItem extends ListItem>(
                         ListFooterComponent={listFooterContent ?? ShowMoreButtonInstance}
                         onEndReached={onEndReached}
                         onEndReachedThreshold={onEndReachedThreshold}
-                        scrollEventThrottle={scrollEventThrottle}
+                        scrollEventThrottle={scrollEventThrottle ?? 16}
                         addBottomSafeAreaPadding={!shouldHideBottomSafeAreaPaddingWithFooter && addBottomSafeAreaPadding}
                         contentContainerStyle={contentContainerStyle}
                         CellRendererComponent={shouldPreventActiveCellVirtualization ? FocusAwareCellRendererComponent : undefined}
@@ -913,6 +925,7 @@ function BaseSelectionList<TItem extends ListItem>(
                     shouldStickToBottom={shouldFooterContentStickToBottom}
                     addBottomSafeAreaPadding={addBottomSafeAreaPadding}
                     shouldUseSmallPadding={shouldFooterContentUseSmallPadding}
+                    showTopBorder={isOverflowing}
                 >
                     <Button
                         success={!shouldUseDefaultTheme}
@@ -933,6 +946,7 @@ function BaseSelectionList<TItem extends ListItem>(
                     shouldStickToBottom={shouldFooterContentStickToBottom}
                     addBottomSafeAreaPadding={addBottomSafeAreaPadding}
                     shouldUseSmallPadding={shouldFooterContentUseSmallPadding}
+                    showTopBorder={isOverflowing}
                 >
                     {footerContent}
                 </FixedFooter>
