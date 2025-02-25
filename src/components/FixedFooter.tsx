@@ -26,9 +26,14 @@ type FixedFooterProps = {
      * Whether the footer should use small paddings.
      */
     shouldUseSmallPadding?: boolean;
+
+    /**
+     * Whether to show a top border.
+     */
+    showTopBorder?: boolean;
 };
 
-function FixedFooter({style, children, addBottomSafeAreaPadding = false, shouldStickToBottom = false, shouldUseSmallPadding = false}: FixedFooterProps) {
+function FixedFooter({style, children, addBottomSafeAreaPadding = false, shouldStickToBottom = false, shouldUseSmallPadding = false, showTopBorder = false}: FixedFooterProps) {
     const styles = useThemeStyles();
     const {paddingBottom} = useStyledSafeAreaInsets(true);
 
@@ -55,7 +60,7 @@ function FixedFooter({style, children, addBottomSafeAreaPadding = false, shouldS
         return null;
     }
 
-    return <View style={[paddingStyles.ph, paddingStyles.pt, styles.flexShrink0, footerStyle, style]}>{children}</View>;
+    return <View style={[paddingStyles.ph, paddingStyles.pt, styles.flexShrink0, showTopBorder && styles.borderTop, footerStyle, style]}>{children}</View>;
 }
 
 FixedFooter.displayName = 'FixedFooter';
