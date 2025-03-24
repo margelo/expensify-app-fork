@@ -44,7 +44,7 @@ Choose when reimbursable expenses should export, based on your accounting method
 
 ## Export Settings for Reimbursable Expenses
 
-- **Expense Reports**: Reimbursable expenses will export as expense reports, posted to the designated payables account in NetSuite.
+- **Expense Reports**: Reimbursable expenses will export as expense reports, posted to the designated payable account in NetSuite.
 - **Vendor Bills**: Transactions export as vendor bills, mapped to the correct subsidiary and associated vendor.
 - **Journal Entries**: Transactions export as journal entries, mapped to the appropriate subsidiary and posted to the payable account.
 

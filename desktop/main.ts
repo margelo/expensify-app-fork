@@ -445,7 +445,7 @@ const mainWindow = (): Promise<void> => {
                             {id: 'zoomIn', role: 'zoomIn'},
                             {id: 'zoomOut', role: 'zoomOut'},
                             {type: 'separator'},
-                            {id: 'togglefullscreen', role: 'togglefullscreen'},
+                            {id: 'toggleFullscreen', role: 'toggleFullscreen'},
                         ],
                     },
                     {

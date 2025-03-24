@@ -5131,7 +5131,7 @@ const translations = {
         resetZoom: 'Actual Size',
         zoomIn: 'Zoom In',
         zoomOut: 'Zoom Out',
-        togglefullscreen: 'Toggle Full Screen',
+        toggleFullscreen: 'Toggle Full Screen',
         historyMenu: 'History',
         back: 'Back',
         forward: 'Forward',

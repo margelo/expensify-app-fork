@@ -5186,7 +5186,7 @@ const translations = {
         resetZoom: 'Tamaño real',
         zoomIn: 'Acercar',
         zoomOut: 'Alejar',
-        togglefullscreen: 'Alternar pantalla completa',
+        toggleFullscreen: 'Alternar pantalla completa',
         historyMenu: 'Historial',
         back: 'Atrás',
         forward: 'Adelante',

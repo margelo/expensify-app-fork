@@ -68,7 +68,7 @@ This error occurs when you are exporting reimbursable expenses as Journal Entrie
 ## How to fix it
 
 There are three different ways you can resolve this error.
-- Select a different type of export for reimbursable expenses under Settings > Workspaces > Worksapce Name > Connections > Configure > Export tab. 
+- Select a different type of export for reimbursable expenses under Settings > Workspaces > Workspace Name > Connections > Configure > Export tab. 
 - Enable _Automatically Create Entities_ under Settings > Workspaces > Workspace Name > Connections > Configure > Advanced to create vendor records automatically.
 - Manually create vendor records in QuickBooks Online for each employee.
 
