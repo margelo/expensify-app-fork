@@ -164,6 +164,6 @@ Track your Free Trial start date and remaining days on the Subscription page.
 - You’ll receive notifications when your trial starts and ends.
 - To continue using Expensify, add a <b>billing card<b/> before your trial ends.
 
-![Hightlight the free trial start and end date]({{site.url}}/assets/images/ExpensifyHelp-FreeTrial-1.png){:width="100%"}
+![Highlight the free trial start and end date]({{site.url}}/assets/images/ExpensifyHelp-FreeTrial-1.png){:width="100%"}
  
 </div>
