@@ -549,5 +549,11 @@
         "src/libs/SearchParser/*"
     ],
     "ignoreRegExpList": ["@assets/.*"],
-    "useGitignore": true
+    "useGitignore": true,
+    "overrides": [
+        {
+            "filename": "src/languages/es.ts",
+            "language": "es"
+        }
+    ]
 }
