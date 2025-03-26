@@ -199,7 +199,7 @@ function getDestinationForDisplay(customUnit: CustomUnit | undefined, transactio
     return selectedDestination?.name ?? '';
 }
 
-function getSubratesFields(customUnit: CustomUnit | undefined, transaction: OnyxEntry<Transaction>) {
+function getSubrateFields(customUnit: CustomUnit | undefined, transaction: OnyxEntry<Transaction>) {
     const customUnitRateID = transaction?.comment?.customUnit?.customUnitRateID;
     if (!customUnitRateID) {
         return [];
@@ -230,7 +230,7 @@ type Subrate = {
     rate?: number;
 };
 
-function getSubratesForDisplay(subrate: Subrate | undefined, qtyText: string) {
+function getSubrateForDisplay(subrate: Subrate | undefined, qtyText: string) {
     if (!subrate) {
         return undefined;
     }
@@ -280,4 +280,4 @@ function getTimeDifferenceIntervals(transaction: OnyxEntry<Transaction>) {
 
 export type {Destination};
 
-export {getCustomUnitID, getDestinationListSections, getDestinationForDisplay, getSubratesFields, getSubratesForDisplay, getTimeForDisplay, getTimeDifferenceIntervals};
+export {getCustomUnitID, getDestinationListSections, getDestinationForDisplay, getSubrateFields, getSubrateForDisplay, getTimeForDisplay, getTimeDifferenceIntervals};

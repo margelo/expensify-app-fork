@@ -13,7 +13,7 @@ import {convertToDisplayString} from '@libs/CurrencyUtils';
 import DistanceRequestUtils from '@libs/DistanceRequestUtils';
 import Navigation from '@libs/Navigation/Navigation';
 import {hasEnabledOptions} from '@libs/OptionsListUtils';
-import {getDestinationForDisplay, getSubratesFields, getSubratesForDisplay, getTimeDifferenceIntervals, getTimeForDisplay} from '@libs/PerDiemRequestUtils';
+import {getDestinationForDisplay, getSubrateFields, getSubrateForDisplay, getTimeDifferenceIntervals, getTimeForDisplay} from '@libs/PerDiemRequestUtils';
 import {canSendInvoice, getPerDiemCustomUnit, isMultiLevelTags as isMultiLevelTagsPolicyUtils, isPaidGroupPolicy} from '@libs/PolicyUtils';
 import type {ThumbnailAndImageURI} from '@libs/ReceiptUtils';
 import {getThumbnailAndImageURIs} from '@libs/ReceiptUtils';
@@ -626,7 +626,7 @@ function MoneyRequestConfirmationListFooter({
         },
     ];
 
-    const subRates = getSubratesFields(perDiemCustomUnit, transaction);
+    const subRates = getSubrateFields(perDiemCustomUnit, transaction);
     const shouldDisplaySubrateError =
         isPerDiemRequest && (shouldDisplayFieldError || formError === 'iou.error.invalidSubrateLength') && (subRates.length === 0 || (subRates.length === 1 && !subRates.at(0)));
 
@@ -634,7 +634,7 @@ function MoneyRequestConfirmationListFooter({
         <MenuItemWithTopDescription
             key={`${translate('common.subrate')}${field?.key ?? index}`}
             shouldShowRightIcon={!isReadOnly}
-            title={getSubratesForDisplay(field, translate('iou.qty'))}
+            title={getSubrateForDisplay(field, translate('iou.qty'))}
             description={translate('common.subrate')}
             style={[styles.moneyRequestMenuItem]}
             titleStyle={styles.flex1}
