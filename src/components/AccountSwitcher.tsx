@@ -257,7 +257,6 @@ function AccountSwitcher({isScreenFocused}: AccountSwitcherProps) {
                     shouldUseScrollView
                     shouldUpdateFocusedIndex={false}
                     enableEdgeToEdgeBottomSafeAreaPadding
-                    addBottomSafeAreaPadding
                 />
             )}
             <ConfirmModal
