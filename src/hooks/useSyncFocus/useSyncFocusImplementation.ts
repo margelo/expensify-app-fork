@@ -1,7 +1,7 @@
 import {useContext, useLayoutEffect} from 'react';
 import type {RefObject} from 'react';
 import type {View} from 'react-native';
-import ScreenWrapperStatusContext from '@components/ScreenWrapper/ScreenWrapperStatusContext';
+import {ScreenWrapperStatusContext} from '@components/ScreenWrapper';
 
 // This mutable ref holds the currently focused item's ref.
 // It enables external actions like calling .focus() from outside this hook,
