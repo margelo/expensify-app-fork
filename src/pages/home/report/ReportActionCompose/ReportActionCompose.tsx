@@ -113,6 +113,8 @@ type ReportActionComposeProps = Pick<ComposerWithSuggestionsProps, 'reportID' | 
 
     /** Whether the main composer was hidden */
     didHideComposerInput?: boolean;
+
+    nativeID?: string;
 };
 
 // We want consistent auto focus behavior on input between native and mWeb so we have some auto focus management code that will
@@ -136,6 +138,7 @@ function ReportActionCompose({
     onComposerFocus,
     onComposerBlur,
     didHideComposerInput,
+    nativeID,
 }: ReportActionComposeProps) {
     const actionSheetAwareScrollViewContext = useContext(ActionSheetAwareScrollView.ActionSheetAwareScrollViewContext);
     const styles = useThemeStyles();
@@ -617,6 +620,7 @@ function ReportActionCompose({
                                         measureParentContainer={measureContainer}
                                         onValueChange={onValueChange}
                                         didHideComposerInput={didHideComposerInput}
+                                        nativeID={nativeID}
                                     />
                                     {/* TODO: remove beta check after the feature is enabled */}
                                     {isBetaEnabled(CONST.BETAS.NEWDOT_MULTI_FILES_DRAG_AND_DROP) && shouldDisplayDualDropZone && (
