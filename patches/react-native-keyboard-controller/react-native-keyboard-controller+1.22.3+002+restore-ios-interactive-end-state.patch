@@ -1,0 +1,23 @@
+diff --git a/node_modules/react-native-keyboard-controller/ios/observers/movement/KeyboardTrackingView.swift b/node_modules/react-native-keyboard-controller/ios/observers/movement/KeyboardTrackingView.swift
+--- a/node_modules/react-native-keyboard-controller/ios/observers/movement/KeyboardTrackingView.swift
++++ b/node_modules/react-native-keyboard-controller/ios/observers/movement/KeyboardTrackingView.swift
+@@ -139,6 +139,6 @@ public final class KeyboardTrackingView: UIView {
+     // for `keyboardLayoutGuide` case we can just read keyboard position directly - no interpolation needed
+     if KeyboardControllerConfiguration.usesKeyboardLayoutGuideTracking {
+-      if keyboardPosition > keyboardHeight {
++      if !keyboardPosition.isFinite || keyboardPosition < 0 || keyboardPosition > keyboardHeight {
+         return Self.invalidPosition
+       }
+       // when we are the top position KVO takes `inputAccessoryView` into consideration,
+diff --git a/node_modules/react-native-keyboard-controller/src/animated.tsx b/node_modules/react-native-keyboard-controller/src/animated.tsx
+--- a/node_modules/react-native-keyboard-controller/src/animated.tsx
++++ b/node_modules/react-native-keyboard-controller/src/animated.tsx
+@@ -181,3 +181,3 @@ export const KeyboardProvider = (props: KeyboardProviderProps) => {
+-        updateSharedValues(event, ["android"]);
++        updateSharedValues(event, ["android", "ios"]);
+       },
+     },
+@@ -229,2 +229,2 @@ export const KeyboardProvider = (props: KeyboardProviderProps) => {
+-        onKeyboardMoveEnd={OS === "android" ? onKeyboardMove : undefined}
++        onKeyboardMoveEnd={onKeyboardMove}
+         onFocusedInputLayoutChangedReanimated={inputLayoutHandler}

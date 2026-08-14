@@ -1,0 +1,37 @@
+diff --git a/node_modules/@legendapp/list/keyboard.js b/node_modules/@legendapp/list/keyboard.js
+--- a/node_modules/@legendapp/list/keyboard.js
++++ b/node_modules/@legendapp/list/keyboard.js
+@@ -3,4 +3,5 @@
+ var React = require('react');
++var reactNative$1 = require('react-native');
+ var reactNativeKeyboardController = require('react-native-keyboard-controller');
+ var reactNativeReanimated = require('react-native-reanimated');
+ var reactNative = require('@legendapp/list/react-native');
+@@ -130,7 +131,7 @@ var KeyboardAwareLegendList = typedForwardRef(function KeyboardAwareLegendList2
+           freeze,
+           keyboardLiftBehavior,
+           offset: keyboardOffset,
+-          onContentInsetChange,
++          onContentInsetChange: reactNative$1.Platform.OS === "android" ? onContentInsetChange : void 0,
+           ScrollViewComponent
+         }
+       );
+diff --git a/node_modules/@legendapp/list/keyboard.mjs b/node_modules/@legendapp/list/keyboard.mjs
+--- a/node_modules/@legendapp/list/keyboard.mjs
++++ b/node_modules/@legendapp/list/keyboard.mjs
+@@ -1,5 +1,6 @@
+ import * as React from 'react';
+ import { useRef, useEffect, useMemo, useCallback, useLayoutEffect } from 'react';
++import { Platform } from 'react-native';
+ import { KeyboardChatScrollView, KeyboardController } from 'react-native-keyboard-controller';
+ import { useSharedValue } from 'react-native-reanimated';
+ import { internal } from '@legendapp/list/react-native';
+@@ -109,7 +110,7 @@ var KeyboardAwareLegendList = typedForwardRef(function KeyboardAwareLegendList2
+           freeze,
+           keyboardLiftBehavior,
+           offset: keyboardOffset,
+-          onContentInsetChange,
++          onContentInsetChange: Platform.OS === "android" ? onContentInsetChange : void 0,
+           ScrollViewComponent
+         }
+       );

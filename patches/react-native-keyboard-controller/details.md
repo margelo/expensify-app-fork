@@ -11,3 +11,13 @@
 - Upstream PR/issue: -
 - E/App issue: https://github.com/Expensify/App/issues/87307
 - PR introducing patch: https://github.com/Expensify/App/pull/87376
+
+### [react-native-keyboard-controller+1.22.3+002+restore-ios-interactive-end-state.patch](react-native-keyboard-controller+1.22.3+002+restore-ios-interactive-end-state.patch)
+
+- Reason:
+
+    During a cancelled interactive keyboard dismissal on iOS, the final keyboard event was not copied into the provider's Animated or Reanimated height values. The last interactive height could therefore remain latched and translate `KeyboardStickyView` below its clipped parent until the keyboard was closed or reopened. The patch also rejects non-finite and negative layout-guide positions before they can reach JavaScript. This restores the final open/closed state while leaving UIKit in control of the physical keyboard gesture.
+
+- Upstream PR/issue: https://github.com/kirillzyusko/react-native-keyboard-controller/issues/1563
+- E/App issue: -
+- PR introducing patch: -
