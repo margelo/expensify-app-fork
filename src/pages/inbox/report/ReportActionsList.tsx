@@ -10,10 +10,12 @@ import useNetwork from '@hooks/useNetwork';
 import useOnyx from '@hooks/useOnyx';
 import useReportActionsScroll from '@hooks/useReportActionsScroll';
 import useResponsiveLayout from '@hooks/useResponsiveLayout';
+import useSafeAreaPaddings from '@hooks/useSafeAreaPaddings';
 import useThemeStyles from '@hooks/useThemeStyles';
 import useUnreadMarker from '@hooks/useUnreadMarker';
 
 import {isConsecutiveChronosAutomaticTimerAction} from '@libs/ChronosUtils';
+import FS from '@libs/Fullstory';
 import getNonEmptyStringOnyxID from '@libs/getNonEmptyStringOnyxID';
 import isSearchTopmostFullScreenRoute from '@libs/Navigation/helpers/isSearchTopmostFullScreenRoute';
 import type {PlatformStackRouteProp} from '@libs/Navigation/PlatformStackNavigation/types';
@@ -62,13 +64,13 @@ import {KeyboardAwareLegendList} from '@legendapp/list/keyboard';
 import {useRoute} from '@react-navigation/native';
 import {isTrackIntentUserSelector} from '@selectors/Onboarding';
 import React, {useEffect, useImperativeHandle, useRef, useState} from 'react';
+import {View} from 'react-native';
 
 import FloatingMessageCounter from './FloatingMessageCounter';
 import ReportActionIndexContext from './ReportActionIndexContext';
 import {useReportActionsListActions, useReportActionsListState} from './ReportActionsListContext';
 import ReportActionsListHeader from './ReportActionsListHeader';
 import ReportActionsListItemRenderer from './ReportActionsListItemRenderer';
-import ReportActionsListPaddingView from './ReportActionsListPaddingView';
 import ReportActionsSkeletonGuard from './ReportActionsSkeletonGuard';
 import ShowPreviousMessagesButton from './ShowPreviousMessagesButton';
 import useFollowActionBadgeTarget from './useFollowActionBadgeTarget';
@@ -108,6 +110,7 @@ function ReportActionsListContent({reportID, onLayout}: ReportActionsListContent
     const styles = useThemeStyles();
     const {translate} = useLocalize();
     const {shouldUseNarrowLayout} = useResponsiveLayout();
+    const safeAreaPaddings = useSafeAreaPaddings();
     const {isProduction} = useEnvironment();
 
     const {
@@ -488,6 +491,8 @@ function ReportActionsListContent({reportID, onLayout}: ReportActionsListContent
         return <ReportActionsSkeletonView />;
     }
 
+    const reportActionsListFSClass = FS.getChatFSClass(report);
+
     return (
         <>
             <FloatingMessageCounter
@@ -499,12 +504,16 @@ function ReportActionsListContent({reportID, onLayout}: ReportActionsListContent
                 onActionBadgePress={scrollToActionBadgeTarget}
                 isMarkAsDone={shouldUseMarkAsDoneCopy}
             />
-            <ReportActionsListPaddingView
-                report={report}
-                isReportArchived={isReportArchived}
+            <View
+                style={styles.flex1}
+                fsClass={reportActionsListFSClass}
             >
                 <KeyboardAwareLegendList
                     ScrollViewComponent={ActionSheetAwareScrollView}
+                    keyboardOffset={safeAreaPaddings.paddingBottom}
+                    automaticallyAdjustContentInsets={false}
+                    contentInsetAdjustmentBehavior="never"
+                    keyboardDismissMode="interactive"
                     accessibilityLabel={translate('sidebarScreen.listOfChatMessages')}
                     ref={legendListRef}
                     testID="report-actions-list"
@@ -540,7 +549,7 @@ function ReportActionsListContent({reportID, onLayout}: ReportActionsListContent
                         trackVerticalScrolling(undefined);
                     }}
                 />
-            </ReportActionsListPaddingView>
+            </View>
         </>
     );
 }
