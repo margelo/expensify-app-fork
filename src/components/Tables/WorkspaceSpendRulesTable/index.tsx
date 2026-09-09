@@ -10,7 +10,7 @@ import tokenizedSearch from '@libs/tokenizedSearch';
 
 import variables from '@styles/variables';
 
-import type {ListRenderItemInfo} from '@shopify/flash-list';
+import type {LegendListRenderItemProps} from '@components/LegendList/types';
 
 import React from 'react';
 
@@ -91,7 +91,7 @@ function WorkspaceSpendRulesTable({rulesData, selectionEnabled, selectedKeys, em
         return matchingItems.length > 0;
     };
 
-    const renderItem = ({item, index}: ListRenderItemInfo<SpendRuleTableItem>) => (
+    const renderItem = ({item, index}: LegendListRenderItemProps<SpendRuleTableItem>) => (
         <WorkspaceSpendRulesTableRow
             key={item.ruleID}
             item={item}

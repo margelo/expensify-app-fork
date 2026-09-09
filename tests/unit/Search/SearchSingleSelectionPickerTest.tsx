@@ -13,15 +13,15 @@ import type ReactNative from 'react-native';
 import * as NativeNavigation from '@react-navigation/native';
 import React from 'react';
 
-jest.mock('@shopify/flash-list', () => {
+jest.mock('@components/LegendList', () => {
     const ReactLocal = jest.requireActual<typeof React>('react');
     const RN = jest.requireActual<typeof ReactNative>('react-native');
 
-    const FlashList = ReactLocal.forwardRef<
+    const LegendList = ReactLocal.forwardRef<
         {scrollToIndex: (params: {index: number}) => void},
         Omit<React.ComponentProps<typeof RN.ScrollView>, 'children'> & {
             data?: unknown[];
-            renderItem?: (info: {item: unknown; index: number; target: string}) => React.ReactNode;
+            renderItem?: (info: {item: unknown; index: number}) => React.ReactNode;
             keyExtractor?: (item: unknown, index: number) => string;
             ListHeaderComponent?: React.ReactNode;
             ListFooterComponent?: React.ReactNode;
@@ -57,14 +57,14 @@ jest.mock('@shopify/flash-list', () => {
                 scrollViewProps,
                 ListHeaderComponent ?? null,
                 ...(data ?? []).map((item, index) =>
-                    ReactLocal.createElement(ReactLocal.Fragment, {key: keyExtractor?.(item, index) ?? String(index)}, renderItem?.({item, index, target: 'Cell'})),
+                    ReactLocal.createElement(ReactLocal.Fragment, {key: keyExtractor?.(item, index) ?? String(index)}, renderItem?.({item, index})),
                 ),
                 ListFooterComponent ?? null,
             );
         },
     );
 
-    return {FlashList};
+    return {__esModule: true, default: LegendList};
 });
 
 jest.mock('@src/components/ConfirmedRoute.tsx');

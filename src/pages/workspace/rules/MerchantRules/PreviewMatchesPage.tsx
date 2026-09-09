@@ -27,9 +27,9 @@ import type SCREENS from '@src/SCREENS';
 import type {Transaction} from '@src/types/onyx';
 import type {CodingRuleFilter} from '@src/types/onyx/Policy';
 
-import type {ListRenderItem} from '@shopify/flash-list';
+import type {LegendListRenderItem} from '@components/LegendList/types';
 
-import {FlashList} from '@shopify/flash-list';
+import LegendList from '@components/LegendList';
 import React, {useEffect} from 'react';
 import {View} from 'react-native';
 
@@ -74,7 +74,7 @@ function PreviewMatchesPage({route}: PreviewMatchesPageProps) {
     const isLoadedWithTransactions = !isLoading && hasMatchingTransactions;
 
     const keyExtractor = (item: Transaction) => item.transactionID;
-    const renderItem: ListRenderItem<Transaction> = ({item}) => (
+    const renderItem: LegendListRenderItem<Transaction> = ({item}) => (
         <UnreportedExpenseListItem
             readOnly
             showTooltip
@@ -127,7 +127,8 @@ function PreviewMatchesPage({route}: PreviewMatchesPageProps) {
                     )}
 
                     {isLoadedWithTransactions && (
-                        <FlashList
+                        <LegendList
+                            maintainVisibleContentPosition
                             data={matchingTransactionsArray}
                             renderItem={renderItem}
                             keyExtractor={keyExtractor}

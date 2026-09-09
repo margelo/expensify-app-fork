@@ -11,7 +11,7 @@ import CONST from '@src/CONST';
 import SCREENS from '@src/SCREENS';
 import type {Transaction} from '@src/types/onyx';
 
-import type {ListRenderItem} from '@shopify/flash-list';
+import type {LegendListRenderItem} from '@components/LegendList/types';
 import type {LayoutChangeEvent} from 'react-native';
 import type {StoryFn} from 'storybook-react-rsbuild';
 
@@ -135,7 +135,7 @@ function Template(props: MoneyRequestReportPreviewContentProps, {parameters}: {p
     const reportPreviewStyles = StyleUtils.getMoneyRequestReportPreviewStyle(false, transactions.length, widths.currentWidth, widths.currentWrapperWidth);
     const transactionPreviewContainerStyles = [styles.h100, reportPreviewStyles.transactionPreviewCarouselStyle];
 
-    const renderItem: ListRenderItem<Transaction> = ({item}) => (
+    const renderItem: LegendListRenderItem<Transaction> = ({item}) => (
         <TransactionPreviewContent
             action={actionR14932}
             isWhisper={false}

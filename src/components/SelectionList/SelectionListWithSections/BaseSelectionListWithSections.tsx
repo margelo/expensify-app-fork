@@ -22,11 +22,11 @@ import useThemeStyles from '@hooks/useThemeStyles';
 
 import CONST from '@src/CONST';
 
-import type {FlashListRef, ListRenderItemInfo} from '@shopify/flash-list';
+import type {LegendListRef, LegendListRenderItemProps} from '@components/LegendList/types';
 import type {ValueOf} from 'type-fest';
 
 import {useIsFocused} from '@react-navigation/native';
-import {FlashList} from '@shopify/flash-list';
+import LegendList from '@components/LegendList';
 import React, {useCallback, useImperativeHandle, useRef} from 'react';
 import {View} from 'react-native';
 
@@ -98,7 +98,7 @@ function BaseSelectionListWithSectionsImpl({
     const paddingBottomStyle = !isKeyboardShown && !footerContent && safeAreaPaddingBottomStyle;
 
     const {flattenedData, disabledIndexes, itemsCount, selectedItems, initialFocusedIndex, firstFocusableIndex} = useFlattenedSections(sections, initiallyFocusedItemKey);
-    const listRef = useRef<FlashListRef<FlattenedItem<ListItem>> | null>(null);
+    const listRef = useRef<LegendListRef | null>(null);
     const {scrollToIndex, debouncedScrollToIndex} = useSelectionListScroll(listRef, flattenedData);
     const {containerRef, trackScrollOffset, scrollInputIntoView} = useScrollToFocusedInput(listRef, isKeyboardShown);
 
@@ -112,7 +112,6 @@ function BaseSelectionListWithSectionsImpl({
         shouldDebounceScrolling,
         scrollToIndex,
         debouncedScrollToIndex,
-        announceProgrammaticScroll: () => listRef.current?.announceProgrammaticScroll(),
         setShouldDisableHoverStyle,
     });
 
@@ -254,7 +253,7 @@ function BaseSelectionListWithSectionsImpl({
         );
     };
 
-    const renderItem = ({item, index}: ListRenderItemInfo<FlattenedItem<ListItem>>) => {
+    const renderItem = ({item, index}: LegendListRenderItemProps<FlattenedItem<ListItem>>) => {
         if (!item) {
             return null;
         }
@@ -326,12 +325,12 @@ function BaseSelectionListWithSectionsImpl({
                     listEmptyContent={listEmptyContent}
                 />
             ) : (
-                <FlashList
+                <LegendList
                     role={getListboxRole(canSelectMultiple)}
                     data={flattenedData}
                     renderItem={renderItem}
                     ref={listRef}
-                    extraData={flattenedData.length}
+                    extraData={renderItem}
                     getItemType={getItemType}
                     initialScrollIndex={initialScrollIndex ?? initialFocusedIndex}
                     keyExtractor={(item) => ('flatListKey' in item ? item.flatListKey : item.keyForList)}
@@ -352,7 +351,7 @@ function BaseSelectionListWithSectionsImpl({
                     ListFooterComponentStyle={style?.listFooterContentStyle}
                     style={style?.listStyle}
                     contentContainerStyle={style?.contentContainerStyle}
-                    maintainVisibleContentPosition={{disabled: true}}
+                    maintainVisibleContentPosition={false}
                 />
             )}
             {!!footerContent && (
