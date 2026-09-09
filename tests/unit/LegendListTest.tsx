@@ -79,13 +79,15 @@ describe('LegendList Jest mock', () => {
 
     it('forwards scroll events and calculates the end distance', () => {
         const onEndReached = jest.fn();
-        const onScroll = jest.fn();
+        const ref = createRef<LegendListRef>();
+        const onScroll = jest.fn(() => ref.current?.getState());
         render(
             <LibraryLegendList
                 data={DATA}
                 onEndReached={onEndReached}
                 onEndReachedThreshold={0.5}
                 onScroll={onScroll}
+                ref={ref}
                 renderItem={renderItem}
                 testID="legend-list"
             />,
@@ -100,19 +102,24 @@ describe('LegendList Jest mock', () => {
         });
 
         expect(onScroll).toHaveBeenCalledTimes(1);
+        expect(onScroll).toHaveLastReturnedWith(expect.objectContaining({contentLength: 600, scroll: 100, scrollLength: 400}));
         expect(onEndReached).toHaveBeenCalledWith({distanceFromEnd: 100});
     });
 
     it('provides the imperative scroll methods used by list consumers', async () => {
         const ref = createRef<LegendListRef>();
+        const onLoad = jest.fn(() => ref.current?.getState());
         render(
             <LibraryLegendList
                 data={DATA}
+                onLoad={onLoad}
                 ref={ref}
                 renderItem={renderItem}
             />,
         );
 
+        expect(onLoad).toHaveBeenCalledTimes(1);
+        expect(onLoad).toHaveLastReturnedWith(expect.objectContaining({data: DATA, endBuffered: DATA.length - 1, startBuffered: 0}));
         await expect(ref.current?.scrollToIndex({index: 1})).resolves.toBeUndefined();
         await expect(ref.current?.scrollToOffset({offset: 20})).resolves.toBeUndefined();
     });
