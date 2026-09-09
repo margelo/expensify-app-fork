@@ -1,6 +1,7 @@
 import Button from '@components/ButtonComposed';
-import FlatList from '@components/FlatList/FlatList';
 import Image from '@components/Image';
+import LegendList from '@components/LegendList';
+import type {LegendListRef} from '@components/LegendList/types';
 import {PressableWithFeedback} from '@components/Pressable';
 
 import {useMemoizedLazyExpensifyIcons} from '@hooks/useLazyAsset';
@@ -20,8 +21,6 @@ import useReceiptPreviewsSizes from '@pages/iou/request/step/IOURequestStepScan/
 import CONST from '@src/CONST';
 import {DYNAMIC_ROUTES} from '@src/ROUTES';
 import type {Receipt} from '@src/types/onyx/Transaction';
-
-import type {FlatList as FlatListType} from 'react-native';
 
 import {Str} from 'expensify-common';
 import React, {useEffect, useRef} from 'react';
@@ -105,7 +104,7 @@ function ReceiptPreviews({submit, isMultiScanEnabled, isCapturingPhoto = false, 
         return receiptsWithPlaceholders;
     })();
     const isScrollEnabled = optimisticTransactionsReceipts.length >= receipts.length;
-    const flatListRef = useRef<FlatListType<ReceiptWithTransactionID | undefined>>(null);
+    const flatListRef = useRef<LegendListRef>(null);
     const receiptsPhotosLength = optimisticTransactionsReceipts.length;
     const previousReceiptsPhotosLength = usePrevious(receiptsPhotosLength);
 
@@ -153,13 +152,14 @@ function ReceiptPreviews({submit, isMultiScanEnabled, isCapturingPhoto = false, 
     return (
         <Animated.View style={slideInStyle}>
             <View style={isInLandscapeMode ? styles.pb4 : styles.pr4}>
-                <FlatList
+                <LegendList
                     ref={flatListRef}
                     data={receipts}
                     horizontal={!isInLandscapeMode}
                     keyExtractor={(_, index) => index.toString()}
                     renderItem={renderItem}
-                    getItemLayout={(data, index) => ({length: previewItemSize, offset: previewItemSize * index, index})}
+                    extraData={renderItem}
+                    getFixedItemSize={() => previewItemSize}
                     style={isInLandscapeMode ? styles.ph2 : styles.pv2}
                     scrollEnabled={isScrollEnabled}
                     showsHorizontalScrollIndicator={false}

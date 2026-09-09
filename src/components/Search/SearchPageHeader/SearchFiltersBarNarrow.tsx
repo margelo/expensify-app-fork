@@ -1,3 +1,5 @@
+import LegendList from '@components/LegendList';
+import type {LegendListRef} from '@components/LegendList/types';
 import type {SearchQueryJSON} from '@components/Search/types';
 import SearchFiltersSkeleton from '@components/Skeletons/SearchFiltersSkeleton';
 
@@ -7,7 +9,6 @@ import type {SearchFilter} from '@libs/SearchUIUtils';
 import shouldAdjustScroll from '@libs/shouldAdjustScroll';
 
 import React, {useRef} from 'react';
-import {FlatList} from 'react-native';
 
 import type {FilterItem} from './useSearchFiltersBar';
 
@@ -21,7 +22,7 @@ type SearchFiltersBarNarrowProps = {
 
 function SearchFiltersBarNarrow({queryJSON}: SearchFiltersBarNarrowProps) {
     const styles = useThemeStyles();
-    const scrollRef = useRef<FlatList<SearchFilter & FilterItem>>(null);
+    const scrollRef = useRef<LegendListRef>(null);
     const {filters, hasErrors, shouldShowFiltersBarLoading, clearFilters} = useSearchFiltersBar(queryJSON);
 
     const adjustScroll = (info: {distanceFromEnd: number}) => {
@@ -47,7 +48,7 @@ function SearchFiltersBarNarrow({queryJSON}: SearchFiltersBarNarrowProps) {
     }
 
     return (
-        <FlatList
+        <LegendList
             horizontal
             keyboardShouldPersistTaps="always"
             style={[styles.flexRow, styles.overflowScroll, styles.flexGrow0, !!filters.length && styles.mb4]}
