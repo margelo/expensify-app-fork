@@ -18,16 +18,16 @@ import React, {useState} from 'react';
 // Captures scrollToIndex calls so tests can assert on scroll behaviour
 const mockScrollToIndex = jest.fn();
 
-// Mock FlashList
-jest.mock('@shopify/flash-list', () => {
+// Mock LegendList
+jest.mock('@components/LegendList', () => {
     const ReactLocal = jest.requireActual<typeof React>('react');
     const RN = jest.requireActual<typeof ReactNative>('react-native');
 
-    const FlashList = ReactLocal.forwardRef<
+    const LegendList = ReactLocal.forwardRef<
         {scrollToIndex: (params: {index: number}) => void},
         Omit<React.ComponentProps<typeof RN.ScrollView>, 'children'> & {
             data?: unknown[];
-            renderItem?: (info: {item: unknown; index: number; target: string}) => React.ReactNode;
+            renderItem?: (info: {item: unknown; index: number}) => React.ReactNode;
             keyExtractor?: (item: unknown, index: number) => string;
             ListHeaderComponent?: React.ReactNode;
             ListFooterComponent?: React.ReactNode;
@@ -63,14 +63,14 @@ jest.mock('@shopify/flash-list', () => {
                 scrollViewProps,
                 ListHeaderComponent ?? null,
                 ...(data ?? []).map((item, index) =>
-                    ReactLocal.createElement(ReactLocal.Fragment, {key: keyExtractor?.(item, index) ?? String(index)}, renderItem?.({item, index, target: 'Cell'})),
+                    ReactLocal.createElement(ReactLocal.Fragment, {key: keyExtractor?.(item, index) ?? String(index)}, renderItem?.({item, index})),
                 ),
                 ListFooterComponent ?? null,
             );
         },
     );
 
-    return {FlashList};
+    return {__esModule: true, default: LegendList};
 });
 
 type BaseSelectionListSections<TItem extends ListItem> = {
@@ -203,7 +203,7 @@ describe('BaseSelectionList', () => {
             />,
         );
 
-        // FlashList renders all items (virtualization is handled internally)
+        // LegendList renders all items (virtualization is handled internally)
         expect(screen.getByTestId(`${CONST.BASE_LIST_ITEM_TEST_ID}0`)).toBeTruthy();
         expect(screen.getByTestId(`${CONST.BASE_LIST_ITEM_TEST_ID}99`)).toBeTruthy();
     });
@@ -229,7 +229,7 @@ describe('BaseSelectionList', () => {
             />,
         );
 
-        // All items should be rendered with FlashList
+        // All items should be rendered with LegendList
         expect(screen.getByTestId(`${CONST.BASE_LIST_ITEM_TEST_ID}0`)).toBeTruthy();
         expect(screen.getByTestId(`${CONST.BASE_LIST_ITEM_TEST_ID}49`)).toBeTruthy();
         expect(screen.getByTestId(`${CONST.BASE_LIST_ITEM_TEST_ID}99`)).toBeTruthy();

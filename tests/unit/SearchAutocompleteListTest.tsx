@@ -26,7 +26,8 @@ import ROUTES from '@src/ROUTES';
 import type {PersonalDetails, Report, ReportAction} from '@src/types/onyx';
 
 import type * as NativeNavigation from '@react-navigation/native';
-import type ReactNative from 'react-native';
+import type {LegendListProps} from '@components/LegendList/types';
+import type * as LegendListModule from '@legendapp/list/react-native';
 
 import React from 'react';
 import {StyleSheet} from 'react-native';
@@ -40,19 +41,19 @@ import * as TestHelper from '../utils/TestHelper';
 import waitForBatchedUpdates from '../utils/waitForBatchedUpdates';
 import wrapOnyxWithWaitForBatchedUpdates from '../utils/wrapOnyxWithWaitForBatchedUpdates';
 
-const mockFlashListContentContainerStyles: Array<React.ComponentProps<typeof ReactNative.FlatList>['contentContainerStyle']> = [];
+const mockLegendListContentContainerStyles: Array<LegendListProps<unknown>['contentContainerStyle']> = [];
 
-jest.mock('@shopify/flash-list', () => {
-    const RN = jest.requireActual<typeof ReactNative>('react-native');
+jest.mock('@components/LegendList', () => {
+    const {LegendList: MockList} = jest.requireMock<typeof LegendListModule>('@legendapp/list/react-native');
     return {
-        FlashList: ({data, contentContainerStyle, ...props}: React.ComponentProps<typeof RN.FlatList>) => {
-            mockFlashListContentContainerStyles.push(contentContainerStyle);
+        __esModule: true,
+        default: ({data, contentContainerStyle, ...props}: LegendListProps<unknown>) => {
+            mockLegendListContentContainerStyles.push(contentContainerStyle);
             return (
-                <RN.FlatList
+                <MockList
                     data={data}
                     contentContainerStyle={contentContainerStyle}
                     {...props}
-                    initialNumToRender={data?.length}
                 />
             );
         },
@@ -310,13 +311,13 @@ describe('SearchAutocompleteList', () => {
                 action: jest.fn(),
             },
         ]);
-        mockFlashListContentContainerStyles.length = 0;
+        mockLegendListContentContainerStyles.length = 0;
         render(<SearchRouterWrapper addOfflineIndicatorSafeAreaPadding />);
         await flushAllUpdates();
 
         const getContentPaddingBottom = () => {
-            // FlashList records a style per render; use the latest numeric bottom padding.
-            return mockFlashListContentContainerStyles
+            // LegendList records a style per render; use the latest numeric bottom padding.
+            return mockLegendListContentContainerStyles
                 .map((contentContainerStyle) => StyleSheet.flatten(contentContainerStyle)?.paddingBottom)
                 .findLast((paddingBottom) => typeof paddingBottom === 'number');
         };

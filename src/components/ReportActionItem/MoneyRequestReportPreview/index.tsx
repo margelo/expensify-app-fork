@@ -38,7 +38,7 @@ import ROUTES from '@src/ROUTES';
 import {hasOnceLoadedReportActionsSelector, isLoadingInitialReportActionsSelector, pendingNewTransactionIDsSelector} from '@src/selectors/ReportMetaData';
 import type {ReportActions, Transaction} from '@src/types/onyx';
 
-import type {ListRenderItem} from '@shopify/flash-list';
+import type {LegendListRenderItem} from '@components/LegendList/types';
 import type {LayoutChangeEvent} from 'react-native';
 import type {OnyxEntry} from 'react-native-onyx';
 
@@ -436,7 +436,7 @@ function MoneyRequestReportPreview({
         [],
     );
 
-    const renderItem: ListRenderItem<Transaction> = ({item}) => {
+    const renderItem: LegendListRenderItem<Transaction> = ({item}) => {
         const transactionIOUAction = getIOUActionForReportID(item.reportID, item.transactionID);
         return (
             <TransactionPreview

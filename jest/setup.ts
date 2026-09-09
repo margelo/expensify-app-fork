@@ -1,6 +1,5 @@
 import type {RenderInfo} from '@components/FlatList/RenderTaskQueue';
 
-import '@shopify/flash-list/jestSetup';
 import type * as LegendListModule from '@legendapp/list/react-native';
 import type {ReactNode} from 'react';
 import type React from 'react';
@@ -115,16 +114,26 @@ jest.mock('@legendapp/list/react-native', () => {
 
                 const itemKey = keyExtractor?.(item, index) ?? String(index);
                 const safeExtraData: unknown = extraData;
-                const itemElement = ReactActual.createElement(View, {key: itemKey}, renderItem({data, extraData: safeExtraData, index, item, type: getItemType?.(item, index)}));
+                const itemElement = ReactActual.createElement(
+                    View,
+                    {key: itemKey},
+                    renderItem({data, extraData: safeExtraData, index, item, type: getItemType?.(item, index)}),
+                );
                 if (!ItemSeparatorComponent || index === data.length - 1) {
                     return [itemElement];
                 }
 
                 return [itemElement, ReactActual.createElement(ItemSeparatorComponent, {key: `${itemKey}-separator`, leadingItem: item})];
             });
-            const header = ReactActual.isValidElement(ListHeaderComponent) ? ListHeaderComponent : ListHeaderComponent && ReactActual.createElement(ListHeaderComponent);
-            const footer = ReactActual.isValidElement(ListFooterComponent) ? ListFooterComponent : ListFooterComponent && ReactActual.createElement(ListFooterComponent);
-            const empty = ReactActual.isValidElement(ListEmptyComponent) ? ListEmptyComponent : ListEmptyComponent && ReactActual.createElement(ListEmptyComponent);
+            const header = ReactActual.isValidElement(ListHeaderComponent)
+                ? ListHeaderComponent
+                : ListHeaderComponent && ReactActual.createElement(ListHeaderComponent);
+            const footer = ReactActual.isValidElement(ListFooterComponent)
+                ? ListFooterComponent
+                : ListFooterComponent && ReactActual.createElement(ListFooterComponent);
+            const empty = ReactActual.isValidElement(ListEmptyComponent)
+                ? ListEmptyComponent
+                : ListEmptyComponent && ReactActual.createElement(ListEmptyComponent);
             let content = children;
             if (data) {
                 content = data.length > 0 ? renderedItems : empty;
@@ -141,7 +150,7 @@ jest.mock('@legendapp/list/react-native', () => {
     );
     const LegendList = jest.fn((props: MockLegendListProps & {ref?: React.Ref<unknown>}) => ReactActual.createElement(MockLegendList, props));
 
-    const useRecyclingState = <T>(valueOrInitializer: T | (() => T)) => ReactActual.useState(valueOrInitializer);
+    const useRecyclingState = <T,>(valueOrInitializer: T | (() => T)) => ReactActual.useState(valueOrInitializer);
 
     return {
         ...LegendListActual,
