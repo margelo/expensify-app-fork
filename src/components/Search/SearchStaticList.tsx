@@ -1,4 +1,6 @@
 import Checkbox from '@components/Checkbox';
+import LegendList from '@components/LegendList';
+import type {LegendListRenderItemProps} from '@components/LegendList/types';
 import {usePersonalDetails, useSession} from '@components/OnyxListItemProvider';
 import PressableWithoutFeedback from '@components/Pressable/PressableWithoutFeedback';
 import SearchRowSkeleton from '@components/Skeletons/SearchRowSkeleton';
@@ -24,7 +26,7 @@ import ROUTES from '@src/ROUTES';
 import {hasCompletedGuidedSetupFlowSelector, hasSeenTourSelector} from '@src/selectors/Onboarding';
 import type {SearchResults} from '@src/types/onyx';
 
-import type {ListRenderItemInfo, StyleProp, ViewStyle} from 'react-native';
+import type {StyleProp, ViewStyle} from 'react-native';
 
 /**
  * Lightweight, hook-minimal static version of the search results list used
@@ -42,7 +44,7 @@ import type {ListRenderItemInfo, StyleProp, ViewStyle} from 'react-native';
  */
 import {useFocusEffect} from '@react-navigation/native';
 import React, {useCallback, useRef, useState} from 'react';
-import {FlatList, View} from 'react-native';
+import {View} from 'react-native';
 
 import type {TransactionListItemType} from './SearchList/ListItem/types';
 import type {SearchColumnType, SearchQueryJSON} from './types';
@@ -177,7 +179,7 @@ function SearchStaticList({
         requestAnimationFrame(() => Navigation.navigate(ROUTES.SEARCH_REPORT.getRoute({reportID, backTo})));
     };
 
-    const renderItem = ({item, index}: ListRenderItemInfo<TransactionListItemType>) => {
+    const renderItem = ({item, index}: LegendListRenderItemProps<TransactionListItemType>) => {
         if (!('transactionID' in item)) {
             return null;
         }
@@ -259,7 +261,7 @@ function SearchStaticList({
 
     const hasWideFooter = !shouldUseNarrowLayout || showPendingExpensePlaceholder;
 
-    const renderWideItem = ({item, index}: ListRenderItemInfo<TransactionListItemType>, dataLength: number) => {
+    const renderWideItem = ({item, index}: LegendListRenderItemProps<TransactionListItemType>, dataLength: number) => {
         if (!('transactionID' in item)) {
             return null;
         }
@@ -376,13 +378,13 @@ function SearchStaticList({
                     </View>
                 </View>
             )}
-            <FlatList
+            <LegendList
                 data={sortedData}
+                extraData={[shouldUseNarrowLayout, renderItem, renderWideItem, sortedData.length]}
                 renderItem={shouldUseNarrowLayout ? renderItem : (info) => renderWideItem(info, sortedData.length)}
                 keyExtractor={keyExtractor}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={shouldUseNarrowLayout ? contentContainerStyle : styles.pb3}
-                removeClippedSubviews
                 ListFooterComponent={
                     showPendingExpensePlaceholder ? (
                         <SearchRowSkeleton

@@ -1,3 +1,5 @@
+import LegendList from '@components/LegendList';
+import type {LegendListProps, LegendListRenderItemProps} from '@components/LegendList/types';
 import OptionRow from '@components/OptionRow';
 
 import useCurrentUserPersonalDetails from '@hooks/useCurrentUserPersonalDetails';
@@ -16,11 +18,8 @@ import CONST from '@src/CONST';
 import {DYNAMIC_ROUTES} from '@src/ROUTES';
 import type {PersonalDetails} from '@src/types/onyx';
 
-import type {FlatListProps} from 'react-native';
-
 import {Str} from 'expensify-common';
 import React from 'react';
-import {FlatList} from 'react-native';
 
 import type ReactionListProps from './types';
 
@@ -40,13 +39,7 @@ type BaseReactionListProps = ReactionListProps & {
     isVisible?: boolean;
 };
 
-const keyExtractor: FlatListProps<PersonalDetails>['keyExtractor'] = (item, index) => `${item.login}+${index}`;
-
-const getItemLayout = (data: ArrayLike<PersonalDetails> | null | undefined, index: number): {length: number; offset: number; index: number} => ({
-    index,
-    length: variables.listItemHeightNormal,
-    offset: variables.listItemHeightNormal * index,
-});
+const keyExtractor: LegendListProps<PersonalDetails>['keyExtractor'] = (item, index) => `${item.login}+${index}`;
 
 function BaseReactionList({hasUserReacted = false, users, isVisible = false, emojiCodes, emojiCount, emojiName, onClose}: BaseReactionListProps) {
     const icons = useMemoizedLazyExpensifyIcons(['FallbackAvatar']);
@@ -65,7 +58,7 @@ function BaseReactionList({hasUserReacted = false, users, isVisible = false, emo
      * so that the sticky headers function properly
      *
      */
-    const renderItem: FlatListProps<PersonalDetails>['renderItem'] = ({item}) => (
+    const renderItem = ({item}: LegendListRenderItemProps<PersonalDetails>) => (
         <OptionRow
             boldStyle
             style={{maxWidth: variables.mobileResponsiveWidthBreakpoint}}
@@ -102,11 +95,12 @@ function BaseReactionList({hasUserReacted = false, users, isVisible = false, emo
                 emojiCount={emojiCount}
                 hasUserReacted={hasUserReacted}
             />
-            <FlatList
+            <LegendList
                 data={users}
                 renderItem={renderItem}
+                extraData={renderItem}
                 keyExtractor={keyExtractor}
-                getItemLayout={getItemLayout}
+                getFixedItemSize={() => variables.listItemHeightNormal}
                 contentContainerStyle={pv2}
                 style={[reactionListContainer, !shouldUseNarrowLayout && reactionListContainerFixedWidth]}
             />
