@@ -64,7 +64,7 @@ import type {ValueOf} from 'type-fest';
 
 import {isActingAsDelegateSelector, isUserValidatedSelector} from '@selectors/Account';
 import {createPoliciesForDomainCardsSelector} from '@selectors/Policy';
-import {FlashList} from '@shopify/flash-list';
+import LegendList from '@components/LegendList';
 import lodashSortBy from 'lodash/sortBy';
 import React from 'react';
 import {View} from 'react-native';
@@ -690,7 +690,8 @@ function PaymentMethodList({
                 },
             ]}
         >
-            <FlashList<PaymentMethod | string>
+            <LegendList<PaymentMethod | string>
+                maintainVisibleContentPosition
                 data={itemsToRender}
                 renderItem={renderItem}
                 keyExtractor={keyExtractor}

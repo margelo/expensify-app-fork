@@ -12,7 +12,7 @@ import variables from '@styles/variables';
 
 import CONST from '@src/CONST';
 
-import type {ListRenderItemInfo} from '@shopify/flash-list';
+import type {LegendListRenderItemProps} from '@components/LegendList/types';
 
 import React from 'react';
 
@@ -100,7 +100,7 @@ export default function WorkspaceViewTagsTable({tags, hasDependentTags, selectio
         },
     };
 
-    const renderItem = ({item, index}: ListRenderItemInfo<WorkspaceTagTableRowData>) => (
+    const renderItem = ({item, index}: LegendListRenderItemProps<WorkspaceTagTableRowData>) => (
         <WorkspaceTagsTableRow
             item={item}
             rowIndex={index}
